@@ -171,12 +171,12 @@ class EnvironmentManager:
       vm_list = self.get_virtual_machines()
 
       for (vm,count) in iter(vm_list):
-         try:
+         if machine[0].isdigit():
             if int(machine[0]) is count:
                return vm_list[(vm,count)]
-         except ValueError:
+         else
             if machine[0] == vm:
-               return vm_list[(vm,count)]
+               return vm_list[(vm_count)]
       return None
 
    def set_vm(self, java_vm, env_file, javaws_file):
