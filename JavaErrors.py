@@ -47,4 +47,4 @@ class PermissionError:
    The permission on the file are wrong or you are not a privileged user
    """
 
-# vim:set expandtab tabstop=3 shiftwidth=3:
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

@@ -115,4 +115,4 @@ class OutputFormatter:
    def setTitle(self, message):
       self.__setTitle(self.__parseColor(message, True))
 
-# vim:set expandtab tabstop=3 shiftwidth=3:
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

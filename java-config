@@ -49,76 +49,75 @@ if __name__ == '__main__':
    (options, args) = parser.parse_args()
 
    printer = OutputFormatter.OutputFormatter(options.optColor, True)
+   manager = EnvironmentManager.EnvironmentManager()
 
-   try:
-      manager = EnvironmentManager.EnvironmentManager()
-   except JavaErrors.EnvironmentUndefinedError:
-      printer._printError("No JAVA_HOME available! Please set your Java Virtual Machine")
-      sys.exit(-1)
-   except JavaErrors.InvalidConfigError:
-      printer._printError("Invalid configuration file encountered!")
-      
+   #########################################################################
+
    if options.optVersion:
       printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
       raise SystemExit()
 
    if options.optJavaExec:
       try:
-         printer._print(manager.find_exec('java'))
+         printer._print(manager.get_active_vm().find_exec('java'))
       except JavaErrors.PermissionError:
          printer._printError("The java executable was not found in the Java path")
 
    if options.optJavacExec:
       try:
-         printer._print(manager.find_exec('javac'))
+         printer._print(manager.get_active_vm().find_exec('javac'))
       except JavaErrors.PermissionError:
          printer._printError("The javac executable was not found in the Java path")
 
    if options.optJarExec:
       try:
-         printer._print(manager.find_exec('jar'))
+         printer._print(manager.get_active_vm().find_exec('jar'))
       except JavaErrors.PermissionError:
          printer._printError("The jar executable was not found in the Java path")
 
    if options.optJDKHome:
       try:
-         printer._print(manager.query_variable('JDK_HOME'))
+         printer._print(manager.get_active_vm().query('JDK_HOME'))
       except JavaErrors.EnvironmentUndefinedError:
          print
 
    if options.optJREHome:
       try:
-         printer._print(manager.query_variable('JRE_HOME'))
+         printer._print(manager.get_active_vm().query('JRE_HOME'))
       except JavaErrors.EnvironmentUndefinedError:
          print
 
    if options.optShowActiveVM:
-      printer._print(manager.get_active_vm())
+      printer._print(manager.get_active_vm().name())
 
    if options.optShowJavaVer:
       try:
-         printer._print(getoutput('%s -version' % manager.find_exec('java')))
+         printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
       except JavaErrors.PermissionError:
          printer._printError("The java executable was not found in the Java path")
 
    if options.exe:
-      for cmd in iter(options.exe[0].split(',')):
+      for cmd in iter(options.exe.split(',')):
          os.system(cmd)
 
    if options.optListJVMs:
       vm_list = manager.get_virtual_machines()
       i = 1 
-      for (vm,count) in iter(vm_list):
-         if manager.is_active_vm(vm_list[(vm,count)]['JAVA_HOME']):
-            printer._print('%H%G' + '*) %s\t[%s]\t(/etc/env.d/java/%s)' % (vm_list[(vm,count)]['VERSION'],vm[2:],vm) + '%$')
+      for count in iter(vm_list):
+         vm = vm_list[count]
+         if vm.active:
+            printer._print('%H%G' + '*) %s\t[%s]\t(%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
          else:
-            printer._print('%H' + '%i) %s\t[%s]\t(/etc/env.d/java/%s)' % (i,vm_list[(vm,count)]['VERSION'],vm[2:],vm) + '%$')
+            if vm.is_jdk():
+               printer._print('%H' + '%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+            else:
+               printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
          i += 1
 
    if options.SystemVM:
       vm = manager.get_vm(options.SystemVM)
 
-      if vm['PROVIDES_TYPE'] == "JRE":
+      if vm.is_jre():
          printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
          
       try:
@@ -128,4 +127,4 @@ if __name__ == '__main__':
       except JavaErrors.PermissionError:
          printer._printError("You do not have enough permissions to set the system VM")
 
-# vim:set expandtab tabstop=3 shiftwidth=3:
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

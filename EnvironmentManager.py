@@ -18,142 +18,68 @@
 __version__ = '$Revision: 2.0$'[11:-1]
 
 import os
-import JavaErrors
+import JavaErrors,VM
 
-class JavaEnvironParser:
-   environ_path = [
-                     os.path.join(os.environ.get('HOME'), '.gentoo', 'java'),
-                     os.path.join('/etc/env.d', '20java')
-                  ]
+class EnvironmentManager:
+   virtual_machines = {} 
+   
+   def __init__(self):
+      # Get JAVA_HOME
+      environ_path = [
+                        os.path.join(os.environ.get('HOME'), '.gentoo', 'java'),
+                        os.path.join('/', 'etc', 'env.d', '20java')
+                     ]
 
-   def query(self, query):
-      for file in self.environ_path:
+      self.JAVA_HOME = None
+
+      for file in environ_path:
          try:
             stream = open(file, 'r')
          except IOError:
             continue
-
+         
          read = stream.readline()
          while read:
-            if read.strip().startswith(query):
+            if read.strip().startswith('JAVA_HOME'):
                stream.close()
-               value = read.split('=', 1)
-               return value[-1].strip()
+               self.JAVA_HOME = read.split('=', 1)[-1].strip()
+               break
             else:
                read = stream.readline()
-         stream.close()
-      return None
-
-   def config_dict(self, file):
-      config = {}
-      bracketed = False
-
-      if not os.path.isfile(file) or not os.access(file, os.R_OK):
-         return None
-
-      stream = open(file, 'r')
-      read = stream.readline()
-      while read:
-         if read.isspace() or read == '' or read.startswith('#'):
-            read = stream.readline()
-         else:
-            read = read.split('\n')[0]
-            read.replace
-            name, value = read.split('=')
-
-            if value == '':
-               raise JavaErrors.InvalidConfigError(file)
-
-            values = value.split(':')
-            for item in values:
-               item = item.strip('\\').strip('\'\"')
-
-               if item.find('${') >= 0:
-                  bracketed = True
-                  item = item[item.find('${')+2:item.find('}')]
-
-               if config.has_key(item):
-                  val = config[item]
-               else:
-                  val = ''
-               
-               if bracketed:
-                  value = value.replace('${%s}' % item, val)
-                  bracketed = False
-               else:
-                  value = value.replace('$%s' % item, val)
-            
-            config[name] = value
-
-            read = stream.readline()
-
-      stream.close()
-
-      return config
-
-class EnvironmentManager:
-   envparser = JavaEnvironParser()
-   virtual_machines = {}
-   
-   def __init__(self):
-      # Get the JAVA_HOME
-      self.JAVA_HOME = self.envparser.query('JAVA_HOME')
-      if self.JAVA_HOME is None:
-         raise JavaErrors.EnvironmentUndefinedError
+         stream.close()      
 
       # Collect the Virtual Machines
+      # TODO: MAKE THIS MODULAR!
       if os.path.isdir('/etc/env.d/java'):
          try:
-            count = 1;
+            count = 1
             for file in os.listdir('/etc/env.d/java'):
                conf = os.path.join('/etc/env.d/java', file)
-               config = self.envparser.config_dict(conf)
 
-               try:
-                  if os.path.isdir(config['JAVA_HOME']):
-                     self.virtual_machines[(file, count)] = config
-               except KeyError:
-                  raise JavaErrors.InvalidConfigError(conf)
-               count += 1
+               if file.startswith("20"):
+                  vm = None
+
+                  try:
+                     vm = VM.VM(conf)
+                  except JavaErrors.InvalidConfigError:
+                     pass
+                  except JavaErrors.PermissionError:
+                     pass
+
+                  if vm.query('JAVA_HOME') == self.JAVA_HOME:
+                     vm.set_active()
+
+                  self.virtual_machines[count] = vm
+                  count += 1
          except OSError:
             pass
 
-   def find_exec(self, executable, java_home=None):
-      if java_home is None:
-         java_home = self.JAVA_HOME
-
-      vm = self.get_vm(java_home)
-
-      if vm['PROVIDES_TYPE'] == "JRE":
-         path = java_home + '/bin/' + str(executable)
-      else:
-         path = java_home + '/jre/bin/' + str(executable)
-
-      if os.path.isfile(path):
-         if not os.access(path, os.X_OK):
-            raise JavaErrors.PermissionError
-         else:
-            return path
-      else:
-         raise JavaErrors.PermissionError
-
-   def query_variable(self, variable):
-      value = self.envparser.query(variable)
-      if value is None:
-         raise JavaErrors.EnvironmentUndefinedError
-      else:
-         return value
-
    def get_active_vm(self):
-      for vm in self.virtual_machines.keys():
-         if (self.virtual_machines[vm]['JAVA_HOME'] == self.JAVA_HOME):
-            return vm[2:]
+      vm_list = self.get_virtual_machines()
 
-   def is_active_vm(self, java_home):
-      if java_home == self.JAVA_HOME:
-         return True
-      else:
-         return False
+      for count in iter(vm_list):
+         if vm_list[count].active:
+            return vm_list[count]
 
    def get_virtual_machines(self):
       return self.virtual_machines
@@ -162,29 +88,31 @@ class EnvironmentManager:
       vm_list = self.get_virtual_machines()
       selected = None
 
-      for (vm,count) in iter(vm_list):
+      for count in iter(vm_list):
+         vm = vm_list[count]
+
          if str(machine).isdigit():
             if int(machine) is count:
-               return vm_list[(vm,count)]
+               return vm
          else:
             # Check if the vm is specified via env file
-            if machine == vm:
-               return vm_list[(vm,count)]
+            if machine == vm.filename():
+               return vm 
 
-            # Check if the vm is specified by env file without priority
-            elif machine == vm.lstrip("20"):
-               return vm_list[(vm,count)]
+            # Check if the vm is specified by name 
+            elif machine == vm.name():
+               return vm
 
             # Check if the vm is specified via JAVA_HOME
-            elif machine == vm_list[(vm,count)]['JAVA_HOME']:
-               return vm_list[(vm,count)]
+            elif machine == vm.query('JAVA_HOME'):
+               return vm
 
-            # Check if vm is specified by VM name
-            elif vm.lstrip("20").startswith(vm):
-               selected = (vm,count)
+            # Check if vm is specified by partial name 
+            elif vm.name().startswith(machine):
+               selected = vm
 
       if selected:
-         return vm_list[selected]
+         return selected
       else:
          return None
 
@@ -195,16 +123,16 @@ class EnvironmentManager:
          raise JavaErrors.PermissionError
 
       stream.write("# Autogenerated by java-config\n")
-      stream.write("# Java Virtual Machine: %s\n\n" % vm['VERSION'][1:-1])
-
-      for (item,value) in vm.iteritems():
-         try:
-            if item in vm["ENV_VARS"]:
+      stream.write("# Java Virtual Machine: %s\n\n" % vm.query('VERSION')[1:-1])
+      
+      try:
+         ENV_VARS = vm.config['ENV_VARS']
+         for (item,value) in vm.config.iteritems():
+            if item in ENV_VARS:
                stream.write('%s=%s\n' % (item,value))
-            else:
-               stream.write('# %s=%s\n' % (item,value))
-         except IOError:
-            continue
+      except IOError:
+         stream.close()
+         raise JavaErrors.PermissionError
 
       stream.close()
 
@@ -219,13 +147,13 @@ class EnvironmentManager:
          raise JavaErrors.PermissionError
 
       stream.write("# Autogenerated by java-config\n")
-      stream.write("deployment.javaws.jre.0.platform=" + vm['PROVIDES_VERSION'])
-      stream.write("deployment.javaws.jre.0.product=" + vm['PROVIDES_VERSION'])
-      stream.write("deployment.javaws.jre.0.path=" + self.find_exec('java', vm['JAVA_HOME']))
+      stream.write("deployment.javaws.jre.0.platform=" + vm.query('PROVIDES_VERSION'))
+      stream.write("deployment.javaws.jre.0.product=" + vm.query('PROVIDES_VERSION'))
+      stream.write("deployment.javaws.jre.0.path=" + vm.find_exec('java'))
 
       stream.close()
 
-      # Re-Source the profile which contains updates
+      # Update the profile which contains updates
       os.system("env-update")
  
-# vim:set expandtab tabstop=3 shiftwidth=3:
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
