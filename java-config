@@ -117,19 +117,24 @@ if __name__ == '__main__':
 
    if options.SystemVM:
       valid = False
-
+      
+      vm = manager.get_vm(options.SystemVM)
+       
       try:
-         valid = manager.valid_vm(options.SystemVM)
+         valid = manager.valid_vm(vm)
       except JavaErrors.InvalidVM:
          printer._printError("The specified VM does not exist or is invalid")
       except JavaErrors.MissingOptionals:
          printer._printWarning("Some optional tools are missing from the VM")
          valid = True
-
+      
+      #previous behaviar was to allow setting of invalid vm's
       if valid:
          try:
-            manager.set_vm(options.SystemVM, '/etc/env.d/20java', '/etc/.java/.deployment/deployment.properties')
+            manager.set_vm(vm, '/etc/env.d/20java', '/etc/.java/.deployment/deployment.properties')
             printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
             printer._print("\t   %Hsource /etc/profile")
          except JavaErrors.PermissionError:
             printer._printError("You do not have enough permissions to set the system VM")
+
+# vim:set expandtab tabstop=3 shiftwidth=3:
