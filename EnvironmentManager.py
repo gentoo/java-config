@@ -172,7 +172,7 @@ class EnvironmentManager:
       selected = None
 
       for (vm,count) in iter(vm_list):
-         if machine[0].isdigit():
+         if str(machine[0]).isdigit():
             if int(machine[0]) is count:
                return vm_list[(vm,count)]
          else:
