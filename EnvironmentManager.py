@@ -218,4 +218,68 @@ class EnvironmentManager:
                stream.close()
       except IOError:
          raise PermissionError
+
+   def clean_classpath(self, env_file):
+      if os.path.isfile(env_file):
+         try:
+            os.remove(env_file)
+         except IOError:
+            raise PermissionError
+
+   def set_classpath(self, env_file, pkgs):
+      classpath = self.query_packages(pkgs, "CLASSPATH")
+      classpath = re.sub(':+', ':', classpath) 
+      classpath.strip(':')
+
+      if os.path.isfile(env_file):
+         try:
+            os.remove(env_file)
+         except IOError:
+            raise PermissionError
+
+      try:
+         stream = open(env_file, 'w')
+      except IOError:
+         raise PermissionError
+
+      stream.write("CLASSPATH=%s\n" % (classpath))
+      stream.close()
+
+   def append_classpath(self, env_file, pkgs):
+      classpath = self.query_packages(pkgs, "CLASSPATH")
+      classpath = re.sub(':+', ':', classpath) 
+      classpath.strip(':')
+
+      oldClasspath = ''
+      if os.path.isfile(env_file):
+         try:
+            stream = open(env_file, 'r')
+         except IOError:
+            raise PermissionError
+
+         read = stream.readline()
+         while read:
+            if read.strip().startswith('CLASSPATH'):
+               stream.close()
+               oldClasspath = read.split('=', 1)[-1].strip()
+               break
+            else:
+               read = stream.readline()
+         stream.close()
+
+      classpath = oldClasspath + ':' + classpath
+
+      if os.path.isfile(env_file):
+         try:
+            os.remove(env_file)
+         except IOError:
+            raise PermissionError
+
+      try:
+         stream = open(env_file, 'w')
+      except IOError:
+         raise PermissionError
+
+      stream.write("CLASSPATH=%s\n" % (classpath))
+      stream.close()
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

@@ -225,6 +225,10 @@ if __name__ == '__main__':
                      make_option ("-P", "--print",                   action="store",                      dest="vm",              help="Print the environment for the specified VM"),
                      make_option ("-S", "--set-system-vm",           action="store",                      dest="SystemVM",        help="Set the default Java VM for the system"),
                      make_option ("-s", "--set-user-vm",             action="store",                      dest="UserVM",          help="Set the default Java VM for the user"),
+                     make_option ("-A", "--set-system-classpath",    action="store",                      dest="SetSystemCP",     help="Set the system classpath to include the libraries"),
+                     make_option ("-a", "--set-user-classpath",      action="store",                      dest="SetUserCP",       help="Set the user classpath to include the libraries"),
+                     make_option ("-B", "--append-system-classpath", action="store",                      dest="AppendSystemCP",  help="Append the libraries to the system classpath"),
+                     make_option ("-b", "--append-user-classpath",   action="store",                      dest="AppendUserCP",    help="Append the libraries to the user classpath"),
                      make_option ("-X", "--clean-system-classpath",  action="store_true",  default=False, dest="optCleanSysCP",   help="Clean the current system classpath"),
                      make_option ("-x", "--clean-user-classpath",    action="store_true",  default=False, dest="optCleanUsrCP",   help="Clean the current user classpath"),
                      make_option ("-i", "--library",                 action="store",                      dest="library",         help="Print entries in the package library")
@@ -380,27 +384,65 @@ if __name__ == '__main__':
 
       printer._print(join(library, ':'))
 
+   if options.SetSystemCP:
+      # TODO: MAKE THIS MODULAR!!
+      env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
+      
+      if os.getuid is 0:
+         manager.set_classpath(env_file, SetSystemCP.split(","))
+
+         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+         printer._print("\t   %Hsource /etc/profile")
+      else:
+         printer._printError("You do not have enough permissions to set the system classpath!")
+
+   if options.SetUserCP:
+      # TODO: MAKE THIS MODULAR!!
+      env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+
+      manager.set_classpath(env_file, SetUserCP.split(","))
+
+   if options.AppendSystemCP:
+      # TODO: MAKE THIS MODULAR!!
+      env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
+
+      if os.getuid is 0:
+         manager.append_classpath(env_file, AppendSystemCP.split(','))
+         os.system("env-update")
+
+         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+         printer._print("\t    %Hsource /etc/profile")
+      else:
+         printer._printError("You do not have enough permissioins to append to the system classpath!")
+
+   if options.AppendUserCP:
+      # TODO: MAKE THIS MODUlAR!!
+      env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+
+      manager.append_classpath(env_file, AppendUserCP.split(','))
+
+      printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+      printer._print("\t   %Henv-update && source /etc/profile")
+
    if options.optCleanSysCP:
       # TODO: MAKE THIS MODULAR!!
       env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
 
       if os.getuid is 0:
-         if os.path.isfile(env_file):
-            os.remove(env_file)
-            os.system("env-update")
+         manager.clean_classpath(env_file)
+         os.system("env-update")
 
-            printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-            printer._print("\t   %Hsource /etc/profile")
+         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+         printer._print("\t   %Hsource /etc/profile")
       else:
-         printner._printError("You do not have enough permissions to clean the system classpath!")
+         printer._printError("You do not have enough permissions to clean the system classpath!")
 
    if options.optCleanUsrCP:
       # TODO: MAKE THIS MODULAR!!
       env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
 
-      if os.path.isfile(env_file):
-         os.remove(env_file)
+      manager.clean_classpath(env_file)
 
-         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-         printer._print("\t   %Henv-update && source /etc/profile")
+      printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+      printer._print("\t   %Henv-update && source /etc/profile")
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
