@@ -25,7 +25,14 @@ class EnvironmentUnexecutableError(SystemExit):
    The file is not executable!
    """
 
-class JavaConfig_RuntimeError(SystemExit):
+class RuntimeError(SystemExit):
    """
    General Exception for the java-config utility
    """
+
+class InvalidConfigError:
+   """
+   Invalid Configuration File
+   """
+   def __init__(self, file):
+      self.file = file 
