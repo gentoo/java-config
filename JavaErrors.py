@@ -20,11 +20,6 @@ class EnvironmentUndefinedError(SystemExit):
    Environment Variable is undefined!
    """
 
-class EnvironmentUnexecutableError(SystemExit):
-   """
-   The file is not executable!
-   """
-
 class RuntimeError(SystemExit):
    """
    General Exception for the java-config utility
@@ -45,4 +40,9 @@ class InvalidVM:
 class MissingOptionals:
    """
    Some optional utilities are missing from a valid VM
+   """
+
+class PermissionError:
+   """
+   The permission on the file are wrong or you are not a privileged user
    """

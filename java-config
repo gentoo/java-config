@@ -65,19 +65,19 @@ if __name__ == '__main__':
    if options.optJavaExec:
       try:
          printer._print(manager.find_exec('java'))
-      except JavaErrors.EnvironmentUnexecutableError:
+      except JavaErrors.PermissionError:
          printer._printError("The java executable was not found in the Java path")
 
    if options.optJavacExec:
       try:
          printer._print(manager.find_exec('javac'))
-      except JavaErrors.EnvironmentUnexecutableError:
+      except JavaErrors.PermissionError:
          printer._printError("The javac executable was not found in the Java path")
 
    if options.optJarExec:
       try:
          printer._print(manager.find_exec('jar'))
-      except JavaErrors.EnvironmentUnexecutableError:
+      except JavaErrors.PermissionError:
          printer._printError("The jar executable was not found in the Java path")
 
    if options.optJDKHome:
@@ -96,7 +96,10 @@ if __name__ == '__main__':
       printer._print(manager.get_active_vm())
 
    if options.optShowJavaVer:
-      printer._print(getoutput('%s -version' % manager.find_exec('java')))
+      try:
+         printer._print(getoutput('%s -version' % manager.find_exec('java')))
+      except JavaErrors.PermissionError:
+         printer._printError("The java executable was not found in the Java path")
 
    if options.exe is not None:
       for cmd in iter(options.exe[0].split(',')):
@@ -124,4 +127,7 @@ if __name__ == '__main__':
          valid = True
 
       if valid:
-         print "Yippie!"
+         try:
+            manager.set_vm(options.SystemVM, '/etc/env.d/20java')
+         except JavaErrors.PermissionError:
+            printer._printError("You do not have enough permissions to set the system VM")
