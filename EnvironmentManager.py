@@ -21,8 +21,7 @@ import os
 
 class JavaEnvironParser:
    environ_path = [
-                     os.path.join(os.environ.get('HOME'), '.gentoo'),
-                     os.path.join(os.environ.get('HOME'), '.java'),
+                     os.path.join(os.environ.get('HOME'), '.gentoo', 'java'),
                      os.path.join('/etc/env.d', '20java')
                   ]
 
