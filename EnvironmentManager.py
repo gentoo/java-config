@@ -163,20 +163,20 @@ class EnvironmentManager:
       selected = None
 
       for (vm,count) in iter(vm_list):
-         if str(machine[0]).isdigit():
-            if int(machine[0]) is count:
+         if str(machine).isdigit():
+            if int(machine) is count:
                return vm_list[(vm,count)]
          else:
             # Check if the vm is specified via env file
-            if machine[0] == vm:
+            if machine == vm:
                return vm_list[(vm,count)]
 
             # Check if the vm is specified by env file without priority
-            elif machine[0] == vm.lstrip("20"):
+            elif machine == vm.lstrip("20"):
                return vm_list[(vm,count)]
 
             # Check if the vm is specified via JAVA_HOME
-            elif machine[0] == vm_list[(vm,count)]['JAVA_HOME']:
+            elif machine == vm_list[(vm,count)]['JAVA_HOME']:
                return vm_list[(vm,count)]
 
             # Check if vm is specified by VM name
