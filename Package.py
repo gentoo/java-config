@@ -15,7 +15,7 @@
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
 
-import JavaErrors,EnvFileParser
+import EnvFileParser
 
 class Package:
    def __init__(self,file, name):

@@ -15,7 +15,7 @@
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
 
-import JavaErrors
+from JavaErrors import *
 import os
 
 class EnvFileParser:
@@ -26,9 +26,9 @@ class EnvFileParser:
 
       # Create the config from the file
       if not os.path.isfile(file):
-         raise JavaErrors.InvalidConfigError(file)
+         raise InvalidConfigError(file)
       if not os.access(file, os.R_OK):
-         raise JavaErrors.PermissionError
+         raise PermissionError
 
       stream = open(file, 'r')
       read = stream.readline()
@@ -40,7 +40,7 @@ class EnvFileParser:
             name, value = read.split('=')
 
             if value == '':
-               raise JavaErrors.InvalidConfigError(file)
+               raise InvalidConfigError(file)
 
             value = value.strip('\\').strip('\'\"')
 

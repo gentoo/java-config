@@ -17,9 +17,10 @@
 
 __version__ = '$Revision: 2.0$'[11:-1]
 
-import OutputFormatter,EnvironmentManager,JavaErrors
+import OutputFormatter,EnvironmentManager
 import os
 
+from JavaErrors import *
 from commands import getoutput
 from optparse import OptionParser, make_option
 from string   import join
@@ -67,31 +68,31 @@ if __name__ == '__main__':
    if options.optJavaExec:
       try:
          printer._print(manager.get_active_vm().find_exec('java'))
-      except JavaErrors.PermissionError:
+      except PermissionError:
          printer._printError("The java executable was not found in the Java path")
 
    if options.optJavacExec:
       try:
          printer._print(manager.get_active_vm().find_exec('javac'))
-      except JavaErrors.PermissionError:
+      except PermissionError:
          printer._printError("The javac executable was not found in the Java path")
 
    if options.optJarExec:
       try:
          printer._print(manager.get_active_vm().find_exec('jar'))
-      except JavaErrors.PermissionError:
+      except PermissionError:
          printer._printError("The jar executable was not found in the Java path")
 
    if options.optJDKHome:
       try:
          printer._print(manager.get_active_vm().query('JDK_HOME'))
-      except JavaErrors.EnvironmentUndefinedError:
+      except EnvironmentUndefinedError:
          print
 
    if options.optJREHome:
       try:
          printer._print(manager.get_active_vm().query('JRE_HOME'))
-      except JavaErrors.EnvironmentUndefinedError:
+      except EnvironmentUndefinedError:
          print
 
    if options.optShowActiveVM:
@@ -100,7 +101,7 @@ if __name__ == '__main__':
    if options.optShowJavaVer:
       try:
          printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
-      except JavaErrors.PermissionError:
+      except PermissionError:
          printer._printError("The java executable was not found in the Java path")
 
    if options.packages:
@@ -116,7 +117,7 @@ if __name__ == '__main__':
       try:
          for env in options.env.split(','):
             printer._print(manager.get_active_vm().query(env))
-      except JavaErrors.EnvironmentUndefinedError:
+      except EnvironmentUndefinedError:
          print
 
    if options.exe:
@@ -167,7 +168,7 @@ if __name__ == '__main__':
 
             printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
             printer._print("\t   %Hsource /etc/profile")
-         except JavaErrors.PermissionError:
+         except PermissionError:
             printer._printError("You do not have enough permissions to set the system VM!")
       else:
          printer._printError("You do not have enough permissions to set the system VM!")
@@ -191,7 +192,7 @@ if __name__ == '__main__':
                manager.set_vm(vm, config, deploy)
                printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
                printer._print("\t   %Hsource ~/.gentoo/java")
-            except JavaErrors.PermissionError:
+            except PermissionError:
                printer._printError("You do not have enough permissions to set the VM!")
 
    if options.library:

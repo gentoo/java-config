@@ -15,8 +15,10 @@
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
 
-import JavaErrors, EnvFileParser
+import EnvFileParser
 import os
+
+from JavaErrors import *
 
 class VM:
 
@@ -50,7 +52,7 @@ class VM:
       if self.config.has_key(var):
          return self.config[var]
       else:
-         raise JavaErrors.EnvironmentUndefinedError
+         raise EnvironmentUndefinedError
 
    def active(self):
       return self.active
@@ -101,11 +103,11 @@ class VM:
 
          if os.path.isfile(path):
             if not os.access(path, os.X_OK):
-               raise JavaErrors.PermissionError
+               raise PermissionError
             else:
                return path
          else:
-            raise JavaErrors.PermissionError
+            raise PermissionError
       return None
 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
