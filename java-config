@@ -129,5 +129,8 @@ if __name__ == '__main__':
       if valid:
          try:
             manager.set_vm(options.SystemVM, '/etc/env.d/20java')
+            printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+            printer._print("\t   %H/usr/sbin/env-update && source /etc/profile")
          except JavaErrors.PermissionError:
             printer._printError("You do not have enough permissions to set the system VM")
+

@@ -103,5 +103,9 @@ class OutputFormatter:
       message = "%H%Y!!! WARNING: " + message + "%$"
       sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
 
+   def _printAlert(self, message):
+      message = "%H%C!!! ALERT: " + message + "%$"
+      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
+
    def setTitle(self, message):
       self.__setTitle(self.__parseColor(message, True))
