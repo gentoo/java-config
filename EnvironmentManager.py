@@ -162,7 +162,7 @@ class EnvironmentManager:
    def valid_vm(self, machine):
       vm_list = self.get_virtual_machines()
       executables = [ 'javac', 'javadoc', 'jar' ]
-      optionals = [ 'wwww', 'rmic' ]
+      optionals = [ 'rmic' ]
       java_home = None
 
       for (vm,count) in iter(vm_list):
