@@ -167,7 +167,7 @@ class EnvironmentManager:
       # Resolves bug #69542
       # TODO: MAKE THIS MODULAR!!
       prefs_struct = [
-                        os.path.join('/', 'etc', '.java', '.systemPrefs', '.systemPrefs')
+                        os.path.join('/', 'etc', '.java', '.systemPrefs', '.systemPrefs'),
                         os.path.join('/', 'etc', '.java', '.systemPrefs', '.system.lock')
                      ]
       
