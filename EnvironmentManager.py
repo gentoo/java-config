@@ -159,6 +159,14 @@ class EnvironmentManager:
    def get_virtual_machines(self):
       return self.virtual_machines
 
+   def get_vm_from_home(self, home):
+      vm_list = self.get_virtual_machines()
+
+      for vm in iter(vm_list):
+         if vm['JAVA_HOME'] == home:
+            return vm
+      return None
+
    def get_vm(self, machine):
       vm_list = self.get_virtual_machines()
 
@@ -169,10 +177,11 @@ class EnvironmentManager:
          except ValueError:
             if machine[0] == vm:
                return vm_list[(vm,count)]
+      return None
 
    def set_vm(self, java_vm, file):
       vm = self.get_vm(java_vm)
-
+ 
       try:
          stream = open(file, 'w')
       except IOError:
