@@ -102,16 +102,18 @@ if __name__ == '__main__':
    if options.packages:
       package_list = manager.get_packages()
       packages = options.packages.split(',')
+      classpath = ''
 
       for pack in iter(package_list):
          if pack.name in packages:
-            printer._print(pack.classpath())
+            classpath += pack.classpath() + ':'
             packages.remove(pack.name)
 
       if not len(packages) is 0:
          for package in packages:
             printer._printError("Package %s was not found!" % package)
-         print
+
+      printer._print(classpath[:-1])
 
    if options.env:
       try:
