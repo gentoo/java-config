@@ -33,6 +33,12 @@ class Package:
       if self.config.has_key("DESCRIPTION"):
          return self.config["DESCRIPTION"]
       else:
+         return "No Description"
+
+   def classpath(self):
+      if self.config.has_key("CLASSPATH"):
+         return self.config["CLASSPATH"]
+      else:
          return None
 
    def query(self, var):
