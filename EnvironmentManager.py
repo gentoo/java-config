@@ -5,12 +5,12 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-# Author: Saleem Abdulrasool <compnerd@compnerd.org>
+# Author: Saleem Abdulrasool <compnerd@gentoo.org>
 # Maintainer: Gentoo Java Herd <java@gentoo.org>
 # Java Subsystem Configuration Utility for Gentoo Linux
 
 # ChangeLog
-# Saleem A. <compnerd@compnerd.org>
+# Saleem A. <compnerd@gentoo.org>
 #     December 30, 2004 - Initial Rewrite
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
