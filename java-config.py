@@ -55,30 +55,30 @@ if __name__ == '__main__':
 
    if options.optJavaExec:
       try:
-         printer._print(manager.FindExec('java'))
+         printer._print(manager.find_exec('java'))
       except JavaExceptions.EnvironmentUnexecutableError:
          printer._printError("%RError: %HThe java executable was not found in the Java Path")
 
    if options.optJavacExec:
       try:
-         printer._print(manager.FindExec('javac'))
+         printer._print(manager.find_exec('javac'))
       except JavaExceptions.EnvironmentUnexecutableError:
          printer._printError("%RError: %HThe javac executable was not found in the Java Path")
 
    if options.optJarExec:
       try:
-         printer._print(manager.FindExec('jar'))
+         printer._print(manager.find_exec('jar'))
       except JavaExceptions.EnvironmentUnexecutableError:
          printer._printError("%RError: %HThe jar executable was not found in the Java Path")
 
    if options.optJDKHome:
       try:
-         printer._print(manager.QueryVariable('JDK_HOME'))
+         printer._print(manager.query_variable('JDK_HOME'))
       except JavaExceptions.EnvironmentUndefinedError:
          print
 
    if options.optJREHome:
       try:
-         printer._print(manager.QueryVariable('JRE_HOME'))
+         printer._print(manager.query_variable('JRE_HOME'))
       except JavaExceptions.EnvironmentUndefinedError:
          print

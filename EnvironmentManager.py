@@ -27,7 +27,7 @@ class JavaEnvironParser:
                      os.path.join('/etc/env.d', '20java')
                   ]
 
-   def __FileQuery(self, file, query):
+   def __file_query(self, file, query):
       try:
          stream = open(file, 'r')
       except IOError:
@@ -46,7 +46,7 @@ class JavaEnvironParser:
       
    def query(self, query):
       for env_file in self.environ_path:
-         query_result = self.__FileQuery(env_file, query)
+         query_result = self.__file_query(env_file, query)
          if query_result != None:
             return query_result
       return None
@@ -59,14 +59,14 @@ class EnvironmentManager:
       if self.JAVA_HOME is None:
          raise JavaExceptions.EnvironmentUndefinedError
 
-   def QueryVariable(self, variable):
+   def query_variable(self, variable):
       value = self.environment.query(variable)
       if value is not None:
          return value
       else:
          raise JavaExceptions.EnvironmentUndefinedError
 
-   def FindExec(self, executable, java_home=None):
+   def find_exec(self, executable, java_home=None):
       if java_home is None:
          java_home = self.JAVA_HOME
 
