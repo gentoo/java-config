@@ -18,6 +18,7 @@
 __version__ = '$Revision: 2.0$'[11:-1]
 
 import OutputFormatter,EnvironmentManager,JavaExceptions
+import os
 
 from commands import getoutput
 from optparse import OptionParser, make_option
@@ -38,7 +39,8 @@ if __name__ == '__main__':
                      make_option ("-O", "--jdk-home",       action="store_true",  default=False, dest="optJDKHome",      help="Print the location of the active JDK home"),
                      make_option ("-o", "--jre-home",       action="store_true",  default=False, dest="optJREHome",      help="Print the location of the active JRE home"),
                      make_option ("-f", "--show-active-vm", action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
-                     make_option ("-v", "--java-version",   action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM")
+                     make_option ("-v", "--java-version",   action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
+                     make_option ("-e", "--exec",           action="append",                     dest="exe",             help="Execute something which is in JAVA_HOME")
                   ]
 
    parser = OptionParser(usage, options_list)
@@ -93,3 +95,7 @@ if __name__ == '__main__':
 
    if options.optShowJavaVer:
       printer._print(getoutput('%s -version' % manager.find_exec('java')))
+
+   if options.exe is not None:
+      for cmd in iter(options.exe[0].split(',')):
+         os.system(cmd)
