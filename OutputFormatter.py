@@ -98,7 +98,7 @@ class OutputFormatter:
          return striped
 
    def write(self, message):
-      print self._print(mesage)
+      print self.__parseColor(message.strip(), self.colorOutput)
 
    def _print(self, message):
       print self.__parseColor(message, self.colorOutput)
