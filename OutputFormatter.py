@@ -79,7 +79,7 @@ class OutputFormatter:
          if replace:
             if char == ' ':
                colored += self.codes['%'] 
-               stripped += self.codes['%']
+               striped += self.codes['%']
             elif char == '%':
                colored += self.codes[char]
                striped += self.codes[char]
