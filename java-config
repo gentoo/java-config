@@ -40,9 +40,10 @@ if __name__ == '__main__':
                      make_option ("-o", "--jre-home",           action="store_true",  default=False, dest="optJREHome",      help="Print the location of the active JRE home"),
                      make_option ("-f", "--show-active-vm",     action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
                      make_option ("-v", "--java-version",       action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
+                     make_option ("-g", "--get-env",            action="store",                      dest="env",             help="Print an environment variable from the active VM"),
+                     make_option ("-e", "--exec",               action="store",                      dest="exe",             help="Execute something which is in JAVA_HOME"),
                      make_option ("-L", "--list-available-vms", action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
-                     make_option ("-S", "--set-system-vm",      action="store",                      dest="SystemVM",        help="Set the default Java VM for the system."),
-                     make_option ("-e", "--exec",               action="store",                      dest="exe",             help="Execute something which is in JAVA_HOME")
+                     make_option ("-S", "--set-system-vm",      action="store",                      dest="SystemVM",        help="Set the default Java VM for the system.")
                   ]
 
    parser = OptionParser(usage, options_list)
@@ -95,6 +96,12 @@ if __name__ == '__main__':
          printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
       except JavaErrors.PermissionError:
          printer._printError("The java executable was not found in the Java path")
+
+   if options.env:
+      try:
+         printer._print(manager.get_active_vm().query(env))
+      except JavaErrors.EnvironmentUndefinedError:
+         print
 
    if options.exe:
       for cmd in iter(options.exe.split(',')):
