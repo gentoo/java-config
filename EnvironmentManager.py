@@ -179,8 +179,4 @@ class EnvironmentManager:
                stream.close()
       except IOError:
          raise JavaErrors.PermissionError
-
-      # Update the profile which contains updates
-      os.system("env-update")
- 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
