@@ -172,8 +172,7 @@ class EnvironmentManager:
 
    def set_vm(self, java_vm, file):
       vm = self.get_vm(java_vm)
-      env_ignore = [ 'VERSION', 'ENV_VARS' ]
- 
+
       try:
          stream = open(file, 'w')
       except IOError:
@@ -183,11 +182,13 @@ class EnvironmentManager:
       stream.write("# Java Virtual Machine: %s\n\n" % vm['VERSION'][1:-1])
 
       for (item,value) in vm.iteritems():
-         if item not in env_ignore:
-            try:
+         try:
+            if item in vm["ENV_VARS"]:
                stream.write('%s=%s\n' % (item,value))
-            except IOError:
-               continue
+            else:
+               stream.write('# %s=%s\n' % (item,value))
+         except IOError:
+            continue
 
       stream.close()
 
