@@ -25,6 +25,181 @@ from commands import getoutput
 from optparse import OptionParser, make_option
 from string   import join
 
+# class command:
+#    def __call__(self, Manager, Printer, arguments):
+#       raise
+# 
+# class version(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       Printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
+#       raise SystemExit()
+# 
+# class java(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          Printer._print(Manager.get_active_vm().find_exec('java'))
+#       except PermissionError:
+#          Printer._printError("The java executable was not found in the Java path")
+# 
+# class javac(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          Printer._print(Manager.get_active_vm().find_exec('javac'))
+#       except PermissionError:
+#          Printer._printError("The javac executable was not found in the Java path")
+# 
+# class jar(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          Printer._print(Manager.get_active_vm().find_exec('jar'))
+#       except PermissionError:
+#          Printer._printError("The jar executable was not found in the Java path")
+# 
+# class jdk_home(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          Printer._print(Manager.get_active_vm().query('JDK_HOME'))
+#       except EnvironmentUndefinedError:
+#          print
+# 
+# class jre_home(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          Printer._print(Manager.get_active_vm().query('JRE_HOME'))
+#       except EnvironmentUndefinedError:
+#          print
+# 
+# class show_active_vm(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       printer._print(manager.get_active_vm().name())
+# 
+# class java_version(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          Printer._print(getoutput('%s -version' % Manager.get_active_vm().find_exec('java')))
+#       except PermissionError:
+#          Printer._printError("The java executable was not found in the Java path")
+# 
+# # TODO: Make sure that the arguments are sent properly!
+# class classpath(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       packages = arguments[0].split(',')
+#       classpath = Manager.query_packages(packages, "CLASSPATH") 
+# 
+#       for package in packages:
+#          Printer._printError("Package %s was not found!" % package)
+# 
+#       Printer._print(join(classpath,':'))
+# 
+# # TODO: Make sure that the arugments are in proper order!
+# class get_env(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       try:
+#          for env in arguments[0].split(','):
+#             Printer._print(Manager.get_active_vm().query(env))
+#       except EnvironmentUndefinedError:
+#          print
+# 
+# # TODO: Make sure that the arugments are in proper order!
+# class exec(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       for cmd in iter(arguments[0].split(',')):
+#          os.system(cmd)
+# 
+# class list_available_packages(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       for package in Manager.get_packages():
+#          Printer._print("[%s]\t%s\t(%s)" % (package.name, package.description(), package.file))
+# 
+# class list_available_packages(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       vm_list = Manager.get_virtual_machines()
+#       i = 1 
+#       for count in iter(vm_list):
+#          vm = vm_list[count]
+#          if vm.active:
+#             printer._print('%H%G' + '*) %s\t[%s]\t(%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+#          else:
+#             if vm.is_jdk():
+#                printer._print('%H' + '%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+#             else:
+#                printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+#          i += 1
+# 
+# # TODO: Make sure that the arugments are in proper order!
+# class print(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       config = Manager.get_vm(arguments[0].vm).get_config()
+#       env_vars = config["ENV_VARS"]
+# 
+#       for item in iter(config):
+#          if item in env_vars:
+#             Printer._print('export %s=%s' % (item,config[item]))
+# 
+# # TODO: Make sure that the arugments are in proper order!
+# class set_system_vm(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       vm = Manager.get_vm(arguments[0].SystemVM)
+#       # TODO: MAKE THIS MODULAR!!
+#       config = os.path.join('/', 'etc', 'env.d', '20java')
+#       deploy = os.path.join('/', 'etc', '.java', '.deployment', 'deployment.properties')
+# 
+#       if vm.is_jre():
+#          Printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
+#          
+#       if os.getuid is 0:
+#          try:
+#             Manager.set_vm(vm, config, None, deploy)
+# 
+#             # Update the profile which contains updates
+#             os.system("env-update")
+# 
+#             Printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+#             Printer._print("\t   %Hsource /etc/profile")
+#          except PermissionError:
+#             Printer._printError("You do not have enough permissions to set the system VM!")
+#       else:
+#          Printer._printError("You do not have enough permissions to set the system VM!")
+# 
+# # TODO: Make sure that the arugments are in proper order!
+# class set_user_vm(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       vm = Manager.get_vm(arguments[0].UserVM)
+#       # TODO: MAKE THIS MODULAR!!
+#       config_sh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.sh')
+#       config_csh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.csh')
+#       deploy = os.path.join(os.environ.get("HOME"), '.java', '.deployment', 'deployment.properties')
+# 
+#       if os.getuid is 0:
+#          Printer._printError("The user 'root' should always use the System VM")
+#       else:
+#          # TODO: MAKE THIS MODULAR!!
+#          env_dir = os.path.join(os.environ.get("HOME"), '.gentoo')
+# 
+#          if os.path.exists(env_dir) and not os.path.isdir(env_dir):
+#             Printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
+#          else:
+#             try:
+#                Manager.set_vm(vm, config_sh, config_csh, deploy)
+# 
+#                printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+#                printer._print("\t   %Hsource ~/.gentoo/java")
+#             except PermissionError:
+#                Printer._printError("You do not have enough permissions to set the VM!")
+# 
+# # TODO: Make sure that the arugments are in proper order!
+# class library(command):
+#    def __call__(self, Manager, Printer, arguments):
+#       packages = arguments[0].library.split(',')
+#       library = Manager.query_packages(packages, "LIBRARY_PATH")
+# 
+#       for package in packages:
+#          Printer._printError("Package %s was not found!" % package)
+# 
+#       Printer._print(join(library, ':'))
+
+#############################################
+
 if __name__ == '__main__':
    usage = "java-config [options]\n\n"
    usage += "Java Configuration Utility Version " + str(__version__) + "\n"
@@ -142,13 +317,11 @@ if __name__ == '__main__':
                printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
          i += 1
 
+   # TODO: FIX THIS!!
+   # Should be able to print in CSH or SH compatible format
    if options.vm:
       config = manager.get_vm(options.vm).get_config()
-      env_vars = config["ENV_VARS"]
-
-      for item in iter(config):
-         if item in env_vars:
-            printer._print('export %s=%s' % (item,config[item]))
+      manager.create_env_entry(manager.get_vm(options.vm), printer, "export %s=%s")
 
    if options.SystemVM:
       vm = manager.get_vm(options.SystemVM)
@@ -161,7 +334,7 @@ if __name__ == '__main__':
          
       if os.getuid is 0:
          try:
-            manager.set_vm(vm, config, deploy)
+            manager.set_vm(vm, config, None, deploy)
 
             # Update the profile which contains updates
             os.system("env-update")
@@ -176,7 +349,8 @@ if __name__ == '__main__':
    if options.UserVM:
       vm = manager.get_vm(options.UserVM)
       # TODO: MAKE THIS MODULAR!!
-      config = os.path.join(os.environ.get("HOME"), '.gentoo', 'java')
+      config_sh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.sh')
+      config_csh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.csh')
       deploy = os.path.join(os.environ.get("HOME"), '.java', '.deployment', 'deployment.properties')
 
       if os.getuid is 0:
@@ -189,7 +363,7 @@ if __name__ == '__main__':
             printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
          else:
             try:
-               manager.set_vm(vm, config, deploy)
+               manager.set_vm(vm, config_sh, config_csh, deploy)
                printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
                printer._print("\t   %Hsource ~/.gentoo/java")
             except PermissionError:
@@ -203,4 +377,5 @@ if __name__ == '__main__':
          printer._printError("Package %s was not found!" % package)
 
       printer._print(join(library, ':'))
+
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
