@@ -111,6 +111,7 @@ if __name__ == '__main__':
       if not len(packages) is 0:
          for package in packages:
             printer._printError("Package %s was not found!" % package)
+         print
 
    if options.env:
       try:
