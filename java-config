@@ -119,7 +119,7 @@ if __name__ == '__main__':
       
       vm = manager.get_vm(options.SystemVM)
 
-      if vm['PROVIDES'] == "jre":
+      if vm['PROVIDES_TYPE'] == "JRE":
          printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
          
       try:

@@ -122,19 +122,18 @@ class EnvironmentManager:
       if java_home is None:
          java_home = self.JAVA_HOME
 
-      jre_path = java_home + '/bin/' + str(executable)
-      jdk_path = java_home + '/jre/bin' + str(executable)
+      vm = self.get_vm(java_home)
 
-      if os.path.isfile(jre_path):
-         if not os.access(jre_path, os.X_OK):
+      if vm['PROVIDES_TYPE'] == "JRE":
+         path = java_home + '/bin/' + str(executable)
+      else:
+         path = java_home + '/jre/bin/' + str(executable)
+
+      if os.path.isfile(path):
+         if not os.access(path, os.X_OK):
             raise JavaErrors.PermissionError
          else:
-            return jre_path
-      elif os.path.isfile(jdk_path):
-         if not os.access(jdk_path, os.X_OK):
-            raise JavaErrors.PermissionError
-         else:
-            return jdk_path
+            return path
       else:
          raise JavaErrors.PermissionError
 
@@ -159,14 +158,6 @@ class EnvironmentManager:
    def get_virtual_machines(self):
       return self.virtual_machines
 
-   def get_vm_from_home(self, home):
-      vm_list = self.get_virtual_machines()
-
-      for vm in iter(vm_list):
-         if vm['JAVA_HOME'] == home:
-            return vm
-      return None
-
    def get_vm(self, machine):
       vm_list = self.get_virtual_machines()
       selected = None
@@ -176,10 +167,19 @@ class EnvironmentManager:
             if int(machine[0]) is count:
                return vm_list[(vm,count)]
          else:
+            # Check if the vm is specified via env file
             if machine[0] == vm:
                return vm_list[(vm,count)]
+
+            # Check if the vm is specified by env file without priority
             elif machine[0] == vm.lstrip("20"):
                return vm_list[(vm,count)]
+
+            # Check if the vm is specified via JAVA_HOME
+            elif machine[0] == vm_list[(vm,count)]['JAVA_HOME']:
+               return vm_list[(vm,count)]
+
+            # Check if vm is specified by VM name
             elif vm.lstrip("20").startswith(vm):
                selected = (vm,count)
 
@@ -224,25 +224,8 @@ class EnvironmentManager:
       stream.write("deployment.javaws.jre.0.path=" + self.find_exec('java', vm['JAVA_HOME']))
 
       stream.close()
+
+      # Re-Source the profile which contains updates
       os.system("env-update")
-
-
-   def valid_vm(self, vm):
-      executables = [ 'javac', 'javadoc', 'jar' ]
-      optionals = [ 'rmic' ]
-
-      for exe in executables:
-         try:
-            self.find_exec(exe, vm['JAVA_HOME'])
-         except:
-            raise JavaErrors.InvalidVM
-
-      for exe in optionals:
-         try:
-            self.find_exec(exe, vm['JAVA_HOME'])
-         except:
-            raise JavaErrors.MissingOptionals
-      
-      return True
  
 # vim:set expandtab tabstop=3 shiftwidth=3:
