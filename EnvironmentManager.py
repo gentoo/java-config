@@ -169,6 +169,7 @@ class EnvironmentManager:
 
    def get_vm(self, machine):
       vm_list = self.get_virtual_machines()
+      selected = None
 
       for (vm,count) in iter(vm_list):
          if machine[0].isdigit():
@@ -177,7 +178,15 @@ class EnvironmentManager:
          else
             if machine[0] == vm:
                return vm_list[(vm_count)]
-      return None
+            else if machine[0] == vm.lstrip("20"):
+               return vm_list[(vm,count)]
+            else if vm.lstrip("20").startswith(vm):
+               selected = (vm,count)
+
+      if selected:
+         return vm_list[selected]
+      else:
+         return None
 
    def set_vm(self, java_vm, env_file, javaws_file):
       vm = self.get_vm(java_vm)
