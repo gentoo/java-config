@@ -31,16 +31,17 @@ if __name__ == '__main__':
    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
    options_list = [
-                     make_option ("-V", "--version",        action="store_true",  default=False, dest="optVersion",      help="Print version information"),
-                     make_option ("-n", "--nocolor",        action="store_false", default=True,  dest="optColor",        help="Disable color output"),
-                     make_option ("-J", "--java",           action="store_true",  default=False, dest="optJavaExec",     help="Print the location of the java executable"),
-                     make_option ("-c", "--javac",          action="store_true",  default=False, dest="optJavacExec",    help="Print the location of the javac executable"),
-                     make_option ("-j", "--jar",            action="store_true",  default=False, dest="optJarExec",      help="Print the location of the jar executable"),
-                     make_option ("-O", "--jdk-home",       action="store_true",  default=False, dest="optJDKHome",      help="Print the location of the active JDK home"),
-                     make_option ("-o", "--jre-home",       action="store_true",  default=False, dest="optJREHome",      help="Print the location of the active JRE home"),
-                     make_option ("-f", "--show-active-vm", action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
-                     make_option ("-v", "--java-version",   action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
-                     make_option ("-e", "--exec",           action="append",                     dest="exe",             help="Execute something which is in JAVA_HOME")
+                     make_option ("-V", "--version",            action="store_true",  default=False, dest="optVersion",      help="Print version information"),
+                     make_option ("-n", "--nocolor",            action="store_false", default=True,  dest="optColor",        help="Disable color output"),
+                     make_option ("-J", "--java",               action="store_true",  default=False, dest="optJavaExec",     help="Print the location of the java executable"),
+                     make_option ("-c", "--javac",              action="store_true",  default=False, dest="optJavacExec",    help="Print the location of the javac executable"),
+                     make_option ("-j", "--jar",                action="store_true",  default=False, dest="optJarExec",      help="Print the location of the jar executable"),
+                     make_option ("-O", "--jdk-home",           action="store_true",  default=False, dest="optJDKHome",      help="Print the location of the active JDK home"),
+                     make_option ("-o", "--jre-home",           action="store_true",  default=False, dest="optJREHome",      help="Print the location of the active JRE home"),
+                     make_option ("-f", "--show-active-vm",     action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
+                     make_option ("-v", "--java-version",       action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
+                     make_option ("-L", "--list-available-vms", action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
+                     make_option ("-e", "--exec",               action="append",                     dest="exe",             help="Execute something which is in JAVA_HOME")
                   ]
 
    parser = OptionParser(usage, options_list)
@@ -99,3 +100,12 @@ if __name__ == '__main__':
    if options.exe is not None:
       for cmd in iter(options.exe[0].split(',')):
          os.system(cmd)
+
+   if options.optListJVMs:
+      vm_list = manager.get_virtual_machines()
+      for vm in iter(vm_list):
+         if manager.is_active_vm(vm_list[vm]['JAVA_HOME']):
+            printer._print('%H%G* ' + '%s\t[%s]\t(/etc/env.d/java/%s)' % (vm_list[vm]['VERSION'],vm[2:],vm) + '%$')
+         else:
+            printer._print('%H' + '  %s\t[%s]\t(/etc/env.d/java/%s)' % (vm_list[vm]['VERSION'],vm[2:],vm) + '%$')
+

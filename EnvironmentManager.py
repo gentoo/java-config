@@ -147,3 +147,12 @@ class EnvironmentManager:
       for vm in self.virtual_machines.keys():
          if (self.virtual_machines[vm]['JAVA_HOME'] == self.JAVA_HOME):
             return vm[2:]
+
+   def is_active_vm(self, java_home):
+      if java_home == self.JAVA_HOME:
+         return True
+      else:
+         return False
+
+   def get_virtual_machines(self):
+      return self.virtual_machines
