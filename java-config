@@ -118,7 +118,8 @@ if __name__ == '__main__':
 
    if options.env:
       try:
-         printer._print(manager.get_active_vm().query(env))
+         for env in options.env.split(','):
+            printer._print(manager.get_active_vm().query(env))
       except JavaErrors.EnvironmentUndefinedError:
          print
 
