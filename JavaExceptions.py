@@ -15,9 +15,9 @@
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
 
-class JavaHomeUndefinedError(SystemExit):
+class EnvironmentUndefinedError(SystemExit):
    """
-   $JAVA_HOME is undefined!
+   Environment Variable is undefined!
    """
 
 class EnvironmentUnexecutableError(SystemExit):

@@ -57,7 +57,14 @@ class EnvironmentManager:
       self.JAVA_HOME = self.environment.query('JAVA_HOME')
 
       if self.JAVA_HOME is None:
-         raise JavaExceptions.JavaHomeUndefinedError
+         raise JavaExceptions.EnvironmentUndefinedError
+
+   def QueryVariable(self, variable):
+      value = self.environment.query(variable)
+      if value is not None:
+         return value
+      else:
+         raise JavaExceptions.EnvironmentUndefinedError
 
    def FindExec(self, executable, java_home=None):
       if java_home is None:
@@ -78,3 +85,4 @@ class EnvironmentManager:
             return jdk_path 
       else:
             raise JavaExceptions.EnvironmentUnexecutableError
+

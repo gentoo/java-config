@@ -29,10 +29,13 @@ if __name__ == '__main__':
    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
    options_list = [
-                     make_option ("-v", "--version", action="store_true",  default=False, dest="optVersion",   help="Print version information"),
-                     make_option ("-n", "--nocolor", action="store_false", default=True, dest="optColor",     help="Disable color output"),
-                     make_option ("-J", "--java",    action="store_true",  default=False, dest="optJavaExec",  help="Print the location of the java executable"),
-                     make_option ("-c", "--javac",   action="store_true",  default=False, dest="optJavacExec", help="Print the location of the javac executable")
+                     make_option ("-v", "--version",  action="store_true",  default=False, dest="optVersion",   help="Print version information"),
+                     make_option ("-n", "--nocolor",  action="store_false", default=True,  dest="optColor",     help="Disable color output"),
+                     make_option ("-J", "--java",     action="store_true",  default=False, dest="optJavaExec",  help="Print the location of the java executable"),
+                     make_option ("-c", "--javac",    action="store_true",  default=False, dest="optJavacExec", help="Print the location of the javac executable"),
+                     make_option ("-j", "--jar",      action="store_true",  default=False, dest="optJarExec",   help="Print the location of the jar executable"),
+                     make_option ("-O", "--jdk-home", action="store_true",  default=False, dest="optJDKHome",   help="Print the location of the active JDK home"),
+                     make_option ("-o", "--jre-home", action="store_true",  default=False, dest="optJREHome",   help="Print the location of the active JRE home")
                   ]
 
    parser = OptionParser(usage, options_list)
@@ -42,7 +45,7 @@ if __name__ == '__main__':
 
    try:
       manager = EnvironmentManager.EnvironmentManager()
-   except JavaExceptions.JavaHomeUndefinedError:
+   except JavaExceptions.EnvironmentUndefinedError:
       printer._printError("%RError: %HNo JAVA_HOME available! Please set your Java Virtual Machine")
       sys.exit(-1)
       
@@ -61,3 +64,21 @@ if __name__ == '__main__':
          printer._print(manager.FindExec('javac'))
       except JavaExceptions.EnvironmentUnexecutableError:
          printer._printError("%RError: %HThe javac executable was not found in the Java Path")
+
+   if options.optJarExec:
+      try:
+         printer._print(manager.FindExec('jar'))
+      except JavaExceptions.EnvironmentUnexecutableError:
+         printer._printError("%RError: %HThe jar executable was not found in the Java Path")
+
+   if options.optJDKHome:
+      try:
+         printer._print(manager.QueryVariable('JDK_HOME'))
+      except JavaExceptions.EnvironmentUndefinedError:
+         print
+
+   if options.optJREHome:
+      try:
+         printer._print(manager.QueryVariable('JRE_HOME'))
+      except JavaExceptions.EnvironmentUndefinedError:
+         print
