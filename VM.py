@@ -25,6 +25,24 @@ class VM:
       self.active = active
       self.config = EnvFileParser.EnvFileParser(file).get_config()
 
+      # TODO: MAKE THIS MODULAR!!
+      # TODO: REMOVE THIS BACKWARDS COMPATIBILITY HACK!!
+      if self.config.has_key("PATH"):
+         self.config["PATH"] = "${PATH}:" + self.config["PATH"]
+      elif self.config.has_key("ADDPATH"):
+         self.config["PATH"] = "${PATH}:" + self.config["ADDPATH"]
+         del self.config["ADDPATH"]
+
+      if self.config.has_key("MANPATH"):
+         self.config["MANPATH"] = "${MANPATH}" + self.config["MANPATH"]
+      elif self.config.has_key("ADDMANPATH"):
+         self.config["MANPATH"] = "${MANPATH}" + self.config["ADDMANPATH"]
+         del self.config["ADDMANPATH"]
+
+      if self.config.has_key("ADDLDPATH"):
+         self.config["LDPATH"] = self.config["ADDLDPATH"]
+         del self.config["ADDLDPATH"]
+
    def get_config(self):
       return self.config
 
@@ -74,13 +92,9 @@ class VM:
    def find_exec(self, executable):
       path = None
 
-      # TODO: REMOVE THIS HACK FOR BACKWARDS COMPATIBILITY
-      try:
-         path = self.query('PATH')
-      except JavaErrors.EnvironmentUndefinedError:
-         path = self.query('ADDPATH')
-
+      path = self.query('PATH')
       paths = path.split(':')
+      paths.remove("${PATH}")
 
       for path in paths:
          path = os.path.join(path, executable)

@@ -45,6 +45,7 @@ if __name__ == '__main__':
                      make_option ("-e", "--exec",                    action="store",                      dest="exe",             help="Execute something which is in JAVA_HOME"),
                      make_option ("-l", "--list-available-packages", action="store_true",  default=False, dest="optListPackages", help="List all available packages on the system."),
                      make_option ("-L", "--list-available-vms",      action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
+                     make_option ("-P", "--print",                   action="store",                      dest="vm",              help="Print the environment for the specified VM"),
                      make_option ("-S", "--set-system-vm",           action="store",                      dest="SystemVM",        help="Set the default Java VM for the system.")
                   ]
 
@@ -142,6 +143,14 @@ if __name__ == '__main__':
             else:
                printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
          i += 1
+
+   if options.vm:
+      config = manager.get_vm(options.vm).get_config()
+      env_vars = config["ENV_VARS"]
+
+      for item in iter(config):
+         if item in env_vars:
+            printer._print('export %s=%s' % (item,config[item]))
 
    if options.SystemVM:
       vm = manager.get_vm(options.SystemVM)

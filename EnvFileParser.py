@@ -22,7 +22,7 @@ class EnvFileParser:
    config = {}
    
    def __init__(self, file):
-      self.config = {}
+      self.config.clear()
 
       # Create the config from the file
       if not os.path.isfile(file):
@@ -69,4 +69,4 @@ class EnvFileParser:
       stream.close()
 
    def get_config(self):
-      return self.config
+      return self.config.copy()
