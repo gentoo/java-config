@@ -66,7 +66,7 @@ class JavaEnvironParser:
 
             values = value.split(':')
             for item in values:
-               item = item.strip('\\').strip('\'\"') 
+               item = item.strip('\\').strip('\'\"')
 
                if item.find('${') >= 0:
                   bracketed = True
@@ -205,7 +205,9 @@ class EnvironmentManager:
       # Resolves bug #60606
 
       try:
-         stream = oepn(javaws_file, 'w')
+         if not os.path.exists(javaws_file):
+            os.makedirs(os.path.dirname(javaws_file))
+         stream = open(javaws_file, 'w')
       except IOError:
          raise JavaErrors.PermissionError
 

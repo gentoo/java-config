@@ -41,8 +41,8 @@ if __name__ == '__main__':
                      make_option ("-f", "--show-active-vm",     action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
                      make_option ("-v", "--java-version",       action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
                      make_option ("-L", "--list-available-vms", action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
-                     make_option ("-S", "--set-system-vm",      action="append",                     dest="SystemVM",        help="Set the default Java VM for the system."),
-                     make_option ("-e", "--exec",               action="append",                     dest="exe",             help="Execute something which is in JAVA_HOME")
+                     make_option ("-S", "--set-system-vm",      action="store",                      dest="SystemVM",        help="Set the default Java VM for the system."),
+                     make_option ("-e", "--exec",               action="store",                      dest="exe",             help="Execute something which is in JAVA_HOME")
                   ]
 
    parser = OptionParser(usage, options_list)
@@ -101,7 +101,7 @@ if __name__ == '__main__':
       except JavaErrors.PermissionError:
          printer._printError("The java executable was not found in the Java path")
 
-   if options.exe is not None:
+   if options.exe:
       for cmd in iter(options.exe[0].split(',')):
          os.system(cmd)
 
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             printer._print('%H' + '%i) %s\t[%s]\t(/etc/env.d/java/%s)' % (i,vm_list[(vm,count)]['VERSION'],vm[2:],vm) + '%$')
          i += 1
 
-   if options.SystemVM is not None:
+   if options.SystemVM:
       valid = False
 
       try:
@@ -130,6 +130,6 @@ if __name__ == '__main__':
          try:
             manager.set_vm(options.SystemVM, '/etc/env.d/20java', '/etc/.java/.deployment/deployment.properties')
             printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-            printer._print("\t   %H/usr/sbin/env-update && source /etc/profile")
+            printer._print("\t   %Hsource /etc/profile")
          except JavaErrors.PermissionError:
             printer._printError("You do not have enough permissions to set the system VM")
