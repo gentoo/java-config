@@ -104,18 +104,11 @@ if __name__ == '__main__':
          printer._printError("The java executable was not found in the Java path")
 
    if options.packages:
-      package_list = manager.get_packages()
       packages = options.packages.split(',')
-      classpath = [] 
+      classpath = manager.query_packages(packages, "CLASSPATH") 
 
-      for pack in iter(package_list):
-         if pack.name in packages:
-            classpath.append(pack.classpath())
-            packages.remove(pack.name)
-
-      if not len(packages) is 0:
-         for package in packages:
-            printer._printError("Package %s was not found!" % package)
+      for package in packages:
+         printer._printError("Package %s was not found!" % package)
 
       printer._print(join(classpath,':'))
 
@@ -202,20 +195,11 @@ if __name__ == '__main__':
                printer._printError("You do not have enough permissions to set the VM!")
 
    if options.library:
-      package_list = manager.get_packages()
       packages = options.library.split(',')
-      library = []
+      library = manager.query_packages(packages, "LIBRARY_PATH")
 
-      for package in iter(packages_list):
-         if package.name in packages:
-            value = package.query("LIBRARY_PATH")
-            if value:
-               library.append(value)
-            packages.remove(package.name)
+      for package in packages:
+         printer._printError("Package %s was not found!" % package)
 
-      if not len(packages) is 0:
-         for package in packages:
-            printer._printError("Packages %s was not found!" % package)
-
-      printer._print(join(library,':'))
+      printer._print(join(library, ':'))
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

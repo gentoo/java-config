@@ -94,6 +94,18 @@ class EnvironmentManager:
    def get_packages(self):
       return self.packages
 
+   def query_packages(self, packages, query):
+      results = []
+
+      for package in iter(self.get_packages()):
+         if package.name in packages:
+            value = package.query(query)
+            if value:
+               results.append(value)
+            packages.remove(package.name)
+
+      return results
+
    def get_vm(self, machine):
       vm_list = self.get_virtual_machines()
       selected = None
