@@ -46,8 +46,9 @@ if __name__ == '__main__':
                      make_option ("-l", "--list-available-packages", action="store_true",  default=False, dest="optListPackages", help="List all available packages on the system."),
                      make_option ("-L", "--list-available-vms",      action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
                      make_option ("-P", "--print",                   action="store",                      dest="vm",              help="Print the environment for the specified VM"),
-                     make_option ("-S", "--set-system-vm",           action="store",                      dest="SystemVM",        help="Set the default Java VM for the system."),
-                     make_option ("-s", "--set-user-vm",             action="store",                      dest="UserVM",          help="Set the default Java VM for the user.")
+                     make_option ("-S", "--set-system-vm",           action="store",                      dest="SystemVM",        help="Set the default Java VM for the system"),
+                     make_option ("-s", "--set-user-vm",             action="store",                      dest="UserVM",          help="Set the default Java VM for the user"),
+                     make_option ("-i", "--library",                 action="store",                      dest="library",         help="Print entries in the package library")
                   ]
 
    parser = OptionParser(usage, options_list)
@@ -104,18 +105,18 @@ if __name__ == '__main__':
    if options.packages:
       package_list = manager.get_packages()
       packages = options.packages.split(',')
-      classpath = ''
+      classpath = [] 
 
       for pack in iter(package_list):
          if pack.name in packages:
-            classpath += pack.classpath() + ':'
+            classpath.append(pack.classpath())
             packages.remove(pack.name)
 
       if not len(packages) is 0:
          for package in packages:
             printer._printError("Package %s was not found!" % package)
 
-      printer._print(classpath[:-1])
+      printer._print(join(classpath,':'))
 
    if options.env:
       try:
@@ -156,13 +157,16 @@ if __name__ == '__main__':
 
    if options.SystemVM:
       vm = manager.get_vm(options.SystemVM)
+      # TODO: MAKE THIS MODULAR!!
+      config = os.path.join('/', 'etc', 'env.d', '20java')
+      deploy = os.path.join('/', 'etc', '.java', '.deployment', 'deployment.properties')
 
       if vm.is_jre():
          printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
          
       if os.getuid is 0:
          try:
-            manager.set_vm(vm, '/etc/env.d/20java', '/etc/.java/.deployment/deployment.properties')
+            manager.set_vm(vm, config, deploy)
 
             # Update the profile which contains updates
             os.system("env-update")
@@ -176,21 +180,41 @@ if __name__ == '__main__':
 
    if options.UserVM:
       vm = manager.get_vm(options.UserVM)
+      # TODO: MAKE THIS MODULAR!!
       config = os.path.join(os.environ.get("HOME"), '.gentoo', 'java')
       deploy = os.path.join(os.environ.get("HOME"), '.java', '.deployment', 'deployment.properties')
 
       if os.getuid is 0:
          printer._printError("The user 'root' should always use the System VM")
       else:
-         if os.path.exists(os.path.join(os.environ.get("HOME"), '.gentoo')):
-            if not os.path.isdir(os.path.join(os.environ.get("HOME"), '.gentoo')):
-               printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
-            else:
-               try:
-                  manager.set_vm(vm, config, deploy)
-                  printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-                  printer._print("\t   %Hsource ~/.gentoo/java")
-               except JavaErrors.PermissionError:
-                  printer._printError("You do not have enough permissions to set the VM!")
+         # TODO: MAKE THIS MODULAR!!
+         env_dir = os.path.join(os.environ.get("HOME"), '.gentoo')
 
+         if os.path.exists(env_dir) and not os.path.isdir(env_dir):
+            printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
+         else:
+            try:
+               manager.set_vm(vm, config, deploy)
+               printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+               printer._print("\t   %Hsource ~/.gentoo/java")
+            except JavaErrors.PermissionError:
+               printer._printError("You do not have enough permissions to set the VM!")
+
+   if options.library:
+      package_list = manager.get_packages()
+      packages = options.library.split(',')
+      library = []
+
+      for package in iter(packages_list):
+         if package.name in packages:
+            value = package.query("LIBRARY_PATH")
+            if value:
+               library.append(value)
+            packages.remove(package.name)
+
+      if not len(packages) is 0:
+         for package in packages:
+            printer._printError("Packages %s was not found!" % package)
+
+      printer._print(join(library,':'))
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
