@@ -22,6 +22,8 @@ class EnvFileParser:
    config = {}
    
    def __init__(self, file):
+      self.config = {}
+
       # Create the config from the file
       if not os.path.isfile(file):
          raise JavaErrors.InvalidConfigError(file)
