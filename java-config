@@ -103,9 +103,10 @@ if __name__ == '__main__':
 
    if options.optListJVMs:
       vm_list = manager.get_virtual_machines()
-      for vm in iter(vm_list):
-         if manager.is_active_vm(vm_list[vm]['JAVA_HOME']):
-            printer._print('%H%G* ' + '%s\t[%s]\t(/etc/env.d/java/%s)' % (vm_list[vm]['VERSION'],vm[2:],vm) + '%$')
+      i = 1 
+      for (vm,count) in iter(vm_list):
+         if manager.is_active_vm(vm_list[(vm,count)]['JAVA_HOME']):
+            printer._print('%H%G' + '*) %s\t[%s]\t(/etc/env.d/java/%s)' % (vm_list[(vm,count)]['VERSION'],vm[2:],vm) + '%$')
          else:
-            printer._print('%H' + '  %s\t[%s]\t(/etc/env.d/java/%s)' % (vm_list[vm]['VERSION'],vm[2:],vm) + '%$')
-
+            printer._print('%H' + '%i) %s\t[%s]\t(/etc/env.d/java/%s)' % (i,vm_list[(vm,count)]['VERSION'],vm[2:],vm) + '%$')
+         i += 1

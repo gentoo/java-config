@@ -104,15 +104,17 @@ class EnvironmentManager:
       # Collect the Virtual Machines
       if os.path.isdir('/etc/env.d/java'):
          try:
+            count = 1;
             for file in os.listdir('/etc/env.d/java'):
                conf = os.path.join('/etc/env.d/java', file)
                config = self.envparser.config_dict(conf)
 
                try:
                   if os.path.isdir(config['JAVA_HOME']):
-                     self.virtual_machines[file] = config
+                     self.virtual_machines[(file, count)] = config
                except KeyError:
                   raise JavaExceptions.InvalidConfigError(conf)
+               count += 1
          except OSError:
             pass
 
