@@ -163,6 +163,23 @@ class EnvironmentManager:
 
       stream.close()
 
+      # Create the System Prefs System
+      # Resolves bug #69542
+      # TODO: MAKE THIS MODULAR!!
+      prefs_struct = [
+                        os.path.join('/', 'etc', '.java', '.systemPrefs', '.systemPrefs')
+                        os.path.join('/', 'etc', '.java', '.systemPrefs', '.system.lock')
+                     ]
+      
+      try:
+         if not os.path.exists(os.path.join('/', 'etc', '.java', '.systemPrefs')):
+            os.makedirs(os.path.join('/', 'etc', '.java', '.systemPrefs'))
+            for file in prefs_struct:
+               stream = open(file, 'w')
+               stream.close()
+      except IOError:
+         raise JavaErrors.PermissionError
+
       # Update the profile which contains updates
       os.system("env-update")
  
