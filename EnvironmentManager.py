@@ -175,12 +175,12 @@ class EnvironmentManager:
          if machine[0].isdigit():
             if int(machine[0]) is count:
                return vm_list[(vm,count)]
-         else
+         else:
             if machine[0] == vm:
                return vm_list[(vm_count)]
-            else if machine[0] == vm.lstrip("20"):
+            elif machine[0] == vm.lstrip("20"):
                return vm_list[(vm,count)]
-            else if vm.lstrip("20").startswith(vm):
+            elif vm.lstrip("20").startswith(vm):
                selected = (vm,count)
 
       if selected:
