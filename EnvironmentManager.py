@@ -19,6 +19,8 @@ __version__ = '$Revision: 2.0$'[11:-1]
 
 import os
 
+import JavaExceptions
+
 class JavaEnvironParser:
    environ_path = [
                      os.path.join(os.environ.get('HOME'), '.gentoo', 'java'),
@@ -47,8 +49,32 @@ class JavaEnvironParser:
          query_result = self.__FileQuery(env_file, query)
          if query_result != None:
             return query_result
+      return None
 
 class EnvironmentManager:
    def __init__(self):
       self.environment = JavaEnvironParser()
-      self.java_home = self.environment.query('JAVA_HOME')
+      self.JAVA_HOME = self.environment.query('JAVA_HOME')
+
+      if self.JAVA_HOME is None:
+         raise JavaExceptions.JavaHomeUndefinedError
+
+   def FindExec(self, executable, java_home=None):
+      if java_home is None:
+         java_home = self.JAVA_HOME
+
+      jre_path = java_home + '/bin/' + str(executable)
+      jdk_path = java_home + '/jre/bin/' + str(executable)
+
+      if os.path.isfile(jre_path):
+         if not os.access(jre_path, os.X_OK):
+            raise JavaExceptions.EnvironmentUnexecutableError
+         else:
+            return jre_path 
+      elif os.path.isfile(jdk_path):
+         if not os.access(jdk_path, os.X_OK):
+            raise JavaExceptions.EnvironmentUnexecutableError
+         else:
+            return jdk_path 
+      else:
+            raise JavaExceptions.EnvironmentUnexecutableError

@@ -17,7 +17,7 @@
 
 __version__ = '$Revision: 2.0$'[11:-1]
 
-import OutputFormatter,EnvironmentManager 
+import OutputFormatter,EnvironmentManager,JavaExceptions
 
 from optparse import OptionParser, make_option
 
@@ -39,8 +39,25 @@ if __name__ == '__main__':
    (options, args) = parser.parse_args()
 
    printer = OutputFormatter.OutputFormatter(options.optColor, True)
-   manager = EnvironmentManager.EnvironmentManager()
 
+   try:
+      manager = EnvironmentManager.EnvironmentManager()
+   except JavaExceptions.JavaHomeUndefinedError:
+      printer._printError("%RError: %HNo JAVA_HOME available! Please set your Java Virtual Machine")
+      sys.exit(-1)
+      
    if options.optVersion:
       printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
       raise SystemExit()
+
+   if options.optJavaExec:
+      try:
+         printer._print(manager.FindExec('java'))
+      except JavaExceptions.EnvironmentUnexecutableError:
+         printer._printError("%RError: %HThe java executable was not found in the Java Path")
+
+   if options.optJavacExec:
+      try:
+         printer._print(manager.FindExec('javac'))
+      except JavaExceptions.EnvironmentUnexecutableError:
+         printer._printError("%RError: %HThe javac executable was not found in the Java Path")

@@ -15,7 +15,7 @@
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
 
-import os
+import os,sys
 
 class OutputFormatter:
    codes = {
@@ -94,6 +94,9 @@ class OutputFormatter:
 
    def _print(self, message):
       print self.__parseColor(message, self.colorOutput)
+
+   def _printError(self, message):
+      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
 
    def setTitle(self, message):
       self.__setTitle(self.__parseColor(message, True))
