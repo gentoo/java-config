@@ -17,11 +17,12 @@
 
 __version__ = '$Revision: 2.0$'[11:-1]
 
-import os
-import JavaErrors,VM
+import JavaErrors,VM,Package
+import os,glob
 
 class EnvironmentManager:
    virtual_machines = {} 
+   packages = []
    
    def __init__(self):
       # Get JAVA_HOME
@@ -74,6 +75,12 @@ class EnvironmentManager:
          except OSError:
             pass
 
+      # Collect the packages
+      # TODO: MAKE THIS MODULAR!
+      packages_path = os.path.join('/', 'usr', 'share', '*', 'package.env')
+      for package in iter(glob.glob(packages_path)):
+         self.packages.append(Package.Package(package,os.path.basename(os.path.dirname(package))))
+
    def get_active_vm(self):
       vm_list = self.get_virtual_machines()
 
@@ -83,6 +90,9 @@ class EnvironmentManager:
 
    def get_virtual_machines(self):
       return self.virtual_machines
+
+   def get_packages(self):
+      return self.packages
 
    def get_vm(self, machine):
       vm_list = self.get_virtual_machines()
@@ -126,8 +136,8 @@ class EnvironmentManager:
       stream.write("# Java Virtual Machine: %s\n\n" % vm.query('VERSION')[1:-1])
       
       try:
-         ENV_VARS = vm.config['ENV_VARS']
-         for (item,value) in vm.config.iteritems():
+         ENV_VARS = vm.get_config['ENV_VARS']
+         for (item,value) in vm.get_config.iteritems():
             if item in ENV_VARS:
                stream.write('%s=%s\n' % (item,value))
       except IOError:
