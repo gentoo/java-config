@@ -77,9 +77,14 @@ class OutputFormatter:
 
       for char in message:
          if replace:
-            colored += self.codes[char]
-            if char == '%':
+            if char == ' ':
+               colored += self.codes['%'] 
+               stripped += self.codes['%']
+            elif char == '%':
+               colored += self.codes[char]
                striped += self.codes[char]
+            else: 
+               colored += self.codes[char]
             replace = 0
          elif char == '%':
             replace = 1

@@ -116,7 +116,6 @@ if __name__ == '__main__':
          i += 1
 
    if options.SystemVM:
-      
       vm = manager.get_vm(options.SystemVM)
 
       if vm['PROVIDES_TYPE'] == "JRE":
