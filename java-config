@@ -17,7 +17,7 @@
 
 __version__ = '$Revision: 2.0$'[11:-1]
 
-import OutputFormatter,EnvironmentManager,JavaExceptions
+import OutputFormatter,EnvironmentManager,JavaErrors
 import os
 
 from commands import getoutput
@@ -41,6 +41,7 @@ if __name__ == '__main__':
                      make_option ("-f", "--show-active-vm",     action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
                      make_option ("-v", "--java-version",       action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
                      make_option ("-L", "--list-available-vms", action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
+                     make_option ("-S", "--set-system-vm",      action="append",                     dest="SystemVM",        help="Set the default Java VM for the system."),
                      make_option ("-e", "--exec",               action="append",                     dest="exe",             help="Execute something which is in JAVA_HOME")
                   ]
 
@@ -51,11 +52,11 @@ if __name__ == '__main__':
 
    try:
       manager = EnvironmentManager.EnvironmentManager()
-   except JavaExceptions.EnvironmentUndefinedError:
-      printer._printError("%RError: %HNo JAVA_HOME available! Please set your Java Virtual Machine")
+   except JavaErrors.EnvironmentUndefinedError:
+      printer._printError("No JAVA_HOME available! Please set your Java Virtual Machine")
       sys.exit(-1)
-   except JavaExceptions.InvalidConfigError:
-      printer._printError("%RError: %HInvalid configuration file encountered!")
+   except JavaErrors.InvalidConfigError:
+      printer._printError("Invalid configuration file encountered!")
       
    if options.optVersion:
       printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
@@ -64,31 +65,31 @@ if __name__ == '__main__':
    if options.optJavaExec:
       try:
          printer._print(manager.find_exec('java'))
-      except JavaExceptions.EnvironmentUnexecutableError:
-         printer._printError("%RError: %HThe java executable was not found in the Java Path")
+      except JavaErrors.EnvironmentUnexecutableError:
+         printer._printError("The java executable was not found in the Java path")
 
    if options.optJavacExec:
       try:
          printer._print(manager.find_exec('javac'))
-      except JavaExceptions.EnvironmentUnexecutableError:
-         printer._printError("%RError: %HThe javac executable was not found in the Java Path")
+      except JavaErrors.EnvironmentUnexecutableError:
+         printer._printError("The javac executable was not found in the Java path")
 
    if options.optJarExec:
       try:
          printer._print(manager.find_exec('jar'))
-      except JavaExceptions.EnvironmentUnexecutableError:
-         printer._printError("%RError: %HThe jar executable was not found in the Java Path")
+      except JavaErrors.EnvironmentUnexecutableError:
+         printer._printError("The jar executable was not found in the Java path")
 
    if options.optJDKHome:
       try:
          printer._print(manager.query_variable('JDK_HOME'))
-      except JavaExceptions.EnvironmentUndefinedError:
+      except JavaErrors.EnvironmentUndefinedError:
          print
 
    if options.optJREHome:
       try:
          printer._print(manager.query_variable('JRE_HOME'))
-      except JavaExceptions.EnvironmentUndefinedError:
+      except JavaErrors.EnvironmentUndefinedError:
          print
 
    if options.optShowActiveVM:
@@ -110,3 +111,17 @@ if __name__ == '__main__':
          else:
             printer._print('%H' + '%i) %s\t[%s]\t(/etc/env.d/java/%s)' % (i,vm_list[(vm,count)]['VERSION'],vm[2:],vm) + '%$')
          i += 1
+
+   if options.SystemVM is not None:
+      valid = False
+
+      try:
+         valid = manager.valid_vm(options.SystemVM)
+      except JavaErrors.InvalidVM:
+         printer._printError("The specified VM does not exist or is invalid")
+      except JavaErrors.MissingOptionals:
+         printer._printWarning("Some optional tools are missing from the VM")
+         valid = True
+
+      if valid:
+         print "Yippie!"

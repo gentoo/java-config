@@ -36,3 +36,13 @@ class InvalidConfigError:
    """
    def __init__(self, file):
       self.file = file 
+
+class InvalidVM:
+   """
+   Specified Virtual Machine does not exist or is invalid
+   """
+
+class MissingOptionals:
+   """
+   Some optional utilities are missing from a valid VM
+   """

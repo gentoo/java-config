@@ -18,7 +18,7 @@
 __version__ = '$Revision: 2.0$'[11:-1]
 
 import os
-import JavaExceptions
+import JavaErrors
 
 class JavaEnvironParser:
    environ_path = [
@@ -62,7 +62,7 @@ class JavaEnvironParser:
             name, value = read.split('=')
 
             if value == '':
-               raise JavaExceptions.InvalidConfigError(file)
+               raise JavaErrors.InvalidConfigError(file)
 
             values = value.split(':')
             for item in values:
@@ -99,7 +99,7 @@ class EnvironmentManager:
       # Get the JAVA_HOME
       self.JAVA_HOME = self.envparser.query('JAVA_HOME')
       if self.JAVA_HOME is None:
-         raise JavaExceptions.EnvironmentUndefinedError
+         raise JavaErrors.EnvironmentUndefinedError
 
       # Collect the Virtual Machines
       if os.path.isdir('/etc/env.d/java'):
@@ -113,7 +113,7 @@ class EnvironmentManager:
                   if os.path.isdir(config['JAVA_HOME']):
                      self.virtual_machines[(file, count)] = config
                except KeyError:
-                  raise JavaExceptions.InvalidConfigError(conf)
+                  raise JavaErrors.InvalidConfigError(conf)
                count += 1
          except OSError:
             pass
@@ -127,21 +127,21 @@ class EnvironmentManager:
 
       if os.path.isfile(jre_path):
          if not os.access(jre_path, os.X_OK):
-            raise JavaExceptions.EnvironmentUnexecutableError
+            raise JavaErrors.EnvironmentUnexecutableError
          else:
             return jre_path
       elif os.path.isfile(jdk_path):
          if not os.access(jdk_path, os.X_OK):
-            raise JavaExceptions.EnvironmentUnexecutableError
+            raise JavaErrors.EnvironmentUnexecutableError
          else:
             return jdk_path
       else:
-         raise JavaExceptions.EnvironmentUnexecutableError
+         raise JavaErrors.EnvironmentUnexecutableError
 
    def query_variable(self, variable):
       value = self.envparser.query(variable)
       if value is None:
-         raise JavaExceptions.EnvironmentUndefinedError
+         raise JavaErrors.EnvironmentUndefinedError
       else:
          return value
 
@@ -158,3 +158,36 @@ class EnvironmentManager:
 
    def get_virtual_machines(self):
       return self.virtual_machines
+
+   def valid_vm(self, machine):
+      vm_list = self.get_virtual_machines()
+      executables = [ 'javac', 'javadoc', 'jar' ]
+      optionals = [ 'wwww', 'rmic' ]
+      java_home = None
+
+      for (vm,count) in iter(vm_list):
+         try:
+            if int(machine[0]) is count:
+               java_home = vm_list[(vm,count)]['JAVA_HOME']
+               break
+         except ValueError:
+            if machine[0] == vm:
+               java_home = vm_list[(vm,count)]['JAVA_HOME']
+               break
+      
+      if java_home is None:
+         raise JavaErrors.InvalidVM
+
+      for exe in executables:
+         try:
+            self.find_exec(exe, java_home) 
+         except:
+            raise JavaErrors.InvalidVM
+
+      for exe in optionals:
+         try:
+            self.find_exec(exe, java_home)
+         except:
+            raise JavaErrors.MissingOptionals
+      
+      return True

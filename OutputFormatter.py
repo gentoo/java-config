@@ -96,6 +96,11 @@ class OutputFormatter:
       print self.__parseColor(message, self.colorOutput)
 
    def _printError(self, message):
+      message = "%H%R!!! ERROR: " + message + "%$"
+      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
+
+   def _printWarning(self, message):
+      message = "%H%Y!!! WARNING: " + message + "%$"
       sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
 
    def setTitle(self, message):
