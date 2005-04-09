@@ -151,6 +151,8 @@ class EnvironmentManager:
                stream.write(render % (item,value))
       except IOError:
          raise PermissionError
+      except EnvironmentUndefinedError:
+         raise EnvironmentUndefinedError
 
    def set_vm(self, vm, sh_env_file, csh_env_file=None, deploy_file=None):
 
@@ -166,6 +168,9 @@ class EnvironmentManager:
          except IOError:
             stream.close()
             raise PermissionError
+         except EnvironmentUndefinedError:
+            stream.close();
+            raise EnvironmentUndefinedError
 
          stream.close()
 

@@ -52,6 +52,7 @@ class VM:
       if self.config.has_key(var):
          return self.config[var]
       else:
+         print "Undefined: " + var
          raise EnvironmentUndefinedError
 
    def active(self):
