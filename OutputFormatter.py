@@ -105,17 +105,17 @@ class OutputFormatter:
 
    def _printError(self, message):
       message = "%H%R!!! ERROR: " + message + "%$"
-      sys.stderr.write(__parseColor(message, self.colorOutput) + '\n')
+      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
 
    def _printWarning(self, message):
       message = "%H%Y!!! WARNING: " + message + "%$"
-      sys.stderr.write(__parseColor(message, self.colorOutput) + '\n')
+      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
 
    def _printAlert(self, message):
       message = "%H%C!!! ALERT: " + message + "%$"
-      sys.stderr.write(__parseColor(message, self.colorOutput) + '\n')
+      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
 
    def setTitle(self, message):
-      __setTitle(__parseColor(message, True))
+      self.__setTitle(self.__parseColor(message, True))
 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
