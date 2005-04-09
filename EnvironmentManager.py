@@ -162,7 +162,7 @@ class EnvironmentManager:
             raise PermissionError
 
          try:
-            create_env_entry(vm, stream, "%s=%s\n")
+            self.create_env_entry(vm, stream, "%s=%s\n")
          except IOError:
             stream.close()
             raise PermissionError
