@@ -1,4 +1,4 @@
-#!/usr/bin/python -E
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
 # Copyright 2004 Gentoo Foundation
@@ -17,258 +17,272 @@
 
 __version__ = '$Revision: 2.0$'[11:-1]
 
-import OutputFormatter,EnvironmentManager
-import os
-
+from OutputFormatter import OutputFormatter
+from EnvironmentManager import EnvironmentManager
 from JavaErrors import *
+
+import os
 from commands import getoutput
-from optparse import OptionParser, make_option
 from string   import join
 
+from optparse import OptionParser, make_option
 
-if __name__ == '__main__':
-   usage = "java-config [options]\n\n"
-   usage += "Java Configuration Utility Version " + str(__version__) + "\n"
-   usage += "Copyright 2004 Gentoo Foundation\n"
-   usage += "Distributed under the terms of the GNU General Public License v2\n"
-   usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
-   options_list = [
-                     make_option ("-V", "--version",                 action="store_true",  default=False, dest="optVersion",      help="Print version information"),
-                     make_option ("-n", "--nocolor",                 action="store_false", default=True,  dest="optColor",        help="Disable color output"),
-                     make_option ("-J", "--java",                    action="store_true",  default=False, dest="optJavaExec",     help="Print the location of the java executable"),
-                     make_option ("-c", "--javac",                   action="store_true",  default=False, dest="optJavacExec",    help="Print the location of the javac executable"),
-                     make_option ("-j", "--jar",                     action="store_true",  default=False, dest="optJarExec",      help="Print the location of the jar executable"),
-                     make_option ("-O", "--jdk-home",                action="store_true",  default=False, dest="optJDKHome",      help="Print the location of the active JDK home"),
-                     make_option ("-o", "--jre-home",                action="store_true",  default=False, dest="optJREHome",      help="Print the location of the active JRE home"),
-                     make_option ("-f", "--show-active-vm",          action="store_true",  default=False, dest="optShowActiveVM", help="Print the active Virtual Machine"),
-                     make_option ("-v", "--java-version",            action="store_true",  default=False, dest="optShowJavaVer",  help="Print version information for the active VM"),
-                     make_option ("-p", "--classpath",               action="store",                      dest="packages",        help="Print entries in the environment classpath"),
-                     make_option ("-g", "--get-env",                 action="store",                      dest="env",             help="Print an environment variable from the active VM"),
-                     make_option ("-e", "--exec",                    action="store",                      dest="exe",             help="Execute something which is in JAVA_HOME"),
-                     make_option ("-l", "--list-available-packages", action="store_true",  default=False, dest="optListPackages", help="List all available packages on the system."),
-                     make_option ("-L", "--list-available-vms",      action="store_true",  default=False, dest="optListJVMs",     help="List available Java Virtual Machines"),
-                     make_option ("-P", "--print",                   action="store",                      dest="vm",              help="Print the environment for the specified VM"),
-                     make_option ("-S", "--set-system-vm",           action="store",                      dest="SystemVM",        help="Set the default Java VM for the system"),
-                     make_option ("-s", "--set-user-vm",             action="store",                      dest="UserVM",          help="Set the default Java VM for the user"),
-                     make_option ("-A", "--set-system-classpath",    action="store",                      dest="SetSystemCP",     help="Set the system classpath to include the libraries"),
-                     make_option ("-a", "--set-user-classpath",      action="store",                      dest="SetUserCP",       help="Set the user classpath to include the libraries"),
-                     make_option ("-B", "--append-system-classpath", action="store",                      dest="AppendSystemCP",  help="Append the libraries to the system classpath"),
-                     make_option ("-b", "--append-user-classpath",   action="store",                      dest="AppendUserCP",    help="Append the libraries to the user classpath"),
-                     make_option ("-X", "--clean-system-classpath",  action="store_true",  default=False, dest="optCleanSysCP",   help="Clean the current system classpath"),
-                     make_option ("-x", "--clean-user-classpath",    action="store_true",  default=False, dest="optCleanUsrCP",   help="Clean the current user classpath"),
-                     make_option ("-i", "--library",                 action="store",                      dest="library",         help="Print entries in the package library")
-                  ]
 
-   parser = OptionParser(usage, options_list)
-   (options, args) = parser.parse_args()
+def version(option, opt, value, parser):
+    printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
+    raise SystemExit()
 
-   printer = OutputFormatter.OutputFormatter(options.optColor, True)
-   manager = EnvironmentManager.EnvironmentManager()
+def nocolor(option, opt, value, parser):
+   printer.setColorOutputStatus(False)
 
-   #########################################################################
+def java(option, opt, value, parser):
+   try:
+      printer._print(manager.get_active_vm().find_exec('java'))
+   except PermissionError:
+      printer._printError("The java executable was not found in the Java path")
 
-   if options.optVersion:
-      printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
-      raise SystemExit()
+def javac(option, opt, value, parser):
+   try:
+      printer._print(manager.get_active_vm().find_exec('javac'))
+   except PermissionError:
+      printer._printError("The javac executable was not found in the Java path")
 
-   if options.optJavaExec:
-      try:
-         printer._print(manager.get_active_vm().find_exec('java'))
-      except PermissionError:
-         printer._printError("The java executable was not found in the Java path")
+def jar(option, opt, value, parser):
+   try:
+      printer._print(manager.get_active_vm().find_exec('jar'))
+   except PermissionError:
+      printer._printError("The jar executable was not found in the Java path")
 
-   if options.optJavacExec:
-      try:
-         printer._print(manager.get_active_vm().find_exec('javac'))
-      except PermissionError:
-         printer._printError("The javac executable was not found in the Java path")
+def jdk_home(option, opt, value, parser):
+   try:
+      printer._print(manager.get_active_vm().query('JDK_HOME'))
+   except EnvironmentUndefinedError:
+      print
 
-   if options.optJarExec:
-      try:
-         printer._print(manager.get_active_vm().find_exec('jar'))
-      except PermissionError:
-         printer._printError("The jar executable was not found in the Java path")
+def jre_home(option, opt, value, parser):
+   try:
+      printer._print(manager.get_active_vm().query('JRE_HOME'))
+   except EnvironmentUndefinedError:
+      print
 
-   if options.optJDKHome:
-      try:
-         printer._print(manager.get_active_vm().query('JDK_HOME'))
-      except EnvironmentUndefinedError:
-         print
+def show_active_vm(option, opt, value, parser):
+   printer._print(manager.get_active_vm().name())
 
-   if options.optJREHome:
-      try:
-         printer._print(manager.get_active_vm().query('JRE_HOME'))
-      except EnvironmentUndefinedError:
-         print
+def java_version(option, opt, value, parser):
+   try:
+      printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
+   except PermissionError:
+      printer._printError("The java executable was not found in the Java path")
 
-   if options.optShowActiveVM:
-      printer._print(manager.get_active_vm().name())
+def classpath(option, opt, value, parser):
+   packages = value.split(',')
+   classpath = manager.query_packages(packages, "CLASSPATH")
 
-   if options.optShowJavaVer:
-      try:
-         printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
-      except PermissionError:
-         printer._printError("The java executable was not found in the Java path")
+   for package in packages:
+      printer._printError("Package %s was not found!" % package)
 
-   if options.packages:
-      packages = options.packages.split(',')
-      classpath = manager.query_packages(packages, "CLASSPATH") 
+   printer._print(join(classpath,':'))
 
-      for package in packages:
-         printer._printError("Package %s was not found!" % package)
+def get_env(option, opt, value, parser):
+   try:
+      for env in value.split(','):
+         printer._print(manager.get_active_vm().query(env))
+   except EnvironmentUndefinedError:
+      print
 
-      printer._print(join(classpath,':'))
+def exec_cmd(option, opt, value, parser):
+   for cmd in iter(value.split(',')):
+      os.system(cmd)
 
-   if options.env:
-      try:
-         for env in options.env.split(','):
-            printer._print(manager.get_active_vm().query(env))
-      except EnvironmentUndefinedError:
-         print
+def list_available_packages(option, opt, value, parser):
+   for package in manager.get_packages():
+      printer._print("[%s]\t%s\t(%s)" % (package.name, package.description(), package.file))
 
-   if options.exe:
-      for cmd in iter(options.exe.split(',')):
-         os.system(cmd)
+def list_available_vms(option, opt, value, parser):
+   vm_list = manager.get_virtual_machines()
+   i = 1
 
-   if options.optListPackages:
-      for package in manager.get_packages():
-         printer._print("[%s]\t%s\t(%s)" % (package.name, package.description(), package.file))
-
-   if options.optListJVMs:
-      vm_list = manager.get_virtual_machines()
-      i = 1 
-      for count in iter(vm_list):
-         vm = vm_list[count]
-         if vm.active:
-            printer._print('%H%G' + '*) %s\t[%s]\t(%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
-         else:
-            if vm.is_jdk():
-               printer._print('%H' + '%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
-            else:
-               printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
-         i += 1
-
-   # TODO: FIX THIS!!
-   # Should be able to print in CSH or SH compatible format
-   if options.vm:
-      config = manager.get_vm(options.vm).get_config()
-      manager.create_env_entry(manager.get_vm(options.vm), printer, "export %s=%s")
-
-   if options.SystemVM:
-      vm = manager.get_vm(options.SystemVM)
-      # TODO: MAKE THIS MODULAR!!
-      config = os.path.join('/', 'etc', 'env.d', '20java')
-      deploy = os.path.join('/', 'etc', '.java', '.deployment', 'deployment.properties')
-         
-      if os.getuid() is 0:
-         if vm.is_jre():
-            printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
-
-         try:
-            manager.set_vm(vm, config, None, deploy)
-
-            # Update the profile which contains updates
-            os.system("env-update")
-
-            printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-            printer._print("\t   %Hsource /etc/profile")
-         except PermissionError:
-            printer._printError("You do not have enough permissions to set the system VM!")
+   for count in iter(vm_list):
+      vm = vm_list[count]
+      if vm.active:
+         printer._print('%H%G' + '*) %s\t[%s]\t(%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
       else:
+         if vm.is_jdk():
+            printer._print('%H' + '%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+         else:
+            printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+      i += 1
+
+# TODO: FIX THIS!!
+# Should be able to print in CSH or SH compatible format
+def print_environment(option, opt, value, parser):
+   # Possibly Unneeded
+   """
+   config = manager.get_vm(value).get_config()
+   """
+   manager.create_env_entry(manager.get_vm(value), printer, "export %s=%s")
+
+def set_system_vm(option, opt, value, parser):
+   vm = manager.get_vm(value)
+   # TODO: MAKE THIS MODULAR!!
+   config = os.path.join('/', 'etc', 'env.d', '20java')
+   deploy = os.path.join('/', 'etc', '.java', '.deployment', 'deployment.properties')
+
+   if os.getuid() is 0:
+      if vm.is_jre():
+         printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
+
+      try:
+         manager.set_vm(vm, config, None, deploy)
+
+         # Update the profile which contains updates
+         os.system("env-update")
+
+         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+         printer._print("\t   %Hsource /etc/profile")
+      except PermissionError:
          printer._printError("You do not have enough permissions to set the system VM!")
+   else:
+      printer._printError("You do not have enough permissions to set the system VM!")
 
-   if options.UserVM:
-      vm = manager.get_vm(options.UserVM)
+def set_user_vm(option, opt, value, parser):
+   vm = manager.get_vm(value)
+   # TODO: MAKE THIS MODULAR!!
+   config_sh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.sh')
+   config_csh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.csh')
+   deploy = os.path.join(os.environ.get("HOME"), '.java', '.deployment', 'deployment.properties')
+
+   if os.getuid() is 0:
+      printer._printError("The user 'root' should always use the System VM")
+   else:
       # TODO: MAKE THIS MODULAR!!
-      config_sh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.sh')
-      config_csh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.csh')
-      deploy = os.path.join(os.environ.get("HOME"), '.java', '.deployment', 'deployment.properties')
+      env_dir = os.path.join(os.environ.get("HOME"), '.gentoo')
 
-      if os.getuid() is 0:
-         printer._printError("The user 'root' should always use the System VM")
+      if os.path.exists(env_dir) and not os.path.isdir(env_dir):
+         printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
       else:
-         # TODO: MAKE THIS MODULAR!!
-         env_dir = os.path.join(os.environ.get("HOME"), '.gentoo')
+         try:
+            manager.set_vm(vm, config_sh, config_csh, deploy)
+            printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+            printer._print("\t   %Hsource ~/.gentoo/java")
+         except PermissionError:
+            printer._printError("You do not have enough permissions to set the VM!")
 
-         if os.path.exists(env_dir) and not os.path.isdir(env_dir):
-            printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
-         else:
-            try:
-               manager.set_vm(vm, config_sh, config_csh, deploy)
-               printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-               printer._print("\t   %Hsource ~/.gentoo/java")
-            except PermissionError:
-               printer._printError("You do not have enough permissions to set the VM!")
-
-   if options.library:
-      packages = options.library.split(',')
-      library = manager.query_packages(packages, "LIBRARY_PATH")
-
-      for package in packages:
-         printer._printError("Package %s was not found!" % package)
-
-      printer._print(join(library, ':'))
-
-   if options.SetSystemCP:
+def set_system_classpath(option, opt, value, parser):
       # TODO: MAKE THIS MODULAR!!
       env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
-      
+
       if os.getuid() is 0:
-         manager.set_classpath(env_file, SetSystemCP.split(","))
+         manager.set_classpath(env_file, value.split(","))
 
          printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
          printer._print("\t   %Hsource /etc/profile")
       else:
          printer._printError("You do not have enough permissions to set the system classpath!")
 
-   if options.SetUserCP:
-      # TODO: MAKE THIS MODULAR!!
-      env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+def set_user_classpath(option, opt, value, parser):
+   # TODO: MAKE THIS MODULAR!!
+   env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
 
-      manager.set_classpath(env_file, SetUserCP.split(","))
+   manager.set_classpath(env_file, value.split(","))
 
-   if options.AppendSystemCP:
-      # TODO: MAKE THIS MODULAR!!
-      env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
+def append_system_classpath(option, opt, value, parser):
+   # TODO: MAKE THIS MODULAR!!
+   env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
 
-      if os.getuid() is 0:
-         manager.append_classpath(env_file, AppendSystemCP.split(','))
-         os.system("env-update")
-
-         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-         printer._print("\t    %Hsource /etc/profile")
-      else:
-         printer._printError("You do not have enough permissioins to append to the system classpath!")
-
-   if options.AppendUserCP:
-      # TODO: MAKE THIS MODUlAR!!
-      env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
-
-      manager.append_classpath(env_file, AppendUserCP.split(','))
+   if os.getuid() is 0:
+      manager.append_classpath(env_file, value.split(','))
+      os.system("env-update")
 
       printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-      printer._print("\t   %Henv-update && source /etc/profile")
+      printer._print("\t    %Hsource /etc/profile")
+   else:
+      printer._printError("You do not have enough permissioins to append to the system classpath!")
 
-   if options.optCleanSysCP:
-      # TODO: MAKE THIS MODULAR!!
-      env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
+def append_user_classpath(option, opt, value, parser):
+   # TODO: MAKE THIS MODUlAR!!
+   env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
 
-      if os.getuid() is 0:
-         manager.clean_classpath(env_file)
-         os.system("env-update")
+   manager.append_classpath(env_file, value.split(','))
 
-         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-         printer._print("\t   %Hsource /etc/profile")
-      else:
-         printer._printError("You do not have enough permissions to clean the system classpath!")
+   printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+   printer._print("\t   %Henv-update && source /etc/profile")
 
-   if options.optCleanUsrCP:
-      # TODO: MAKE THIS MODULAR!!
-      env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+def clean_system_classpath(option, opt, value, parser):
+   # TODO: MAKE THIS MODULAR!!
+   env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
 
+   if os.getuid() is 0:
       manager.clean_classpath(env_file)
+      os.system("env-update")
 
       printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-      printer._print("\t   %Henv-update && source /etc/profile")
+      printer._print("\t   %Hsource /etc/profile")
+   else:
+      printer._printError("You do not have enough permissions to clean the system classpath!")
+
+def clean_user_classpath(option, opt, value, parser):
+   # TODO: MAKE THIS MODULAR!!
+   env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+
+   manager.clean_classpath(env_file)
+
+   printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+   printer._print("\t   %Henv-update && source /etc/profile")
+
+def library(option, opt, value, parser):
+   packages = value.split(',')
+   library = manager.query_packages(packages, "LIBRARY_PATH")
+
+   for package in packages:
+      printer._printError("Package %s was not found!" % package)
+
+   printer._print(join(library, ':'))
+
+
+
+
+if __name__ == '__main__':
+   global printer, manager
+   printer = OutputFormatter(True, True)
+   manager = EnvironmentManager()
+
+   usage =  "java-config [options]\n\n"
+   usage += "Java Configuration Utility Version " + str(__version__) + "\n"
+   usage += "Copyright 2004-2005 Gentoo Foundation\n"
+   usage += "Distributed under the terms of the GNU General Public License v2\n"
+   usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
+
+   options_list = [
+                     make_option ("-V", "--version",                 action="callback", callback=version,                 help="Print version information"                                                               ),
+                     make_option ("-n", "--nocolor",                 action="callback", callback=nocolor,                 help="Disable color output"                                                                    ),
+                     make_option ("-J", "--java",                    action="callback", callback=java,                    help="Print the location of the java executable"                                               ),
+                     make_option ("-c", "--javac",                   action="callback", callback=javac,                   help="Print the location of the javac executable"                                              ),
+                     make_option ("-j", "--jar",                     action="callback", callback=jar,                     help="Print the location of the jar executable"                                                ),
+                     make_option ("-O", "--jdk-home",                action="callback", callback=jdk_home,                help="Print the location of the active JDK home"                                               ),
+                     make_option ("-o", "--jre-home",                action="callback", callback=jre_home,                help="Print the location of the active JRE home"                                               ),
+                     make_option ("-f", "--show-active-vm",          action="callback", callback=show_active_vm,          help="Print the active Virtual Machine"                                                        ),
+                     make_option ("-v", "--java-version",            action="callback", callback=java_version,            help="Print version information for the active VM"                                             ),
+                     make_option ("-p", "--classpath",               action="callback", callback=classpath,               help="Print entries in the environment classpath",        type="string", dest="package"        ),
+                     make_option ("-g", "--get-env",                 action="callback", callback=get_env,                 help="Print an environment variable from the active VM",  type="string", dest="var"            ),
+                     make_option ("-e", "--exec_cmd",                action="callback", callback=exec_cmd,                help="Execute something which is in JAVA_HOME",           type="string", dest="command"        ),
+                     make_option ("-l", "--list-available-packages", action="callback", callback=list_available_packages, help="List all available packages on the system."                                              ),
+                     make_option ("-L", "--list-available-vms",      action="callback", callback=list_available_vms,      help="List available Java Virtual Machines"                                                    ),
+                     make_option ("-P", "--print",                   action="callback", callback=print_environment,       help="Print the environment for the specified VM",        type="string", dest="vm"             ),
+                     make_option ("-S", "--set-system-vm",           action="callback", callback=set_system_vm,           help="Set the default Java VM for the system",            type="string", dest="SystemVM"       ),
+                     make_option ("-s", "--set-user-vm",             action="callback", callback=set_user_vm,             help="Set the default Java VM for the user",              type="string", dest="UserVM"         ),
+                     make_option ("-A", "--set-system-classpath",    action="callback", callback=set_system_classpath,    help="Set the system classpath to include the libraries", type="string", dest="SetSystemCP"    ),
+                     make_option ("-a", "--set-user-classpath",      action="callback", callback=set_user_classpath,      help="Set the user classpath to include the libraries",   type="string", dest="SetUserCP"      ),
+                     make_option ("-B", "--append-system-classpath", action="callback", callback=append_system_classpath, help="Append the libraries to the system classpath",      type="string", dest="AppendSystemCP" ),
+                     make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,   help="Append the libraries to the user classpath",        type="string", dest="AppendUserCP"   ),
+                     make_option ("-X", "--clean-system-classpath",  action="callback", callback=clean_system_classpath,  help="Clean the current system classpath"                                                      ),
+                     make_option ("-x", "--clean-user-classpath",    action="callback", callback=clean_user_classpath,    help="Clean the current user classpath"                                                        ),
+                     make_option ("-i", "--library",                 action="callback", callback=library,                 help="Print entries in the package library"                                                    )
+                  ]
+
+   parser = OptionParser(usage, options_list)
+   (options, args) = parser.parse_args()
+
+
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
