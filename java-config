@@ -144,7 +144,7 @@ def set_system_vm(option, opt, value, parser):
       except PermissionError:
          printer._printError("You do not have enough permissions to set the system VM!")
       except EnvironmentUndefinedError:
-         printer._printError("Please run 'env-update && source /etc/profile' to update your environment first")
+         printer._printError("The selected VM is missing critical environment variables.")
    else:
       printer._printError("You do not have enough permissions to set the system VM!")
 
