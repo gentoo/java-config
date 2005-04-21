@@ -13,13 +13,15 @@
 #     December 30, 2004 - Initial Rewrite
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
+#     April 20, 2005    - Modified Error classes
+#                       - Moved to Errors.py
 
-class EnvironmentUndefinedError(SystemExit):
+class EnvironmentUndefinedError():
    """
    Environment Variable is undefined!
    """
 
-class RuntimeError(SystemExit):
+class RuntimeError():
    """
    General Exception for the java-config utility
    """
@@ -31,12 +33,12 @@ class InvalidConfigError:
    def __init__(self, file):
       self.file = file 
 
-class InvalidVM:
+class InvalidVMError:
    """
    Specified Virtual Machine does not exist or is invalid
    """
 
-class MissingOptionals:
+class MissingOptionalsError:
    """
    Some optional utilities are missing from a valid VM
    """

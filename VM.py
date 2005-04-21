@@ -18,7 +18,7 @@
 import EnvFileParser
 import os
 
-from JavaErrors import *
+from Errors import *
 
 class VM:
 

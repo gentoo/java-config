@@ -14,7 +14,7 @@
 #                       - Based on the collective works of the following:
 #                         {karltk,axxo,aether}@gentoo.org
 
-from JavaErrors import *
+from Errors import *
 import os
 
 class EnvFileParser:
@@ -69,3 +69,4 @@ class EnvFileParser:
 
    def get_config(self):
       return self.config.copy()
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

@@ -19,7 +19,7 @@ __version__ = '$Revision: 2.0$'[11:-1]
 import VM,Package
 import os,glob,re
 
-from JavaErrors import *
+from Errors import *
 
 class EnvironmentManager:
    virtual_machines = {} 
