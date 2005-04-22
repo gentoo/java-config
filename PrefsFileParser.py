@@ -21,7 +21,7 @@ class ConfigReader:
 
       if not os.path.isfile(self.file):
          raise InvalidPath(self.file)
-      
+
       if not os.access(file, os.R_OK):
          raise PermissionError
 

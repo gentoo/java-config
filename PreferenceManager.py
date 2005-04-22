@@ -19,6 +19,17 @@ class PreferenceManager:
    def __init__(self):
       self.database = os.path.join('/', 'var', 'db', 'java')
       self.java_versions = [ '1.0', '1.1', '1.2', '1.3', '1.4', '1.5' ]
+      self.prefs = {}
+
+      load_database()
+
+   def load_database(self):
+      if not os.path.exists(self.database):
+         create_database()
+
+      for java_version in java_versions:
+         file = os.path.join(self.database, java_version)
+         self.prefs[version] = PrefsFileParser(file).get_prefs()
 
    def create_database(self):
       if not os.path.exists(self.database):
@@ -35,47 +46,60 @@ class PreferenceManager:
             stream.close()
 
    def get_preferred_vm(self, version, level='0'):
-      file = os.path.join(self.database, version)
-
-      if os.path.isfile(file):
-         prefs = PrefsFileParser(file).get_prefs()
-         return prefs[level]
-      else:
+      if not self.prefs.has_key(version):
          raise InvalidPrefsFileError
+         
+      if len(self.prefs[version]) is 0:
+         raise PrefsUndefinedError
+      
+      return self.prefs[version][level]
 
    def set_preferred_vm(self, version, vm):
       file = os.path.join(self.database, version)
-      prefs = {} 
 
-      if os.path.isfile(file):
-         prefs = PrefsFileParser(file).get_prefs()
+      if not self.prefs.has_key(version):
+         raise InvalidPrefsFileError
 
-      index = 0
-      for key,value in prefs.iteritems():
-         if value == vm:
-            index = key
-            break
+      if len(self.prefs[version]) is 0:
+         raise PrefsUndefinedError
 
-      while index > 0:
-         prefs[index+1] = prefs[index]
-         index -= 1
-      prefs[0] = vm
+      prefs = self.prefs[version]
+
+      index = get_index(prefs, vm)
+
+      if index not -1:
+         while index > 0:
+            prefs[index + 1] = prefs[index]
+            index -= 1
+         prefs[0] = vm
 
       write_prefs(file, prefs)
 
    def remove_preferred_vm(self, version, vm):
       file = os.path.join(self.database, version)
-      prefs = {}
 
-      if os.path.isfile(file):
-         prefs = PrefsFileParser(file).get_prefs()
+      if not self.prefs.has_key(version):
+         raise InvalidPrefsFileError
+
+      if len(self.prefs[version]) is 0:
+         raise PrefsUndefinedError
+
+      prefs = self.prefs[version]
       
-      for key,value in prefs.iteritems():
-         if value == vm:
-            del prefs[key]
-            break
+      index = get_index(prefs, vm)
+
+      if index not -1:
+         while index < len(prefs) - 1:
+            prefs[index] = prefs[index + 1]
+         del prefs[len(prefs) - 1]
 
       write_prefs(file, prefs)
+
+   def get_index(self, prefs, key_value):
+      for key,value in prefs.iteritems():
+         if value == key_value:
+            return key
+      return -1
 
    def write_prefs(self, file, prefs):
       stream = open(file, 'w')
