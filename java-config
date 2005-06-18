@@ -9,17 +9,11 @@
 # Maintainer: Gentoo Java Herd <java@gentoo.org>
 # Java Subsystem Configuration Utility for Gentoo Linux
 
-# ChangeLog
-# Saleem A. <compnerd@gentoo.org>
-#     December 30, 2004 - Initial Rewrite
-#                       - Based on the collective works of the following:
-#                         {karltk,axxo,aether}@gentoo.org
-
 __version__ = '$Revision: 2.0$'[11:-1]
 
-from OutputFormatter import OutputFormatter
-from EnvironmentManager import EnvironmentManager
-from JavaErrors import *
+from java_config.OutputFormatter import OutputFormatter
+from java_config.EnvironmentManager import EnvironmentManager
+from java_config.Errors import *
 
 import os
 from commands import getoutput
@@ -287,4 +281,4 @@ if __name__ == '__main__':
    (options, args) = parser.parse_args()
 
 
-# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3 nowrap:
