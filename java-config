@@ -131,7 +131,7 @@ def set_system_vm(option, opt, value, parser):
          manager.set_vm(vm, config, None, deploy)
 
          # Update the profile which contains updates
-         getoutput(os.system("env-update"))
+         getoutput("/usr/sbin/env-update")
 
          printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
          printer._print("\t   %Hsource /etc/profile")
@@ -278,7 +278,10 @@ if __name__ == '__main__':
                   ]
 
    parser = OptionParser(usage, options_list)
-   (options, args) = parser.parse_args()
+   try:
+      (options, args) = parser.parse_args()
+   except Exception, (ex):
+      printer._printError(str(ex))
 
 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3 nowrap:
