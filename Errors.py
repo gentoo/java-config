@@ -16,29 +16,34 @@
 #     April 20, 2005    - Modified Error classes
 #                       - Moved to Errors.py
 
-class EnvironmentUndefinedError(Exception):
+class EnvironmentUndefinedError():
    """
    Environment Variable is undefined!
    """
 
-class InvalidConfigError(Exception):
+class RuntimeError():
+   """
+   General Exception for the java-config utility
+   """
+
+class InvalidConfigError:
    """
    Invalid Configuration File
    """
    def __init__(self, file):
       self.file = file 
 
-class InvalidVMError(Exception):
+class InvalidVMError:
    """
    Specified Virtual Machine does not exist or is invalid
    """
 
-class MissingOptionalsError(Exception):
+class MissingOptionalsError:
    """
    Some optional utilities are missing from a valid VM
    """
 
-class PermissionError(Exception):
+class PermissionError:
    """
    The permission on the file are wrong or you are not a privileged user
    """

@@ -1,4 +1,4 @@
-#!/usr/bin/python -E
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
 # Copyright 2004 Gentoo Foundation
@@ -9,11 +9,17 @@
 # Maintainer: Gentoo Java Herd <java@gentoo.org>
 # Java Subsystem Configuration Utility for Gentoo Linux
 
+# ChangeLog
+# Saleem A. <compnerd@gentoo.org>
+#     December 30, 2004 - Initial Rewrite
+#                       - Based on the collective works of the following:
+#                         {karltk,axxo,aether}@gentoo.org
+
 __version__ = '$Revision: 2.0$'[11:-1]
 
-from java_config.OutputFormatter import OutputFormatter
-from java_config.EnvironmentManager import EnvironmentManager
-from java_config.Errors import *
+from OutputFormatter import OutputFormatter
+from EnvironmentManager import EnvironmentManager
+from JavaErrors import *
 
 import os
 from commands import getoutput
@@ -61,10 +67,7 @@ def jre_home(option, opt, value, parser):
       print
 
 def show_active_vm(option, opt, value, parser):
-   try:
-      printer._print(manager.get_active_vm().name())
-   except Exception, (ex):
-      printer._printError(str(ex))
+   printer._print(manager.get_active_vm().name())
 
 def java_version(option, opt, value, parser):
    try:
@@ -134,9 +137,10 @@ def set_system_vm(option, opt, value, parser):
          manager.set_vm(vm, config, None, deploy)
 
          # Update the profile which contains updates
-         printer._print(getoutput("/usr/sbin/env-update"))
+         getoutput(os.system("env-update"))
 
-         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:\n\t   %Hsource /etc/profile")
+         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
+         printer._print("\t   %Hsource /etc/profile")
       except PermissionError:
          printer._printError("You do not have enough permissions to set the system VM!")
       except EnvironmentUndefinedError:
@@ -239,6 +243,8 @@ def library(option, opt, value, parser):
    printer._print(join(library, ':'))
 
 
+
+
 if __name__ == '__main__':
    global printer, manager
    printer = OutputFormatter(True, True)
@@ -280,4 +286,5 @@ if __name__ == '__main__':
    parser = OptionParser(usage, options_list)
    (options, args) = parser.parse_args()
 
-# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3 nowrap:
+
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
