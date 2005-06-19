@@ -131,7 +131,7 @@ def set_system_vm(option, opt, value, parser):
          manager.set_vm(vm, config, None, deploy)
 
          # Update the profile which contains updates
-         getoutput("/usr/sbin/env-update")
+         printer._print(getoutput("/usr/sbin/env-update"))
 
          printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
          printer._print("\t   %Hsource /etc/profile")
