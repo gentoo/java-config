@@ -19,7 +19,7 @@ __version__ = '$Revision: 2.0$'[11:-1]
 
 from OutputFormatter import OutputFormatter
 from EnvironmentManager import EnvironmentManager
-from JavaErrors import *
+from Errors import *
 
 import os
 from commands import getoutput

@@ -153,6 +153,12 @@ class EnvironmentManager:
       except EnvironmentUndefinedError:
          raise EnvironmentUndefinedError
 
+   def enable_vm(self, vm):
+      virtual_machine = get_vm(vm)
+      
+      # We need this VM for the current 
+
+
    def set_vm(self, vm, sh_env_file, csh_env_file=None, deploy_file=None):
 
       # Create the SH environment file

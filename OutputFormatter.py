@@ -45,7 +45,7 @@ class OutputFormatter:
          if os.environ["TERM"] not in [ "xterm", "Eterm", "aterm", "rxvt" ]:
             self.consoleTitle = False
 
-   def setColorOuputStatus(self, status):
+   def setColorOutputStatus(self, status):
       self.colorOutput = status
 
    def setDisplayTitleStatus(self, status):

@@ -16,12 +16,12 @@
 #     April 20, 2005    - Modified Error classes
 #                       - Moved to Errors.py
 
-class EnvironmentUndefinedError():
+class EnvironmentUndefinedError:
    """
    Environment Variable is undefined!
    """
 
-class RuntimeError():
+class RuntimeError:
    """
    General Exception for the java-config utility
    """
