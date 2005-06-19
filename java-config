@@ -64,7 +64,7 @@ def show_active_vm(option, opt, value, parser):
    try:
       printer._print(manager.get_active_vm().name())
    except Exception, (ex):
-      printer._print(str(ex))
+      printer._printError(str(ex))
 
 def java_version(option, opt, value, parser):
    try:
