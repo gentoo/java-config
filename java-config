@@ -14,8 +14,10 @@ __version__ = '$Revision: 2.0$'[11:-1]
 from java_config.OutputFormatter import OutputFormatter
 from java_config.EnvironmentManager import EnvironmentManager
 from java_config.Errors import *
+from java_config.versionator import *
 
 import os
+import sys
 from commands import getoutput
 from string   import join
 
@@ -63,7 +65,7 @@ def jre_home(option, opt, value, parser):
 def show_active_vm(option, opt, value, parser):
    try:
       printer._print(manager.get_active_vm().name())
-   except Exception, (ex):
+   except RuntimeError, (ex):
       printer._printError(str(ex))
 
 def java_version(option, opt, value, parser):

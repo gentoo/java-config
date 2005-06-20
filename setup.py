@@ -2,11 +2,10 @@
 
 from distutils.core import setup
 import os
-import java_config
 
 setup (
 	name = 'java-config',
-	version = java_config.version,
+	version = '2.0.0',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
@@ -14,10 +13,13 @@ setup (
 		variables and configuration files involved in the java
 		enviroment for Gentoo Linux.
 	""",
-	author = 'Gentoo Java Herd',
-	author_email = 'java@gentoo.org',
-	packages = ['', 'java_config'],
-	package_dir = { '' : os.curdir, 'java_config' : os.curdir + '/java_config' }
+	maintainer = 'Gentoo Java Herd',
+	maintainer_email = 'java@gentoo.org',
+	url = 'http://www.gentoo.org',
+	packages = ['java_config'],
+	package_dir = { 'java_config' : 'src' },
+	scripts = ['java-config','depend-java-query'],
+	data_files = [('man/man1', ["man/java-config.1"])]
 )
 
 # vim: noet:ts=4:

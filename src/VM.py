@@ -27,24 +27,6 @@ class VM:
       self.active = active
       self.config = EnvFileParser.EnvFileParser(file).get_config()
 
-      # TODO: MAKE THIS MODULAR!!
-      # TODO: REMOVE THIS BACKWARDS COMPATIBILITY HACK!!
-      if self.config.has_key("PATH"):
-         self.config["PATH"] = "${PATH}:" + self.config["PATH"]
-      elif self.config.has_key("ADDPATH"):
-         self.config["PATH"] = "${PATH}:" + self.config["ADDPATH"]
-         del self.config["ADDPATH"]
-
-      if self.config.has_key("MANPATH"):
-         self.config["MANPATH"] = "${MANPATH}" + self.config["MANPATH"]
-      elif self.config.has_key("ADDMANPATH"):
-         self.config["MANPATH"] = "${MANPATH}" + self.config["ADDMANPATH"]
-         del self.config["ADDMANPATH"]
-
-      if self.config.has_key("ADDLDPATH"):
-         self.config["LDPATH"] = self.config["ADDLDPATH"]
-         del self.config["ADDLDPATH"]
-
    def get_config(self):
       return self.config
 
@@ -69,28 +51,22 @@ class VM:
       return self.file.lstrip("/etc/env.d/java/20")
 
    def is_jre(self):
-      # TODO: REMOVE THIS HACK FOR BACKWARDS COMPATIBILITY
-      if self.config.has_key('PROVIDES_TYPE'):
-         return self.type("JRE")
-      else:
-         if self.config.has_key('JRE_HOME'):
-            return True
-      return False
+      return self.is_type("JRE")
 
    def is_jdk(self):
-      # TODO: REMOVE THIS HACK FOR BACKWARDS COMPATIBILITY
-      if self.config.has_key('PROVIDES_TYPE'):
-         return self.type("JDK")
-      else:
-         if self.config.has_key('JDK_HOME'):
-            return True
-      return False
+      return self.is_type("JDK")
 
-   def type(self, type):
+   def is_type(self, type):
       if self.query('PROVIDES_TYPE') == type:
          return True
       else:
          return False
+
+   def type(self):
+      return self.query('PROVIDES_TYPE')
+
+   def version(self):
+      return self.query('PROVIDES_VERSION')
 
    def find_exec(self, executable):
       path = None
