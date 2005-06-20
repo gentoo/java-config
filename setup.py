@@ -19,7 +19,11 @@ setup (
 	packages = ['java_config'],
 	package_dir = { 'java_config' : 'src' },
 	scripts = ['java-config','depend-java-query','run-java-tool'],
-	data_files = [('man/man1', ["man/java-config.1"])]
+	data_files = [
+		('man/man1', ["man/java-config.1"]),
+		('share/java-config/config', ["config/jdk-defaults.conf"]),
+		('/etc/java-config/', ["config/jdk.conf"])
+	]
 )
 
 # vim: noet:ts=4:
