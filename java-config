@@ -120,20 +120,19 @@ def print_environment(option, opt, value, parser):
    """
    config = manager.get_vm(value).get_config()
    """
-   manager.create_env_entry(manager.get_vm(value), printer, "export %s=%s")
+   manager.create_env_entry(manager.get_vm(value), printer, "%s=%s")
 
 def set_system_vm(option, opt, value, parser):
    vm = manager.get_vm(value)
    # TODO: MAKE THIS MODULAR!!
    config = os.path.join('/', 'etc', 'env.d', '20java')
-   deploy = os.path.join('/', 'etc', '.java', '.deployment', 'deployment.properties')
 
    if os.getuid() is 0:
       if vm.is_jre():
          printer._printWarning("The specified VM is a JRE!  It is suggested you use a JDK!")
 
       try:
-         manager.set_vm(vm, config, None, deploy)
+         manager.set_vm(vm, config, None)
 
          # Update the profile which contains updates
          printer._print(getoutput("/usr/sbin/env-update"))
@@ -151,7 +150,6 @@ def set_user_vm(option, opt, value, parser):
    # TODO: MAKE THIS MODULAR!!
    config_sh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.sh')
    config_csh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.csh')
-   deploy = os.path.join(os.environ.get("HOME"), '.java', '.deployment', 'deployment.properties')
 
    if os.getuid() is 0:
       printer._printError("The user 'root' should always use the System VM")
@@ -163,7 +161,7 @@ def set_user_vm(option, opt, value, parser):
          printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
       else:
          try:
-            manager.set_vm(vm, config_sh, config_csh, deploy)
+            manager.set_vm(vm, config_sh, config_csh)
             printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
             printer._print("\t   %Hsource ~/.gentoo/java")
          except PermissionError:

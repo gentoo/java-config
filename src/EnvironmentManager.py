@@ -155,7 +155,7 @@ class EnvironmentManager:
       except EnvironmentUndefinedError:
          raise EnvironmentUndefinedError
 
-   def set_vm(self, vm, sh_env_file, csh_env_file=None, deploy_file=None):
+   def set_vm(self, vm, sh_env_file, csh_env_file=None):
 
       # Create the SH environment file
       if sh_env_file is not None:

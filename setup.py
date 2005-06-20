@@ -18,7 +18,7 @@ setup (
 	url = 'http://www.gentoo.org',
 	packages = ['java_config'],
 	package_dir = { 'java_config' : 'src' },
-	scripts = ['java-config','depend-java-query'],
+	scripts = ['java-config','depend-java-query','run-java-tool'],
 	data_files = [('man/man1', ["man/java-config.1"])]
 )
 
