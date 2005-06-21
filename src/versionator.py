@@ -14,6 +14,7 @@
 
 import re
 from string import upper
+from java_config.PreferenceManager import *
 
 # Does not handle deps correctly in any way
 # Does however do the right thing for the only types of deps we should see
@@ -73,5 +74,9 @@ class versionator:
             if lowest > version:
                lowest = version
       return lowest
+
+   def get_vm(self, atoms):
+      lowest = self.get_lowest(atoms)
+      return PreferenceManager().get_vm(lowest)
 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

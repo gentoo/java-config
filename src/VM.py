@@ -27,6 +27,12 @@ class VM:
       self.active = active
       self.config = EnvFileParser.EnvFileParser(file).get_config()
 
+   def __cmp__(self, other):
+      return cmp(self.version(), other.version())
+
+   def __str__(self):
+      return self.name()
+
    def get_config(self):
       return self.config
 
@@ -73,7 +79,6 @@ class VM:
 
       path = self.query('PATH')
       paths = path.split(':')
-      paths.remove("${PATH}")
 
       for path in paths:
          path = os.path.join(path, executable)

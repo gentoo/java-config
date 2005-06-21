@@ -94,6 +94,13 @@ class EnvironmentManager:
    def get_virtual_machines(self):
       return self.virtual_machines
 
+   def find_vm(self, name):
+      found = []
+      for id, vm in self.virtual_machines.iteritems():
+         if vm.name().startswith(name):
+            found.append(vm)
+      return found
+
    def get_packages(self):
       return self.packages
 

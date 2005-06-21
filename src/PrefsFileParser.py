@@ -6,42 +6,35 @@
 
 # Author: Saleem Abdulrasool <compnerd@gentoo.org>
 
-# ChangeLog
-# Saleem A. <compnerd@gentoo.org>
-#     April 19, 2005 - Initial Write
-
 from Errors import *
 import os
 
-class ConfigReader:
-   config = {}
-
+class PrefsFile:
    def __init__(self, file):
-      self.config.clear()
+      self.file = file
+      self.config = []
 
       if not os.path.isfile(self.file):
          raise InvalidPath(self.file)
 
-      if not os.access(file, os.R_OK):
+      if not os.access(self.file, os.R_OK):
          raise PermissionError
 
       stream = open(self.file, 'r')
-      read = stream.readline()
-
-      while read:
+   
+      for line in stream:
          # Ignore whitespace lines and comments
-         if read.isspace() or read == '' or read.startswidth('#'):
+         if line.isspace() or line == '' or line.startswith('#'):
             pass
          else: 
-            read = read.split('\n')[0]
-            name, value = read.split(':')
+            version, vms = line.split('=')
+            vms = vms.strip().split(' ')
 
-            self.config[name] = value
-
-         read = stream.readline()
+            self.config.append([ version, vms ])
 
       stream.close()
 
    def get_prefs(self):
-      return self.config.copy()
+      return self.config
+
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

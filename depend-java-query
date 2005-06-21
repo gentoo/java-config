@@ -45,7 +45,8 @@ def is_sufficient(option, opt, value, parser):
       sys.exit(1)
 
 def get_vm(option, opt, value, parser):
-   pass
+   vator = versionator()
+   printer._print(vator.get_vm(value))
 
 def get_lowest(option, opt, value, parse):
    vator = versionator()
