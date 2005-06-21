@@ -73,8 +73,8 @@ class OutputFormatter:
       colored = ''
       striped = ''
       replace = 0
-
-      for char in message:
+     
+      for char in str(message):
          if replace:
             if char == ' ':
                colored += self.codes['%'] + ' '
