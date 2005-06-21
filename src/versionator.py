@@ -4,14 +4,6 @@
 # Distributed under the terms of the GNU General Public license v2
 # $Header: $
 
-# Author: Saleem Abdulrasool <compnerd@gentoo.org>
-# Maintainer: Gentoo Java Herd <java@gentoo.org>
-# Python based utilities
-
-# ChangeLog
-# Saleem A. <compnerd@gentoo.org>
-#     March 31, 2005 - Initial Write
-
 import re
 from string import upper
 from java_config.PreferenceManager import *

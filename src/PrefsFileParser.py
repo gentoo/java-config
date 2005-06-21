@@ -4,8 +4,6 @@
 # Distributed under the terms of he GNU General Public License v2
 # $Header: $
 
-# Author: Saleem Abdulrasool <compnerd@gentoo.org>
-
 from Errors import *
 import os
 

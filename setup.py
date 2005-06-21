@@ -2,10 +2,11 @@
 
 from distutils.core import setup
 import os
+import java_config
 
 setup (
 	name = 'java-config',
-	version = '2.0.0',
+	version = java_config.version,
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""

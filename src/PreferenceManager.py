@@ -1,16 +1,8 @@
 # -*- coding: UTF-8 -*-
 
-# Copyright 2004 Gentoo Foundation
+# Copyright 2004-2005 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
-
-# Author: Saleem Abdulrasool <compnerd@gentoo.org>
-# Maintainer: Gentoo Java Herd <java@gentoo.org>
-# Java Subsystem Configuration Utility for Gentoo Linux
-
-# ChangeLog
-# Saleem A. <compnerd@gentoo.org>
-#     April 19, 2005 - Initial Write
 
 import VM,Errors 
 from java_config.versionator import *
@@ -55,3 +47,5 @@ class PreferenceManager:
 #print "1.3: " + str(man.get_vm("1.3"))
 #print "1.4: " + str(man.get_vm("1.4"))
 #print "1.5: " + str(man.get_vm("1.5"))
+
+# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

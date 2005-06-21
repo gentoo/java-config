@@ -1,0 +1,8 @@
+Author: Saleem Abdulrasool <compnerd@gentoo.org>
+Author: Thomas Matthijs <axxo@gentoo.org>
+Maintainer: Gentoo Java Herd <java@gentoo.org>
+Java Subsystem Configuration Utility for Gentoo Linux
+
+Based on the collective works of the following:
+Karl Trygve Kalleberg <karltk@gentoo.org>
+Jason A Mobarak <aether@gentoo.org> 
