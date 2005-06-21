@@ -5,7 +5,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from java_config import version
+from java_config import __version__
 from java_config.OutputFormatter import OutputFormatter
 from java_config.EnvironmentManager import EnvironmentManager
 from java_config.Errors import *
@@ -20,7 +20,7 @@ from optparse import OptionParser, make_option
 
 
 def version(option, opt, value, parser):
-    printer._print("%H%BJava Configuration Utility %GVersion " + str(version))
+    printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
     raise SystemExit()
 
 def nocolor(option, opt, value, parser):
@@ -239,7 +239,7 @@ if __name__ == '__main__':
    manager = EnvironmentManager()
 
    usage =  "java-config [options]\n\n"
-   usage += "Java Configuration Utility Version " + str(version) + "\n"
+   usage += "Java Configuration Utility Version " + str(__version__) + "\n"
    usage += "Copyright 2004-2005 Gentoo Foundation\n"
    usage += "Distributed under the terms of the GNU General Public License v2\n"
    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."

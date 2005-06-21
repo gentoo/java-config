@@ -6,7 +6,7 @@ import java_config
 
 setup (
 	name = 'java-config',
-	version = java_config.version,
+	version = '2.0.0',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
@@ -18,8 +18,8 @@ setup (
 	maintainer_email = 'java@gentoo.org',
 	url = 'http://www.gentoo.org',
 	packages = ['java_config'],
-	package_dir = { 'java_config' : 'src' },
-	scripts = ['java-config','depend-java-query','run-java-tool'],
+	package_dir = { 'java_config' : 'src/java_config' },
+	scripts = ['src/java-config','src/depend-java-query','src/run-java-tool'],
 	data_files = [
 		('man/man1', ["man/java-config.1"]),
 		('share/java-config/config', ["config/jdk-defaults.conf"]),
