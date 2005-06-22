@@ -80,7 +80,6 @@ class versionator:
       prefs = PreferenceManager().get()
 
       for atom in matched_atoms:
-         print atom
          version = atom['version']
          eq = atom['equality']
 
@@ -118,7 +117,7 @@ class PreferenceManager:
       return self.prefs
    
 
-vator=versionator()
+#vator=versionator()
 #print vator.get_vm(">=virtual/jdk-1.3")
 #print vator.get_vm(">=virtual/jdk-1.4")
 #print vator.get_vm(">=virtual/jdk-1.5")
