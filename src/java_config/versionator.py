@@ -6,7 +6,15 @@
 
 import re
 from string import upper
-from java_config.PreferenceManager import *
+
+import VM,Errors 
+from java_config.versionator import *
+from java_config.PrefsFileParser import *
+from java_config.EnvironmentManager import *
+import os,glob,re
+import os.path
+
+   
 
 # Does not handle deps correctly in any way
 # Does however do the right thing for the only types of deps we should see
@@ -68,7 +76,54 @@ class versionator:
       return lowest
 
    def get_vm(self, atoms):
-      lowest = self.get_lowest(atoms)
-      return PreferenceManager().get_vm(lowest)
+      matched_atoms = self.parse_depend(atoms)
+      prefs = PreferenceManager().get()
+
+      for atom in matched_atoms:
+         print atom
+         version = atom['version']
+         eq = atom['equality']
+
+         for pref in prefs:
+            if pref[0] == version or pref[0] == "*":
+               for vm in pref[1]:
+                  gvm = self.find_vm(vm, atom)
+                  if gvm is not None:
+                     return gvm
+
+      return self.find_vm("", atom)
+
+   def find_vm(self, vm, atom):
+      vm_list = EnvironmentManager().find_vm(vm)
+      vm_list.sort()
+      vm_list.reverse()
+      for vm in vm_list:
+         if self.matches(vm.version(), atom['version'], atom['equality']):
+             return vm
+      return None
+         
+
+class PreferenceManager:
+   def __init__(self):
+      self.pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
+      self.load()
+
+   def load(self):
+      self.prefs = []
+      for file in self.pref_files:
+         if os.path.exists(file):
+            self.prefs = self.prefs + PrefsFile(file).get_prefs()
+
+   def get(self):
+      return self.prefs
+   
+
+vator=versionator()
+#print vator.get_vm(">=virtual/jdk-1.3")
+#print vator.get_vm(">=virtual/jdk-1.4")
+#print vator.get_vm(">=virtual/jdk-1.5")
+
+#print vator.get_vm("=virtual/jdk-1.3 =virtual/jdk-1.4")
+#print vator.get_vm("=virtual/jdk-1.5")
 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
