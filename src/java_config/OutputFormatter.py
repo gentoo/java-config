@@ -27,9 +27,10 @@ class OutputFormatter:
                '%': '%'               # Percent
            }
 
-   def __init__(self, displayColor=True, displayTitle=True):
+   def __init__(self, displayColor=True, displayTitle=True, autoIndent=True):
       self.colorOutput = displayColor
       self.consoleTitle = displayTitle
+      self.autoIndent = autoIndent
 
       if displayTitle and os.environ.has_key("TERM"):
          if os.environ["TERM"] not in [ "xterm", "Eterm", "aterm", "rxvt" ]:
@@ -58,8 +59,16 @@ class OutputFormatter:
       if self.consoleTitle:
          sys.stderr.write("\x1b]1;\x07\x1b]2;" + str(title) + "\x07")
          sys.stderr.flush()
+  
+   def __indent(self, prefix, message):
+      if self.autoIndent is True:
+         num = len(prefix)
+         return prefix + message.replace('\n','\n'+' '*num)
 
-   def __parseColor(self, message, stripColors=False):
+      else:
+         return prefix + message
+      
+   def __parseColor(self, message):
       colored = ''
       striped = ''
       replace = 0
@@ -81,30 +90,30 @@ class OutputFormatter:
             colored += char
             striped += char
 
-      if stripColors:
+      if self.colorOutput:
          return colored
       else:
          return striped
 
    def write(self, message):
-      print self.__parseColor(message.strip(), self.colorOutput)
+      print self.__parseColor(message.strip())
 
    def _print(self, message):
-      print self.__parseColor(message, self.colorOutput)
+      print self.__parseColor(message)
 
    def _printError(self, message):
-      message = "%H%R!!! ERROR: " + message + "%$"
-      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
+      message = "%H%R" + self.__indent("!!! ERROR: ", message) + "%$"
+      sys.stderr.write(self.__parseColor(message) + '\n')
 
    def _printWarning(self, message):
-      message = "%H%Y!!! WARNING: " + message + "%$"
-      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
+      message = "%H%Y" + self.__indent("!!! WARNING: ", message) + "%$"
+      sys.stderr.write(self.__parseColor(message) + '\n')
 
    def _printAlert(self, message):
-      message = "%H%C!!! ALERT: " + message + "%$"
-      sys.stderr.write(self.__parseColor(message, self.colorOutput) + '\n')
+      message = "%H%C" + self.__indent("!!! ALERT: ", message) +  "%$"
+      sys.stderr.write(self.__parseColor(message) + '\n')
 
    def setTitle(self, message):
-      self.__setTitle(self.__parseColor(message, True))
+      self.__setTitle(self.__parseColor(message))
 
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

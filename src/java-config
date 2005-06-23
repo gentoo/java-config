@@ -90,7 +90,7 @@ def exec_cmd(option, opt, value, parser):
 
 def list_available_packages(option, opt, value, parser):
    for package in manager.get_packages():
-      printer._print("[%s]\t%s\t(%s)" % (package.name, package.description(), package.file))
+      printer._print("[%s] %s (%s)" % (package.name(), package.description(), package.file()))
 
 def list_available_vms(option, opt, value, parser):
    vm_list = manager.get_virtual_machines()
@@ -99,12 +99,12 @@ def list_available_vms(option, opt, value, parser):
    for count in iter(vm_list):
       vm = vm_list[count]
       if vm.active:
-         printer._print('%H%G' + '*) %s\t[%s]\t(%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+         printer._print('%H%G' + '*) %s [%s] (%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
       else:
          if vm.is_jdk():
-            printer._print('%H' + '%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+            printer._print('%H' + '%i) %s [%s] (%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
          else:
-            printer._print('%i) %s\t[%s]\t(%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
+            printer._print('%i) %s [%s] (%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
       i += 1
 
 # TODO: FIX THIS!!
@@ -131,7 +131,7 @@ def set_system_vm(option, opt, value, parser):
          # Update the profile which contains updates
          printer._print(getoutput("/usr/sbin/env-update"))
 
-         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:\n\t   %Hsource /etc/profile")
+         warn_update_env()
       except PermissionError:
          printer._printError("You do not have enough permissions to set the system VM!")
       except EnvironmentUndefinedError:
@@ -156,8 +156,7 @@ def set_user_vm(option, opt, value, parser):
       else:
          try:
             manager.set_vm(vm, config_sh, config_csh)
-            printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-            printer._print("\t   %Hsource ~/.gentoo/java")
+            warn_update_env()
          except PermissionError:
             printer._printError("You do not have enough permissions to set the VM!")
 
@@ -168,8 +167,7 @@ def set_system_classpath(option, opt, value, parser):
       if os.getuid() is 0:
          manager.set_classpath(env_file, value.split(","))
 
-         printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-         printer._print("\t   %Hsource /etc/profile")
+         warn_update_env()
       else:
          printer._printError("You do not have enough permissions to set the system classpath!")
 
@@ -187,8 +185,7 @@ def append_system_classpath(option, opt, value, parser):
       manager.append_classpath(env_file, value.split(','))
       os.system("env-update")
 
-      printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-      printer._print("\t    %Hsource /etc/profile")
+      warn_update_env()
    else:
       printer._printError("You do not have enough permissioins to append to the system classpath!")
 
@@ -198,8 +195,7 @@ def append_user_classpath(option, opt, value, parser):
 
    manager.append_classpath(env_file, value.split(','))
 
-   printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-   printer._print("\t   %Henv-update && source /etc/profile")
+   warn_update_env()
 
 def clean_system_classpath(option, opt, value, parser):
    # TODO: MAKE THIS MODULAR!!
@@ -209,8 +205,7 @@ def clean_system_classpath(option, opt, value, parser):
       manager.clean_classpath(env_file)
       os.system("env-update")
 
-      printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-      printer._print("\t   %Hsource /etc/profile")
+      warn_update_env()
    else:
       printer._printError("You do not have enough permissions to clean the system classpath!")
 
@@ -219,9 +214,7 @@ def clean_user_classpath(option, opt, value, parser):
    env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
 
    manager.clean_classpath(env_file)
-
-   printer._printAlert("If you want to use java in your current session, you should update\n\t   your environment by running:")
-   printer._print("\t   %Henv-update && source /etc/profile")
+   warn_update_env()
 
 def library(option, opt, value, parser):
    packages = value.split(',')
@@ -231,6 +224,10 @@ def library(option, opt, value, parser):
       printer._printError("Package %s was not found!" % package)
 
    printer._print(join(library, ':'))
+
+def warn_update_env():
+   printer._printAlert("If you want to use java in your current session, you should update\nyour environment by running:\nsource /etc/profile")
+
 
 
 if __name__ == '__main__':
