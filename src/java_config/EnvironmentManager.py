@@ -96,11 +96,11 @@ class EnvironmentManager:
       results = []
 
       for package in iter(self.get_packages()):
-         if package.name in packages:
+         if package.name() in packages:
             value = package.query(query)
             if value:
                results.append(value)
-            packages.remove(package.name)
+            packages.remove(package.name())
 
       return results
 

@@ -8,31 +8,31 @@ import EnvFileParser
 
 class Package:
    def __init__(self,file, name):
-      self.file = file
-      self.name = name
-      self.config = EnvFileParser.EnvFileParser(file).get_config()
+      self._file = file
+      self._name = name
+      self._config = EnvFileParser.EnvFileParser(file).get_config()
 
    def name(self):
-      return self.name
+      return self._name
 
    def file(self):
-      return self.file
+      return self._file
 
    def description(self):
-      if self.config.has_key("DESCRIPTION"):
-         return self.config["DESCRIPTION"]
+      if self._config.has_key("DESCRIPTION"):
+         return self._config["DESCRIPTION"]
       else:
          return "No Description"
 
    def classpath(self):
-      if self.config.has_key("CLASSPATH"):
-         return self.config["CLASSPATH"]
+      if self._config.has_key("CLASSPATH"):
+         return self._config["CLASSPATH"]
       else:
          return None
 
    def query(self, var):
-      if self.config.has_key(var):
-         return self.config[var]
+      if self._config.has_key(var):
+         return self._config[var]
       else:
          return None
 
