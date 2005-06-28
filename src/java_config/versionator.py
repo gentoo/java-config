@@ -77,11 +77,21 @@ class versionator:
 
    def get_vm(self, atoms):
       matched_atoms = self.parse_depend(atoms)
+
+      if len(matched_atoms) == 0:
+         return None
+
       prefs = PreferenceManager().get()
+      low = None
 
       for atom in matched_atoms:
          version = atom['version']
          eq = atom['equality']
+
+         if low is None:
+            low = atom
+         elif low['version'] > version:
+            low = atom
 
          for pref in prefs:
             if pref[0] == version or pref[0] == "*":
@@ -90,7 +100,7 @@ class versionator:
                   if gvm is not None:
                      return gvm
 
-      return self.find_vm("", atom)
+      return self.find_vm("", low)
 
    def find_vm(self, vm, atom):
       vm_list = EnvironmentManager().find_vm(vm)
