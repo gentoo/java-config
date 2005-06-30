@@ -59,4 +59,5 @@ class EnvFileParser:
 
    def get_config(self):
       return self.config.copy()
+
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:
