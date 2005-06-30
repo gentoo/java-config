@@ -14,60 +14,60 @@ from java_config.versionator import *
 import os
 import sys
 from commands import getoutput
-from string   import join
+from string    import join
 
 from optparse import OptionParser, make_option, OptionValueError
 
 def version(option, opt, value, parser):
-    printer._print("%H%BJava Dep Query Utility %GVersion " + str(__version__))
-    raise SystemExit()
+     printer._print("%H%BJava Dep Query Utility %GVersion " + str(__version__))
+     raise SystemExit()
 
 def nocolor(option, opt, value, parser):
-   printer.setColorOutputStatus(False)
+    printer.setColorOutputStatus(False)
 
 def is_sufficient(option, opt, value, parser):
-   try:
-      vator = versionator()
-      if vator.version_satisfies(value,manager.get_active_vm()):
-         printer._print("Active vm satifies the depend string")
-         sys.exit(0)
-      else:
-         printer._print("Active vm does NOT satify the depend string")
-         sys.exit(1)
+    try:
+        vator = versionator()
+        if vator.version_satisfies(value,manager.get_active_vm()):
+            printer._print("Active vm satifies the depend string")
+            sys.exit(0)
+        else:
+            printer._print("Active vm does NOT satify the depend string")
+            sys.exit(1)
 
-   except RuntimeError, (ex):
-      printer._printError(str(ex))
-      sys.exit(1)
+    except RuntimeError, (ex):
+        printer._printError(str(ex))
+        sys.exit(1)
 
 def get_vm(option, opt, value, parser):
-   vator = versionator()
-   printer._print(vator.get_vm(value))
+    vator = versionator()
+    printer._print(vator.get_vm(value))
 
 def get_lowest(option, opt, value, parse):
-   vator = versionator()
-   printer._print(vator.get_lowest(value))
+    vator = versionator()
+    printer._print(vator.get_lowest(value))
 
 
 if __name__ == '__main__':
-   global printer, manager
-   printer = OutputFormatter(True, True)
-   manager = EnvironmentManager()
+    global printer, manager
+    printer = OutputFormatter(True, True)
+    manager = EnvironmentManager()
 
-   usage =  "depend-java-query [options]\n\n"
-   usage += "Java Dep Query Utility Version " + str(__version__) + "\n"
-   usage += "Copyright 2004-2005 Gentoo Foundation\n"
-   usage += "Distributed under the terms of the GNU General Public License v2\n"
-   usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
+    usage =  "depend-java-query [options]\n\n"
+    usage += "Java Dep Query Utility Version " + str(__version__) + "\n"
+    usage += "Copyright 2004-2005 Gentoo Foundation\n"
+    usage += "Distributed under the terms of the GNU General Public License v2\n"
+    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
-   options_list = [
-                     make_option ("-V", "--version",                 action="callback", callback=version,                 help="Print version information"                                                               ),
-                     make_option ("-n", "--nocolor",                 action="callback", callback=nocolor,                 help="Disable color output"                                                                    ),
-                     make_option ("-s"  , "--is-sufficient",         action="callback", callback=is_sufficient,           help="Check a depend string and see if current-vm is sufficiant", type="string", dest="dependstr"),
-                     make_option ("-v"  , "--get-vm",                action="callback", callback=get_vm,                  help="Return the best vm for this dep string", type="string", dest="dependstr"),
-                     make_option ("-l"  , "--get-lowest",            action="callback", callback=get_lowest,              help="Return the lowest version in the depend, to be used with -target/-source fex.", type="string", dest="dependstr")
-                  ]
+    options_list = [
+                     make_option ("-V", "--version",        action="callback", callback=version,       help="Print version information"),
+                     make_option ("-n", "--nocolor",        action="callback", callback=nocolor,       help="Disable color output"),
+                     make_option ("-s", "--is-sufficient",  action="callback", callback=is_sufficient, help="Check a depend string and see if current-vm is sufficiant",                        type="string", dest="dependstr"),
+                     make_option ("-v", "--get-vm",         action="callback", callback=get_vm,        help="Return the best vm for this dep string",                                           type="string", dest="dependstr"),
+                     make_option ("-l", "--get-lowest",     action="callback", callback=get_lowest,    help="Return the lowest version in the depend, to be used with -target/-source fex.",    type="string", dest="dependstr")
+                   ]
 
-   parser = OptionParser(usage, options_list)
-   (options, args) = parser.parse_args()
+    parser = OptionParser(usage, options_list)
+    (options, args) = parser.parse_args()
 
-# vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3 nowrap:
+# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
