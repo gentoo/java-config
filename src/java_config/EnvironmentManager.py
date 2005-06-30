@@ -92,6 +92,9 @@ class EnvironmentManager:
             self.load_active_vm()
         return self.active
 
+    def set_active_vm(self, vm):
+        self.active = vm
+
     def get_virtual_machines(self):
         if self.virtual_machines is None:
             self.load_vms()
