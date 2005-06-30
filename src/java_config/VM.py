@@ -25,7 +25,7 @@ class VM:
     def get_config(self):
         return self.config
 
-    def query(self,var):
+    def query(self, var):
         if self.config.has_key(var):
             return self.config[var]
         else:

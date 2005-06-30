@@ -7,11 +7,10 @@
 import re
 from string import upper
 
-import VM,Errors 
-from java_config.versionator import *
+import VM, Errors 
 from java_config.PrefsFileParser import *
 from java_config.EnvironmentManager import *
-import os,glob,re
+import os, glob, re
 import os.path
 
 
@@ -35,8 +34,10 @@ class versionator:
         return matched_atoms
 
     def matches(self, version_a, version_b, operator):
-        if operator == '!': operator = '!='
-        if operator == '=': operator = '=='
+        if operator == '!': 
+            operator = '!='
+        if operator == '=': 
+            operator = '=='
 
         if operator.find('!') is -1:
             return eval(version_a + operator + version_b)

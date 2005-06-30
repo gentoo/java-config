@@ -7,7 +7,7 @@
 import EnvFileParser
 
 class Package:
-    def __init__(self,file, name):
+    def __init__(self, file, name):
         self._file = file
         self._name = name
         self._config = EnvFileParser.EnvFileParser(file).get_config()

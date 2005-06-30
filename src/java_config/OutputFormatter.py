@@ -4,7 +4,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-import os,sys
+import os, sys
 
 class OutputFormatter:
     codes = {
@@ -63,7 +63,7 @@ class OutputFormatter:
     def __indent(self, prefix, message):
         if self.autoIndent is True:
             num = len(prefix)
-            return prefix + message.replace('\n','\n'+' '*num)
+            return prefix + message.replace('\n', '\n'+' '*num)
 
         else:
             return prefix + message

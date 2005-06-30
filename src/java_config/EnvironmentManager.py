@@ -10,7 +10,7 @@ from Errors import *
 
 from os.path import basename, dirname
 from glob import glob
-import os,re
+import os, re
 
 
 class EnvironmentManager:
@@ -54,7 +54,7 @@ class EnvironmentManager:
         self.packages = []
         packages_path = os.path.join('/', 'usr', 'share', '*', 'package.env')
         for package in iter(glob(packages_path)):
-            self.packages.append(Package(package,basename(dirname(package))))
+            self.packages.append(Package(package, basename(dirname(package))))
 
     def load_active_vm(self):
         environ_path = [
@@ -62,7 +62,7 @@ class EnvironmentManager:
                                 os.path.join('/', 'etc', 'env.d', '20java')
                             ]
 
-        JAVA_HOME = None
+        java_home = None
 
         for file in environ_path:
             try:
@@ -74,14 +74,14 @@ class EnvironmentManager:
             while read:
                 if read.strip().startswith('JAVA_HOME'):
                     stream.close()
-                    JAVA_HOME = read.split('=', 1)[-1].strip()
+                    java_home = read.split('=', 1)[-1].strip()
                     break
                 else:
                     read = stream.readline()
             stream.close()        
 
         for vm in self.get_virtual_machines().itervalues():
-            if vm.query('JAVA_HOME') == JAVA_HOME:
+            if vm.query('JAVA_HOME') == java_home:
                 self.active = vm
                 return vm
 
@@ -159,9 +159,9 @@ class EnvironmentManager:
 
         try:
             ENV_VARS = vm.query('ENV_VARS')
-            for (item,value) in vm.get_config().iteritems():
+            for (item, value) in vm.get_config().iteritems():
                 if item in ENV_VARS:
-                    stream.write(render % (item,value))
+                    stream.write(render % (item, value))
         except IOError:
             raise PermissionError
         except EnvironmentUndefinedError:
@@ -195,7 +195,7 @@ class EnvironmentManager:
                 raise PermissionError
 
             try:
-                create_env_entry(vm, stream, "setenv %s %s\n")
+                self.create_env_entry(vm, stream, "setenv %s %s\n")
             except IOError:
                 stream.close()
                 raise PermissionError

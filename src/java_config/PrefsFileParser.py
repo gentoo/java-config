@@ -13,7 +13,7 @@ class PrefsFile:
         self.config = []
 
         if not os.path.isfile(self.file):
-            raise InvalidPath(self.file)
+            raise InvalidConfigError(self.file)
 
         if not os.access(self.file, os.R_OK):
             raise PermissionError
