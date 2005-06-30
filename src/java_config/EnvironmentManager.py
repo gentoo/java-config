@@ -4,23 +4,65 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-import VM,Package
-import os,glob,re
-
+from Package import Package
+from VM import VM
 from Errors import *
 
+from os.path import basename, dirname
+from glob import glob
+import os,re
+
+
 class EnvironmentManager:
-   virtual_machines = {} 
-   packages = []
-   
+   virtual_machines = None
+   packages = None
+   active = None
+
    def __init__(self):
-      # Get JAVA_HOME
+      pass
+
+     
+   def load_vms(self):
+      # Collect the Virtual Machines
+      # TODO: MAKE THIS MODULAR!
+      self.virtual_machines = {} 
+      
+      if os.path.isdir('/etc/env.d/java'):
+         try:
+            count = 1
+            for file in os.listdir('/etc/env.d/java'):
+               conf = os.path.join('/etc/env.d/java', file)
+
+               if file.startswith("20"):
+                  vm = None
+
+                  try:
+                     vm = VM(conf)
+                  except InvalidConfigError:
+                     pass
+                  except PermissionError:
+                     pass
+
+                  self.virtual_machines[count] = vm
+                  count += 1
+         except OSError:
+            pass
+       
+   def load_packages(self):
+      # Collect the packages
+      # TODO: MAKE THIS MODULAR!
+      self.packages = []
+      packages_path = os.path.join('/', 'usr', 'share', '*', 'package.env')
+      for package in iter(glob(packages_path)):
+         self.packages.append(Package(package,basename(dirname(package))))
+
+   def load_active_vm(self):
       environ_path = [
                         os.path.join(os.environ.get('HOME'), '.gentoo', 'java'),
                         os.path.join('/', 'etc', 'env.d', '20java')
                      ]
 
-      self.JAVA_HOME = None
+      JAVA_HOME = None
 
       for file in environ_path:
          try:
@@ -32,64 +74,39 @@ class EnvironmentManager:
          while read:
             if read.strip().startswith('JAVA_HOME'):
                stream.close()
-               self.JAVA_HOME = read.split('=', 1)[-1].strip()
+               JAVA_HOME = read.split('=', 1)[-1].strip()
                break
             else:
                read = stream.readline()
          stream.close()      
 
-      # Collect the Virtual Machines
-      # TODO: MAKE THIS MODULAR!
-      if os.path.isdir('/etc/env.d/java'):
-         try:
-            count = 1
-            for file in os.listdir('/etc/env.d/java'):
-               conf = os.path.join('/etc/env.d/java', file)
-
-               if file.startswith("20"):
-                  vm = None
-
-                  try:
-                     vm = VM.VM(conf)
-                  except InvalidConfigError:
-                     pass
-                  except PermissionError:
-                     pass
-
-                  if vm.query('JAVA_HOME') == self.JAVA_HOME:
-                     vm.set_active()
-
-                  self.virtual_machines[count] = vm
-                  count += 1
-         except OSError:
-            pass
-
-      # Collect the packages
-      # TODO: MAKE THIS MODULAR!
-      packages_path = os.path.join('/', 'usr', 'share', '*', 'package.env')
-      for package in iter(glob.glob(packages_path)):
-         self.packages.append(Package.Package(package,os.path.basename(os.path.dirname(package))))
-
-   def get_active_vm(self):
-      vm_list = self.get_virtual_machines()
-
-      for count in iter(vm_list):
-         if vm_list[count].active:
-            return vm_list[count]
+      for vm in self.get_virtual_machines().itervalues():
+         if vm.query('JAVA_HOME') == JAVA_HOME:
+            self.active = vm
+            return vm
 
       raise RuntimeError, "No java vm could be found."
+ 
+   def get_active_vm(self):
+      if self.active is None:
+         self.load_active_vm()
+      return self.active
 
    def get_virtual_machines(self):
+      if self.virtual_machines is None:
+         self.load_vms()
       return self.virtual_machines
 
    def find_vm(self, name):
       found = []
-      for id, vm in self.virtual_machines.iteritems():
+      for id, vm in self.get_virtual_machines().iteritems():
          if vm.name().startswith(name):
             found.append(vm)
       return found
 
    def get_packages(self):
+      if self.packages is None:
+         self.load_packages()
       return self.packages
 
    def query_packages(self, packages, query):
@@ -248,4 +265,5 @@ class EnvironmentManager:
 
       stream.write("CLASSPATH=%s\n" % (classpath))
       stream.close()
+
 # vim:set expandtab tabstop=3 shiftwidth=3 softtabstop=3:

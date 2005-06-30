@@ -5,17 +5,16 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-import EnvFileParser
+from EnvFileParser import EnvFileParser
 import os
 
 from Errors import *
 
 class VM:
 
-   def __init__(self, file, active=False):
+   def __init__(self, file):
       self.file = file
-      self.active = active
-      self.config = EnvFileParser.EnvFileParser(file).get_config()
+      self.config = EnvFileParser(file).get_config()
 
    def __cmp__(self, other):
       return cmp(self.version(), other.version())
@@ -32,12 +31,6 @@ class VM:
       else:
          print "Undefined: " + var
          raise EnvironmentUndefinedError
-
-   def active(self):
-      return self.active
-
-   def set_active(self):
-      self.active = True
 
    def filename(self):
       return self.file

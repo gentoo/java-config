@@ -94,18 +94,16 @@ def list_available_packages(option, opt, value, parser):
 
 def list_available_vms(option, opt, value, parser):
    vm_list = manager.get_virtual_machines()
-   i = 1
+   active = manager.get_active_vm()
 
-   for count in iter(vm_list):
-      vm = vm_list[count]
-      if vm.active:
+   for i, vm in vm_list.iteritems():
+      if vm is active:
          printer._print('%H%G' + '*) %s [%s] (%s)' % (vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
       else:
          if vm.is_jdk():
             printer._print('%H' + '%i) %s [%s] (%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
          else:
             printer._print('%i) %s [%s] (%s)' % (i,vm.query('VERSION'),vm.name(),vm.filename()) + '%$')
-      i += 1
 
 # TODO: FIX THIS!!
 # Should be able to print in CSH or SH compatible format
