@@ -2,7 +2,6 @@
 
 from distutils.core import setup
 import os
-import java_config
 
 setup (
 	name = 'java-config',
