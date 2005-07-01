@@ -33,25 +33,16 @@ class EnvFileParser:
 
                 value = value.strip('\\').strip('\'\"')
 
-                values  = value.split(':')
-                for item in values:
-                    if item.find('${') >= 0:
-                        item = item[item.find('${')+2:item.find('}')]
-                        
-                        if self.config.has_key(item):
-                            val = self.config[item]
-                        else:
-                            val = ''
-                        
-                        value = value.replace('${%s}' % item, val)
+                while value.find('${') >= 0:
+                    item = value[value.find('${')+2:value.find('}')]
+
+                    if self.config.has_key(item):
+                        val = self.config[item]
                     else:
-                        if self.config.has_key(item):
-                            val = self.config[item]
-                        else:
-                            val = ''
-
-                        value = value.replace('$%s' % item, val)
-
+                        val = ''
+                        
+                    value = value.replace('${%s}' % item, val)
+                
                 self.config[name] = value
 
                 read = stream.readline()

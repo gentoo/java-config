@@ -55,6 +55,13 @@ def jre_home(option, opt, value, parser):
     except EnvironmentUndefinedError:
         print
 
+def runtime(option, opt, value, parser):
+    try:
+        printer._print(manager.get_active_vm().query('BOOTCLASSPATH'))
+    except EnvironmentUndefinedError:
+        print
+
+
 def show_active_vm(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().name())
@@ -249,6 +256,7 @@ if __name__ == '__main__':
                      make_option ("-j", "--jar",                     action="callback", callback=jar,                       help="Print the location of the jar executable"),
                      make_option ("-O", "--jdk-home",                action="callback", callback=jdk_home,                  help="Print the location of the active JDK home"),
                      make_option ("-o", "--jre-home",                action="callback", callback=jre_home,                  help="Print the location of the active JRE home"),
+                     make_option ("-r", "--runtime",                 action="callback", callback=runtime,                   help="Print the runtime classpathh"),
                      make_option ("-f", "--show-active-vm",          action="callback", callback=show_active_vm,            help="Print the active Virtual Machine"),
                      make_option ("-v", "--java-version",            action="callback", callback=java_version,              help="Print version information for the active VM"),
                      make_option ("-p", "--classpath",               action="callback", callback=classpath,                 help="Print entries in the environment classpath",               type="string", dest="package"),
