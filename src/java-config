@@ -30,49 +30,63 @@ def java(option, opt, value, parser):
         printer._print(manager.get_active_vm().find_exec('java'))
     except PermissionError:
         printer._printError("The java executable was not found in the Java path")
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def javac(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().find_exec('javac'))
     except PermissionError:
         printer._printError("The javac executable was not found in the Java path")
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def jar(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().find_exec('jar'))
     except PermissionError:
         printer._printError("The jar executable was not found in the Java path")
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def jdk_home(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().query('JDK_HOME'))
     except EnvironmentUndefinedError:
         print
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def jre_home(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().query('JRE_HOME'))
     except EnvironmentUndefinedError:
         print
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def runtime(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().query('BOOTCLASSPATH'))
     except EnvironmentUndefinedError:
         print
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 
 def show_active_vm(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().name())
-    except RuntimeError, (ex):
-        printer._printError(str(ex))
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def java_version(option, opt, value, parser):
     try:
         printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
     except PermissionError:
         printer._printError("The java executable was not found in the Java path")
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def classpath(option, opt, value, parser):
     packages = value.split(',')
@@ -89,6 +103,8 @@ def get_env(option, opt, value, parser):
             printer._print(manager.get_active_vm().query(env))
     except EnvironmentUndefinedError:
         print
+    except InvalidVMError:
+        printer._printError("The active vm could not be found")
 
 def exec_cmd(option, opt, value, parser):
     for cmd in iter(value.split(',')):
@@ -100,7 +116,10 @@ def list_available_packages(option, opt, value, parser):
 
 def list_available_vms(option, opt, value, parser):
     vm_list = manager.get_virtual_machines()
-    active = manager.get_active_vm()
+    try:
+        active = manager.get_active_vm()
+    except InvalidVMError:
+        active = None
 
     for i, vm in vm_list.iteritems():
         if vm is active:

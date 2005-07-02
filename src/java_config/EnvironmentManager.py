@@ -85,7 +85,7 @@ class EnvironmentManager:
                 self.active = vm
                 return vm
 
-        raise RuntimeError, "No java vm could be found."
+        raise InvalidVMError
  
     def get_active_vm(self):
         if self.active is None:
