@@ -25,8 +25,9 @@ class EnvFileParser:
             if read.isspace() or read == '' or read.startswith('#'):
                 read = stream.readline()
             else:
-                read = read.split('\n')[0]
-                name, value = read.split('=')
+                index = read.find('=')
+                name = read[:index]
+                value = read [index+1:]
 
                 if value == '':
                     raise InvalidConfigError(file)
