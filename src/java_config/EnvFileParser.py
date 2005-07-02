@@ -20,19 +20,19 @@ class EnvFileParser:
             raise PermissionError
 
         stream = open(file, 'r')
-        read = stream.readline()
-        while read:
-            if read.isspace() or read == '' or read.startswith('#'):
-                read = stream.readline()
+        for line in stream:
+            line = line.strip('\n')
+            if line.isspace() or line == '' or line.startswith('#'):
+                continue
             else:
-                index = read.find('=')
-                name = read[:index]
-                value = read [index+1:]
+                index = line.find('=')
+                name = line[:index]
+                value = line [index+1:]
 
                 if value == '':
                     raise InvalidConfigError(file)
 
-                value = value.strip('\\').strip('\'\"')
+                value = value.strip('\\\'\"')
 
                 while value.find('${') >= 0:
                     item = value[value.find('${')+2:value.find('}')]
@@ -46,7 +46,6 @@ class EnvFileParser:
                 
                 self.config[name] = value
 
-                read = stream.readline()
         stream.close()
 
     def get_config(self):
