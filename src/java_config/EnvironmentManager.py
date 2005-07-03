@@ -54,8 +54,9 @@ class EnvironmentManager:
             if os.path.islink(link):
                 vm_name = os.readlink(link)
                 vm = self.get_vm(vm_name)
-                self.active =  vm
-                return vm
+                if vm:
+                    self.active = vm
+                    return vm
 
         raise InvalidVMError
 
@@ -160,8 +161,7 @@ class EnvironmentManager:
         return  os.path.join(os.environ.get('HOME'), '.gentoo/user-vm')
 
     def system_vm_link(self):
-        return '/usr/share/java-config/vms/system-vm'
-
+        return '/etc/java-config/vms/system-vm'
 
     def clean_classpath(self, env_file):
         if os.path.isfile(env_file):
