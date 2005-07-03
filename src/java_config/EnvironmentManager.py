@@ -30,9 +30,8 @@ class EnvironmentManager:
         if os.path.isdir(self.vms_path):
             count = 1
             for file in os.listdir(self.vms_path):
-                conf = os.path.join(self.vms_path, file)
-
                 if file.startswith("20"):
+                    conf = os.path.join(self.vms_path,file)
                     vm = None
 
                     try:
@@ -51,32 +50,11 @@ class EnvironmentManager:
             self.packages.append(Package(package, basename(dirname(package))))
 
     def load_active_vm(self):
-        environ_path = [
-                                os.path.join(os.environ.get('HOME'), '.gentoo', 'java'),
-                                os.path.join('/', 'etc', 'env.d', '20java')
-                            ]
-
-        java_home = None
-
-        for file in environ_path:
-            try:
-                stream = open(file, 'r')
-            except IOError:
-                continue
-            
-            read = stream.readline()
-            while read:
-                if read.strip().startswith('JAVA_HOME'):
-                    stream.close()
-                    java_home = read.split('=', 1)[-1].strip()
-                    break
-                else:
-                    read = stream.readline()
-            stream.close()        
-
-        for vm in self.get_virtual_machines().itervalues():
-            if vm.query('JAVA_HOME') == java_home:
-                self.active = vm
+        for link in self.vm_links():
+            if os.path.islink(link):
+                vm_name = os.readlink(link)
+                vm = self.get_vm(vm_name)
+                self.active =  vm
                 return vm
 
         raise InvalidVMError
@@ -163,41 +141,27 @@ class EnvironmentManager:
             raise PermissionError
         except EnvironmentUndefinedError:
             raise EnvironmentUndefinedError
+ 
+    def set_user_vm(self, vm):
+        self.set_vm(vm, self.user_vm_link())
 
-    def set_vm(self, vm, sh_env_file, csh_env_file=None):
+    def set_system_vm(self, vm):
+        self.set_vm(vm, self.system_vm_link())
 
-        # Create the SH environment file
-        if sh_env_file is not None:
-            try:
-                stream = open(sh_env_file, 'w')
-            except IOError:
-                raise PermissionError
+    def set_vm(self, vm, target):
+        if os.path.islink(target):
+            os.remove(target)
+        os.symlink(vm.name(),target)
 
-            try:
-                self.create_env_entry(vm, stream, "%s=%s\n")
-            except IOError:
-                stream.close()
-                raise PermissionError
-            except EnvironmentUndefinedError:
-                stream.close();
-                raise EnvironmentUndefinedError
+    def vm_links(self):
+        return [ self.user_vm_link(), self.system_vm_link() ]
 
-            stream.close()
+    def user_vm_link(self):
+        return  os.path.join(os.environ.get('HOME'), '.gentoo/user-vm')
 
-        # Create the CSH environment file
-        if csh_env_file is not None:
-            try:
-                stream = open(csh_env_file, 'w')
-            except IOError:
-                raise PermissionError
+    def system_vm_link(self):
+        return '/usr/share/java-config/vms/system-vm'
 
-            try:
-                self.create_env_entry(vm, stream, "setenv %s %s\n")
-            except IOError:
-                stream.close()
-                raise PermissionError
-
-            stream.close()
 
     def clean_classpath(self, env_file):
         if os.path.isfile(env_file):
