@@ -18,42 +18,36 @@ class EnvironmentManager:
     packages = None
     active = None
 
+    vms_path = '/etc/env.d/java/'
+    pkg_path = '/usr/share/*/package.env'
+
     def __init__(self):
         pass
 
-      
     def load_vms(self):
-        # Collect the Virtual Machines
-        # TODO: MAKE THIS MODULAR!
         self.virtual_machines = {} 
         
-        if os.path.isdir('/etc/env.d/java'):
-            try:
-                count = 1
-                for file in os.listdir('/etc/env.d/java'):
-                    conf = os.path.join('/etc/env.d/java', file)
+        if os.path.isdir(self.vms_path):
+            count = 1
+            for file in os.listdir(self.vms_path):
+                conf = os.path.join(self.vms_path, file)
 
-                    if file.startswith("20"):
-                        vm = None
+                if file.startswith("20"):
+                    vm = None
 
-                        try:
-                            vm = VM(conf)
-                        except InvalidConfigError:
-                            pass
-                        except PermissionError:
-                            pass
+                    try:
+                        vm = VM(conf)
+                    except InvalidConfigError:
+                        pass
+                    except PermissionError:
+                        pass
 
-                        self.virtual_machines[count] = vm
-                        count += 1
-            except OSError:
-                pass
+                    self.virtual_machines[count] = vm
+                    count += 1
          
     def load_packages(self):
-        # Collect the packages
-        # TODO: MAKE THIS MODULAR!
         self.packages = []
-        packages_path = os.path.join('/', 'usr', 'share', '*', 'package.env')
-        for package in iter(glob(packages_path)):
+        for package in iter(glob(pkg_path)):
             self.packages.append(Package(package, basename(dirname(package))))
 
     def load_active_vm(self):
@@ -86,14 +80,14 @@ class EnvironmentManager:
                 return vm
 
         raise InvalidVMError
+
+    def set_active_vm(self, vm):
+        self.active = vm
  
     def get_active_vm(self):
         if self.active is None:
             self.load_active_vm()
         return self.active
-
-    def set_active_vm(self, vm):
-        self.active = vm
 
     def get_virtual_machines(self):
         if self.virtual_machines is None:
