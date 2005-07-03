@@ -141,16 +141,13 @@ def print_environment(option, opt, value, parser):
 
 def set_system_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
-    # TODO: MAKE THIS MODULAR!!
-    config = os.path.join('/', 'etc', 'env.d', '20java')
 
     if os.getuid() is 0:
         if vm.is_jre():
             printer._printWarning("The specified VM is a JRE! It is suggested you use a JDK!")
 
         try:
-            manager.set_vm(vm, config, None)
-            update_env()
+            manager.set_system_vm(vm)
         except PermissionError:
             printer._printError("You do not have enough permissions to set the system VM!")
         except EnvironmentUndefinedError:
@@ -160,24 +157,14 @@ def set_system_vm(option, opt, value, parser):
 
 def set_user_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
-    # TODO: MAKE THIS MODULAR!!
-    config_sh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.sh')
-    config_csh = os.path.join(os.environ.get("HOME"), '.gentoo', 'java.csh')
 
     if os.getuid() is 0:
         printer._printError("The user 'root' should always use the System VM")
     else:
-        # TODO: MAKE THIS MODULAR!!
-        env_dir = os.path.join(os.environ.get("HOME"), '.gentoo')
-
-        if os.path.exists(env_dir) and not os.path.isdir(env_dir):
-            printer._printError(os.path.join(os.environ.get("HOME"), '.gentoo') + " exists, but is not a directory!")
-        else:
-            try:
-                manager.set_vm(vm, config_sh, config_csh)
-                update_env()
-            except PermissionError:
-                printer._printError("You do not have enough permissions to set the VM!")
+        try:
+            manager.set_user_vm(vm)
+        except PermissionError:
+            printer._printError("You do not have enough permissions to set the VM!")
 
 def set_system_classpath(option, opt, value, parser):
     # TODO: MAKE THIS MODULAR!!
@@ -219,7 +206,6 @@ def clean_system_classpath(option, opt, value, parser):
 
     if os.getuid() is 0:
         manager.clean_classpath(env_file)
-
         update_env()
     else:
         printer._printError("You do not have enough permissions to clean the system classpath!")
@@ -245,7 +231,7 @@ def select_vm(option, opt, value, parser):
 
 def update_env():
     printer._print(getoutput("/usr/sbin/env-update"))
-    printer._printAlert("If you want to use java in your current session, you should update\nyour environment by running:\nsource /etc/profile")
+    printer._printAlert("If you want the changes too take effect in your current session, you should update\nyour environment by running:\nsource /etc/profile")
 
 
 

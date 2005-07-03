@@ -22,7 +22,8 @@ setup (
 	data_files = [
 		('man/man1', ["man/java-config.1"]),
 		('share/java-config/config', ["config/jdk-defaults.conf"]),
-		('/etc/java-config/', ["config/jdk.conf"])
+		('/etc/java-config/', ["config/jdk.conf"]),
+		('share/java-config/', ["config/symlink-tools"])
 	]
 )
 
