@@ -150,11 +150,7 @@ def set_system_vm(option, opt, value, parser):
 
         try:
             manager.set_vm(vm, config, None)
-
-            # Update the profile which contains updates
-            printer._print(getoutput("/usr/sbin/env-update"))
-
-            warn_update_env()
+            update_env()
         except PermissionError:
             printer._printError("You do not have enough permissions to set the system VM!")
         except EnvironmentUndefinedError:
@@ -179,7 +175,7 @@ def set_user_vm(option, opt, value, parser):
         else:
             try:
                 manager.set_vm(vm, config_sh, config_csh)
-                warn_update_env()
+                update_env()
             except PermissionError:
                 printer._printError("You do not have enough permissions to set the VM!")
 
@@ -189,8 +185,7 @@ def set_system_classpath(option, opt, value, parser):
 
     if os.getuid() is 0:
         manager.set_classpath(env_file, value.split(","))
-
-        warn_update_env()
+        update_env()
     else:
        printer._printError("You do not have enough permissions to set the system classpath!")
 
@@ -206,9 +201,7 @@ def append_system_classpath(option, opt, value, parser):
 
     if os.getuid() is 0:
         manager.append_classpath(env_file, value.split(','))
-        os.system("env-update")
-
-        warn_update_env()
+        update_env()
     else:
         printer._printError("You do not have enough permissioins to append to the system classpath!")
 
@@ -218,7 +211,7 @@ def append_user_classpath(option, opt, value, parser):
 
     manager.append_classpath(env_file, value.split(','))
 
-    warn_update_env()
+    update_env()
 
 def clean_system_classpath(option, opt, value, parser):
     # TODO: MAKE THIS MODULAR!!
@@ -226,9 +219,8 @@ def clean_system_classpath(option, opt, value, parser):
 
     if os.getuid() is 0:
         manager.clean_classpath(env_file)
-        os.system("env-update")
 
-        warn_update_env()
+        update_env()
     else:
         printer._printError("You do not have enough permissions to clean the system classpath!")
 
@@ -237,7 +229,7 @@ def clean_user_classpath(option, opt, value, parser):
     env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
 
     manager.clean_classpath(env_file)
-    warn_update_env()
+    update_env()
 
 def library(option, opt, value, parser):
     packages = value.split(',')
@@ -251,7 +243,8 @@ def library(option, opt, value, parser):
 def select_vm(option, opt, value, parser):
     manager.set_active_vm(manager.get_vm(value))
 
-def warn_update_env():
+def update_env():
+    printer._print(getoutput("/usr/sbin/env-update"))
     printer._printAlert("If you want to use java in your current session, you should update\nyour environment by running:\nsource /etc/profile")
 
 
