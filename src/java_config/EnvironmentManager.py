@@ -217,19 +217,9 @@ class EnvironmentManager:
         classpath = re.sub(':+', ':', classpath) 
         classpath.strip(':')
 
-        if os.path.isfile(env_file):
-            try:
-                os.remove(env_file)
-            except IOError:
-                raise PermissionError
+        self.clean_classpath(env_file)
 
-        try:
-            stream = open(env_file, 'w')
-        except IOError:
-            raise PermissionError
-
-        stream.write("CLASSPATH=%s\n" % (classpath))
-        stream.close()
+        self_write_classpath(env_file, classpath)
 
     def append_classpath(self, env_file, pkgs):
         classpath = self.query_packages(pkgs, "CLASSPATH")
@@ -255,12 +245,11 @@ class EnvironmentManager:
 
         classpath = oldClasspath + ':' + classpath
 
-        if os.path.isfile(env_file):
-            try:
-                os.remove(env_file)
-            except IOError:
-                raise PermissionError
+        self.clean_classpath(env_file)
 
+        self_write_classpath(env_file, classpath)
+
+    def write_classpath(self, env_file, classpath):
         try:
             stream = open(env_file, 'w')
         except IOError:
