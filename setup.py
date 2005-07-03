@@ -24,7 +24,7 @@ setup (
 		('share/java-config/config', ["config/jdk-defaults.conf"]),
 		('/etc/java-config/', ["config/jdk.conf"]),
 		('/etc/env.d/',["config/20java-config"]),
-		('share/java-config/', ["config/symlink-tools"])
+		('share/java-config/', ["config/symlink-tools", "src/env"])
 	]
 )
 
