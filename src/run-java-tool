@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if [[ -n ${GENTOO_VM} ]]; then
-	execme=/usr/share/java-config/vms/${GENTOO_VM}/
-elif [[ -d ${HOME}/.gentoo/user-vm ]]; then
-	execme=${HOME}/.gentoo/user-vm/
+	vmpath=/usr/share/java-config/vms/${GENTOO_VM}/
+elif [[ -h ${HOME}/.gentoo/user-vm ]]; then
+	vmpath=${HOME}/.gentoo/user-vm/
 else
-	execme=/usr/share/java-config/vms/system-vm/
+	vmpath=/usr/share/java-config/vms/system-vm/
 fi
 
-exec ${execme}/bin/$(basename $0) "${@}"
+exec ${vmpath}/bin/$(basename $0) "${@}"
