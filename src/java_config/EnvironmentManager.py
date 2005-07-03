@@ -214,17 +214,15 @@ class EnvironmentManager:
 
     def set_classpath(self, env_file, pkgs):
         classpath = self.query_packages(pkgs, "CLASSPATH")
-        classpath = re.sub(':+', ':', classpath) 
-        classpath.strip(':')
+        classpath = re.sub(':+', ':', ':'.join(classpath)).strip(':')
 
         self.clean_classpath(env_file)
 
-        self_write_classpath(env_file, classpath)
+        self.write_classpath(env_file, classpath)
 
     def append_classpath(self, env_file, pkgs):
         classpath = self.query_packages(pkgs, "CLASSPATH")
-        classpath = re.sub(':+', ':', classpath) 
-        classpath.strip(':')
+        classpath = re.sub(':+', ':', ':'.join(classpath)).strip(':')
 
         oldClasspath = ''
         if os.path.isfile(env_file):
@@ -247,7 +245,7 @@ class EnvironmentManager:
 
         self.clean_classpath(env_file)
 
-        self_write_classpath(env_file, classpath)
+        self.write_classpath(env_file, classpath)
 
     def write_classpath(self, env_file, classpath):
         try:
