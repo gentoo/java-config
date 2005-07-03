@@ -47,7 +47,7 @@ class EnvironmentManager:
          
     def load_packages(self):
         self.packages = []
-        for package in iter(glob(pkg_path)):
+        for package in iter(glob(self.pkg_path)):
             self.packages.append(Package(package, basename(dirname(package))))
 
     def load_active_vm(self):
