@@ -4,7 +4,7 @@
 
 # Based on kernel.eselect
 
-DESCRIPTION="Manage the java system-vm"
+DESCRIPTION="Manage the java system and user vm"
 MAINTAINER="axxo@gentoo.org"
 SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
@@ -27,19 +27,18 @@ sym_to_vm() {
 ### show action ###
 
 describe_show() {
-	echo "Show the current system-vm"
+	echo "Show the current vm"
 }
 
 do_show() {
-	my_show ${VM_SYSTEM} 'system-vm'
-}
-
-describe_show-user() {
-	echo "Show the current user-vm"
-}
-
-do_show-user() {
-	my_show ${VM_USER} 'user-vm'
+	if [[ ${1} == "system" ]]; then
+		my_show ${VM_SYSTEM} 'system-vm'
+	elif [[ ${1} == "user" ]]; then
+		my_show ${VM_USER} 'user-vm'
+	else
+		my_show ${VM_SYSTEM} 'system-vm'
+		my_show ${VM_USER} 'user-vm'
+	fi
 }
 
 my_show() {
@@ -88,34 +87,34 @@ describe_set() {
 }
 
 do_set() {
-	my_set ${VM_SYSTEM} ${1}
-}
-
-describe_set-user() {
-	echo "Set a new user vm"
-}
-
-do_set-user() {
-	my_set ${VM_USER} ${1} 
+	if [[ ${#} != 2 ]]; then
+		die -q "Usage [user|system] [vm]"
+		
+	elif [[ ${1} == "system" ]]; then
+		if [[ $(id -u) == 0 ]]; then
+			my_set ${VM_SYSTEM} ${2}
+		else
+			die -q "Sorry only root can set system"
+		fi
+	elif [[ ${1} == "user" ]]; then
+		my_set ${VM_USER} ${2}
+	fi
 }
 
 my_set() {
 	local target=${2} symlink=${1}
 	if [[ -z ${target} ]] ; then
-		# no parameter
 		die -q "You didn't tell me what to set the symlink to"
 
 	elif [[ -L "${symlink}" ]] ; then
 		set_symlink "${target}" "${symlink}"  || die -q "Couldn't set a new symlink"
 
 	elif [[ -e "${symlink}" ]] ; then
-		# we have something strange
 		die -q "Sorry, ${symlink}"
 
 	else
 		set_symlink "${target}" "${symlink}"|| die -q "Couldn't set a new symlink"
 	fi
-
 }
 
 set_symlink() {
