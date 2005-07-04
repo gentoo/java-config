@@ -91,7 +91,7 @@ do_set() {
 		die -q "Usage [user|system] [vm]"
 		
 	elif [[ ${1} == "system" ]]; then
-		if [[ $(id -u) == 0 ]]; then
+		if [[ ${EUID} == 0 ]]; then
 			my_set ${VM_SYSTEM} ${2}
 		else
 			die -q "Sorry only root can set system"
