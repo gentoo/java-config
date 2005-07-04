@@ -150,9 +150,14 @@ class EnvironmentManager:
         self.set_vm(vm, self.system_vm_link())
 
     def set_vm(self, vm, target):
+        sym_dir = dirname(target)
+        if not os.path.isdir(sym_dir):
+            os.makedirs(sym_dir)
+
         if os.path.islink(target):
             os.remove(target)
-        os.symlink(vm.name(),target)
+
+        os.symlink('/etc/java-config/vms/'+vm.name(),target)
 
     def vm_links(self):
         return [ self.user_vm_link(), self.system_vm_link() ]
