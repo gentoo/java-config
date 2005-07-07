@@ -4,13 +4,13 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-import EnvFileParser
+from FileParser import *
 
 class Package:
     def __init__(self, file, name):
         self._file = file
         self._name = name
-        self._config = EnvFileParser.EnvFileParser(file).get_config()
+        self._config = EnvFileParser(file).get_config()
 
     def name(self):
         return self._name

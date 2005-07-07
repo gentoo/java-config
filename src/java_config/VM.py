@@ -5,7 +5,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from EnvFileParser import EnvFileParser
+from FileParser import *
 import os
 
 from Errors import *

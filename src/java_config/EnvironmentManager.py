@@ -4,8 +4,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from Package import Package
-from VM import VM
+from Package import *
+from VM import *
 from Errors import *
 
 from os.path import basename, dirname
@@ -52,7 +52,7 @@ class EnvironmentManager:
     def load_active_vm(self):
         for link in self.vm_links():
             if os.path.islink(link):
-                vm_name = os.readlink(link)
+                vm_name = basename(os.readlink(link))
                 vm = self.get_vm(vm_name)
                 if vm:
                     self.active = vm
