@@ -126,11 +126,10 @@ class VersionManager:
         return None
             
 
-vator=VersionManager()
-for i in [">=virtual/jdk-1.3",">=virtual/jdk-1.4",">=virtual/jdk-1.5","=virtual/jdk-1.3 =virtual/jdk-1.4","=virtual/jdk-1.5*","=virtual/jdk-1.4*"]:
-    print i
-    print vator.get_vm(i)
-    print
-
+#vator=VersionManager()
+#for i in [">=virtual/jdk-1.3",">=virtual/jdk-1.4",">=virtual/jdk-1.5","=virtual/jdk-1.3 =virtual/jdk-1.4","=virtual/jdk-1.5*","=virtual/jdk-1.4*"]:
+#    print i
+#    print vator.get_vm(i)
+#    print
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
