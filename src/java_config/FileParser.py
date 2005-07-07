@@ -49,9 +49,8 @@ class FileParser:
         pass
 
 class EnvFileParser(FileParser):
-    config = {}
-    
     def __init__(self, file):
+        self.config = {}
         self.parse(file)
 
     def pair(self, key, value):
@@ -61,13 +60,12 @@ class EnvFileParser(FileParser):
         return self.config.copy()
 
 class PrefsFileParser(FileParser):
-    config = []
-    
     def __init__(self, file):
+        self.config = []
         self.parse(file)
 
     def pair(self, key, value):
-        self.config.append([key,value])
+        self.config.append([key,value.split(' ')])
 
     def get_config(self):
         return self.config
