@@ -8,7 +8,7 @@ import re
 from string import upper
 
 import VM, Errors 
-from java_config.PrefsFileParser import *
+from java_config.FileParser import *
 from java_config.EnvironmentManager import *
 import os, glob, re
 import os.path
@@ -17,11 +17,25 @@ import os.path
 # Does not handle deps correctly in any way
 # Does however do the right thing for the only types of deps we should see
 # (i hope)
-class versionator:
+class VersionManager:
+    #atom_parser = re.compile(r"(?P<equality>[~!<>=]*)virtual/(?P<environment>jre|jdk)-(?P<version>[0-9\.]+)")
+    atom_parser = re.compile(r"(?P<equality>[!<>=]+)virtual/(?P<environment>jre|jdk)-(?P<version>[0-9\.]+)")
+    pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
+    _prefs = None
+
     def __init__(self):
-        #self.atom_parser = re.compile(r"(?P<equality>[~!<>=]*)virtual/(?P<environment>jre|jdk)-(?P<version>[0-9\.]+)")
-        self.atom_parser = re.compile(r"(?P<equality>[!<>=]+)virtual/(?P<environment>jre|jdk)-(?P<version>[0-9\.]+)")
-    
+        pass
+
+    def get_prefs(self):
+        if self._prefs:
+            return self._prefs
+        else:
+            self._prefs = []
+            for file in self.pref_files:
+                if os.path.exists(file):
+                    self._prefs += PrefsFileParser(file).get_config()
+            return self._prefs
+
     def parse_depend(self, atoms):
         matched_atoms = []
 
@@ -81,7 +95,7 @@ class versionator:
         if len(matched_atoms) == 0:
             return None
 
-        prefs = PreferenceManager().get()
+        prefs = self.get_prefs()
         low = None
 
         for atom in matched_atoms:
@@ -112,22 +126,7 @@ class versionator:
         return None
             
 
-class PreferenceManager:
-    def __init__(self):
-        self.pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
-        self.load()
-
-    def load(self):
-        self.prefs = []
-        for file in self.pref_files:
-            if os.path.exists(file):
-                self.prefs = self.prefs + PrefsFile(file).get_prefs()
-
-    def get(self):
-        return self.prefs
-    
-
-#vator=versionator()
+#vator=VersionManager()
 #print vator.get_vm(">=virtual/jdk-1.3")
 #print vator.get_vm(">=virtual/jdk-1.4")
 #print vator.get_vm(">=virtual/jdk-1.5")

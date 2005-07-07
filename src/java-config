@@ -9,7 +9,6 @@ from java_config import __version__
 from java_config.OutputFormatter import OutputFormatter
 from java_config.EnvironmentManager import EnvironmentManager
 from java_config.Errors import *
-from java_config.versionator import *
 
 import os
 import sys

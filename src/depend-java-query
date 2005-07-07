@@ -9,7 +9,7 @@ from java_config import __version__
 from java_config.OutputFormatter import OutputFormatter
 from java_config.EnvironmentManager import EnvironmentManager
 from java_config.Errors import *
-from java_config.versionator import *
+from java_config.VersionManager import *
 
 import os
 import sys
@@ -27,8 +27,7 @@ def nocolor(option, opt, value, parser):
 
 def is_sufficient(option, opt, value, parser):
     try:
-        vator = versionator()
-        if vator.version_satisfies(value,manager.get_active_vm()):
+        if verman.version_satisfies(value,manager.get_active_vm()):
             printer._print("Active vm satifies the depend string")
             sys.exit(0)
         else:
@@ -40,18 +39,17 @@ def is_sufficient(option, opt, value, parser):
         sys.exit(1)
 
 def get_vm(option, opt, value, parser):
-    vator = versionator()
-    printer._print(vator.get_vm(value))
+    printer._print(verman.get_vm(value))
 
 def get_lowest(option, opt, value, parse):
-    vator = versionator()
-    printer._print(vator.get_lowest(value))
+    printer._print(verman.get_lowest(value))
 
 
 if __name__ == '__main__':
-    global printer, manager
+    global printer, manager, verman
     printer = OutputFormatter(True, True)
     manager = EnvironmentManager()
+    verman = VersionManager()
 
     usage =  "depend-java-query [options]\n\n"
     usage += "Java Dep Query Utility Version " + str(__version__) + "\n"

@@ -7,13 +7,9 @@
 from Errors import *
 import os
 
-class EnvFileParser:
-    config = {}
-    
-    def __init__(self, file):
-        self.config.clear()
 
-        # Create the config from the file
+class FileParser:
+    def parse(self, file):
         if not os.path.isfile(file):
             raise InvalidConfigError(file)
         if not os.access(file, os.R_OK):
@@ -44,11 +40,37 @@ class EnvFileParser:
                         
                     value = value.replace('${%s}' % item, val)
                 
-                self.config[name] = value
+                self.pair(name,value)
 
         stream.close()
+
+
+    def pair(self, key, value):
+        pass
+
+class EnvFileParser(FileParser):
+    config = {}
+    
+    def __init__(self, file):
+        self.parse(file)
+
+    def pair(self, key, value):
+        self.config[key] = value
 
     def get_config(self):
         return self.config.copy()
 
+class PrefsFileParser(FileParser):
+    config = []
+    
+    def __init__(self, file):
+        self.parse(file)
+
+    def pair(self, key, value):
+        self.config.append([key,value])
+
+    def get_config(self):
+        return self.config
+
+    
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
