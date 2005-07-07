@@ -14,4 +14,5 @@ if [[ -x ${bin} ]]; then
 	exec ${bin} "${@}"
 else
 	echo "Want too run ${bin} but it does not exist or is not executable" > /dev/stderr
+	exit 1
 fi
