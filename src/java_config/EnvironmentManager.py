@@ -95,7 +95,7 @@ class EnvironmentManager:
     def query_packages(self, packages, query):
         results = []
         all_pkg = self.get_packages()
-        for package in packages:
+        for package in packages[:]:
             if all_pkg.has_key(package):
                 packages.remove(package)
                 value = all_pkg[package].query(query)
