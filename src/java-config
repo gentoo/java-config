@@ -141,29 +141,35 @@ def print_environment(option, opt, value, parser):
 def set_system_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
 
-    if os.getuid() is 0:
-        if vm.is_jre():
-            printer._printWarning("The specified VM is a JRE! It is suggested you use a JDK!")
-
-        try:
-            manager.set_system_vm(vm)
-        except PermissionError:
-            printer._printError("You do not have enough permissions to set the system VM!")
-        except EnvironmentUndefinedError:
-            printer._printError("The selected VM is missing critical environment variables.")
+    if not vm:
+        printer._printError("Could not find a vm matching: %s" % value)
     else:
-        printer._printError("You do not have enough permissions to set the system VM!")
+        if os.getuid() is 0:
+            if vm.is_jre():
+                printer._printWarning("The specified VM is a JRE! It is suggested you use a JDK!")
+
+            try:
+                manager.set_system_vm(vm)
+            except PermissionError:
+                printer._printError("You do not have enough permissions to set the system VM!")
+            except EnvironmentUndefinedError:
+                printer._printError("The selected VM is missing critical environment variables.")
+        else:
+            printer._printError("You do not have enough permissions to set the system VM!")
 
 def set_user_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
 
-    if os.getuid() is 0:
-        printer._printError("The user 'root' should always use the System VM")
+    if not vm:
+        printer._printError("Could not find a vm matching: %s" % value)
     else:
-        try:
-            manager.set_user_vm(vm)
-        except PermissionError:
-            printer._printError("You do not have enough permissions to set the VM!")
+        if os.getuid() is 0:
+            printer._printError("The user 'root' should always use the System VM")
+        else:
+            try:
+                manager.set_user_vm(vm)
+            except PermissionError:
+                printer._printError("You do not have enough permissions to set the VM!")
 
 def set_system_classpath(option, opt, value, parser):
     # TODO: MAKE THIS MODULAR!!
