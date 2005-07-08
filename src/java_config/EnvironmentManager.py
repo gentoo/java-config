@@ -28,7 +28,9 @@ class EnvironmentManager:
         
         if os.path.isdir(self.vms_path):
             count = 1
-            for file in os.listdir(self.vms_path):
+            filelist = os.listdir(self.vms_path)
+            filelist.sort()
+            for file in filelist:
                 if file.startswith("20"):
                     conf = os.path.join(self.vms_path,file)
                     vm = None
