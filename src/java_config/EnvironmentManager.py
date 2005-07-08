@@ -12,7 +12,6 @@ from os.path import basename, dirname
 from glob import glob
 import os, re
 
-
 class EnvironmentManager:
     virtual_machines = None
     packages = None
@@ -45,9 +44,10 @@ class EnvironmentManager:
                     count += 1
          
     def load_packages(self):
-        self.packages = []
+        self.packages = {}
         for package in iter(glob(self.pkg_path)):
-            self.packages.append(Package(package, basename(dirname(package))))
+            pkg = Package(package, basename(dirname(package)))
+            self.packages[pkg.name()] = pkg
 
     def load_active_vm(self):
         for link in self.vm_links():
@@ -80,6 +80,13 @@ class EnvironmentManager:
                 found.append(vm)
         return found
 
+    def get_package(self, pkgname):
+        all_pkg = self.get_packages()
+        if all_pkg.has_key(pkgname):
+            return all_pkg[pkgname]
+        else:
+            return  None
+    
     def get_packages(self):
         if self.packages is None:
             self.load_packages()
@@ -87,13 +94,13 @@ class EnvironmentManager:
 
     def query_packages(self, packages, query):
         results = []
-
-        for package in iter(self.get_packages()):
-            if package.name() in packages:
-                value = package.query(query)
+        all_pkg = self.get_packages()
+        for package in packages:
+            if all_pkg.has_key(package):
+                packages.remove(package)
+                value = all_pkg[package].query(query)
                 if value:
                     results.append(value)
-                packages.remove(package.name())
 
         return results
 

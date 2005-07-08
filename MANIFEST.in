@@ -1,4 +1,5 @@
 recursive-include man/ *
 recursive-include config/ *
 include src/env
+include src/*.bash
 

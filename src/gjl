@@ -1,0 +1,145 @@
+#!/usr/bin/python -E
+# -*- coding: UTF-8 -*-
+
+# Copyright 2004-2005 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+from java_config import __version__
+from java_config.OutputFormatter import *
+from java_config.EnvironmentManager import *
+from java_config.VersionManager import *
+
+from commands import getoutput
+from string import join
+from sets import Set
+from optparse import OptionParser, make_option, OptionValueError
+from os.path import basename
+
+# Needs some cleanup!
+
+def get_needed_packages(package):
+    unresolved = Set()
+    unresolved.add(package)
+
+    resolved = Set()
+
+    while len(unresolved) > 0:
+        pkg = unresolved.pop()
+        resolved.add(pkg)
+
+        for dep in pkg.deps():
+            p = manager.get_package(dep[-1])
+
+            if p not in resolved:
+                unresolved.add(p)
+
+    return resolved
+
+def get_needed_target(pkg):
+    highest_target = None
+    for pkg in get_needed_packages(pkg):
+        target = pkg.query("TARGET")
+        if highest_target:
+            if target > highest_target:
+                highest_target = target
+        else:
+            highest_target = target
+    
+    return highest_target
+
+
+def add_classpath(pkg, dep, classpath): 
+    if not dep or len(dep) == 1:
+        for cp in pkg.classpath().split(':'):
+            classpath.add(cp)
+    else:
+        for cp in pkg.classpath().split(':'):
+            if basename(cp) == dep[0]:
+                classpath.add(cp)
+
+def add_library(pkg, library): 
+    libpaths = pkg.query("LIBRARY_PATH")
+    if libpaths:
+        for libpath in libpaths.split(':'):
+            library.add(libpath)
+
+def get_pkg_args(package):
+    classpath = Set()
+    library = Set()
+
+    unresolved = Set()
+    resolved = Set()
+
+    add_library(package, library)
+    add_classpath(package,None, classpath)
+    
+    unresolved.add(package)
+    while len(unresolved) > 0:
+        pkg = unresolved.pop()
+        resolved.add(pkg)
+        
+        add_library(pkg, library)
+
+        for dep in pkg.deps():
+            p = manager.get_package(dep[-1]) 
+
+            if p not in resolved:
+                unresolved.add(p)
+
+            add_classpath(p, dep, classpath)
+
+    return ':'.join(classpath), ':'.join(library)
+
+def abort(msg):
+    printer._printError(msg)
+    sys.exit(1)
+
+
+# Options:
+def get_vm(option, opt, value, parser):
+    pkg = manager.get_package(value)
+    if not pkg:
+        abort("Invalid package")
+
+    target = get_needed_target(pkg)
+    vm = verman.get_vm(">=virtual/jre-%s" % (target))
+    printer._print(vm.name())
+     
+def get_args(option, opt, value, parser):
+    pkg = manager.get_package(value)
+    if not pkg:
+        abort("Invalid package")
+    args=""
+    
+    classpath, library = get_pkg_args(pkg)
+    if classpath:
+        args += '-classpath %s' % (classpath)
+
+    if library:
+        args += '-Djava.library.path="%s"' % (library)
+
+    if args:
+        printer._print(args)
+
+if __name__ == '__main__':
+    global printer, manager, verman
+    printer = OutputFormatter(True, True)
+    manager = EnvironmentManager()
+    verman = VersionManager()
+
+    usage =  "%prog [options]\n\n"
+    usage += "Java Utility Version " + str(__version__) + "\n"
+    usage += "Copyright 2004-2005 Gentoo Foundation\n"
+    usage += "Distributed under the terms of the GNU General Public License v2\n"
+    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
+
+    options_list = [
+                     make_option ("-v", "--get-vm",   action="callback", callback=get_vm,   help="Get prefered vm for this package",  type="string",dest="package"),
+                     make_option ("-a", "--get-args", action="callback", callback=get_args, help="Get args for running this package", type="string",dest="package")
+                   ]
+
+    parser = OptionParser(usage, options_list)
+    (options, args) = parser.parse_args()
+
+# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

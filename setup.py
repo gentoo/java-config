@@ -18,13 +18,14 @@ setup (
 	url = 'http://www.gentoo.org',
 	packages = ['java_config'],
 	package_dir = { 'java_config' : 'src/java_config' },
-	scripts = ['src/java-config','src/depend-java-query','src/run-java-tool'],
+	scripts = ['src/java-config','src/depend-java-query','src/run-java-tool', 'src/gjl'],
 	data_files = [
-		('man/man1', ["man/java-config.1"]),
-		('share/java-config/config', ["config/jdk-defaults.conf"]),
-		('/etc/java-config/', ["config/jdk.conf","config/symlink-tools"]),
-		('/etc/java-config/vms', ["src/env"]),
-		('/etc/env.d/',["config/20java-config"]),
+		('man/man1', ['man/java-config.1']),
+		('share/java-config/config', ['config/jdk-defaults.conf']),
+		('share/java-config/launcher', ['src/launcher.bash']),
+		('/etc/java-config/', ['config/jdk.conf','config/symlink-tools']),
+		('/etc/java-config/vms', ['src/env']),
+		('/etc/env.d/',['config/20java-config']),
 	]
 )
 

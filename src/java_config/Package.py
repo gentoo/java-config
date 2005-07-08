@@ -12,6 +12,9 @@ class Package:
         self._name = name
         self._config = EnvFileParser(file).get_config()
 
+    def __str__(self):
+        return self.name()
+
     def name(self):
         return self._name
 
@@ -35,5 +38,12 @@ class Package:
             return self._config[var]
         else:
             return None
+
+    def deps(self):
+        depstr = self.query("DEPEND")
+        if depstr:
+            return [dep.split("@") for dep in depstr.split(":")]
+        else:
+            return []
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
