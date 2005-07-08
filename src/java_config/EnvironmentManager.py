@@ -10,6 +10,7 @@ from Errors import *
 
 from os.path import basename, dirname
 from glob import glob
+from sets import Set
 import os, re
 
 class EnvironmentManager:
@@ -177,55 +178,73 @@ class EnvironmentManager:
     def system_vm_link(self):
         return '/etc/java-config/vms/system-vm'
 
-    def clean_classpath(self, env_file):
-        if os.path.isfile(env_file):
-            try:
-                os.remove(env_file)
-            except IOError:
-                raise PermissionError
+    def clean_classpath(self, targets):
+        for target in targets:
+            if os.path.isfile(target['file']):
+                try:
+                    os.remove(target['file'])
+                except IOError:
+                    raise PermissionError
 
-    def set_classpath(self, env_file, pkgs):
-        classpath = self.query_packages(pkgs, "CLASSPATH")
-        classpath = re.sub(':+', ':', ':'.join(classpath)).strip(':')
+    def build_classpath(self, pkgs):
+        classpath = Set()
+        for lcp in self.query_packages(pkgs, "CLASSPATH"):
+            for cp in lcp.split(':'):
+                classpath.add(cp)
+        return classpath
 
-        self.clean_classpath(env_file)
+    def set_classpath(self, targets, pkgs):
+        classpath = self.build_classpath(pkgs)
 
-        self.write_classpath(env_file, classpath)
+        if classpath:
+            self.clean_classpath(targets)
 
-    def append_classpath(self, env_file, pkgs):
-        classpath = self.query_packages(pkgs, "CLASSPATH")
-        classpath = re.sub(':+', ':', ':'.join(classpath)).strip(':')
+            self.write_classpath(targets, classpath)
 
+    def get_old_classpath(self, target):
         oldClasspath = ''
-        if os.path.isfile(env_file):
+        if os.path.isfile(target['file']):
             try:
-                stream = open(env_file, 'r')
+                stream = open(target['file'], 'r')
             except IOError:
                 raise PermissionError
 
-            read = stream.readline()
-            while read:
-                if read.strip().startswith('CLASSPATH'):
-                    stream.close()
-                    oldClasspath = read.split('=', 1)[-1].strip()
-                    break
-                else:
-                    read = stream.readline()
+            for line in stream:
+                line = line.strip(' \n')
+                if line.find('CLASSPATH') != -1:
+                    try:
+                        oldClasspath = line.split(target['format'].split('%s')[-2])[-1].strip()
+                    except:
+                        pass
             stream.close()
 
-        classpath = oldClasspath + ':' + classpath
+        return oldClasspath
 
-        self.clean_classpath(env_file)
+    def append_classpath(self, targets, pkgs):
+        classpath = self.build_classpath(pkgs)
 
-        self.write_classpath(env_file, classpath)
+        if classpath:
+            oldClasspath = None
+            for target in targets:
+                for cp in self.get_old_classpath(target).split(':'):
+                    classpath.add(cp)
+    
+            self.clean_classpath(targets)
 
-    def write_classpath(self, env_file, classpath):
-        try:
-            stream = open(env_file, 'w')
-        except IOError:
-            raise PermissionError
+            self.write_classpath(targets, classpath)
 
-        stream.write("CLASSPATH=%s\n" % (classpath))
-        stream.close()
+    def write_classpath(self, targets, classpath):
+        for target in targets:
+            dir = dirname(target['file'])
+            if not os.path.isdir(dir):
+                os.makedirs(dir)
+
+            try:
+                stream = open(target['file'], 'w')
+            except IOError:
+                raise PermissionError
+    
+            stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
+            stream.close()
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

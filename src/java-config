@@ -89,7 +89,7 @@ def java_version(option, opt, value, parser):
 
 def classpath(option, opt, value, parser):
     packages = value.split(',')
-    classpath = manager.query_packages(packages, "CLASSPATH")
+    classpath = manager.build_classpath(packages)
 
     for package in packages:
         printer._printError("Package %s was not found!" % package)
@@ -129,14 +129,12 @@ def list_available_vms(option, opt, value, parser):
             else:
                 printer._print('%i) %s [%s] (%s)' % (i, vm.query('VERSION'), vm.name(), vm.filename()) + '%$')
 
-# TODO: FIX THIS!!
-# Should be able to print in CSH or SH compatible format
 def print_environment(option, opt, value, parser):
-    # Possibly Unneeded
-    """
-    config = manager.get_vm(value).get_config()
-    """
-    manager.create_env_entry(manager.get_vm(value), printer, "%s=%s")
+    vm = manager.get_vm(value) 
+    if vm:
+        manager.create_env_entry(vm, printer, "%s=%s")
+    else:
+        printer._printError("Could not find a vm matching: %s" % value)
 
 def set_system_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
@@ -171,57 +169,69 @@ def set_user_vm(option, opt, value, parser):
             except PermissionError:
                 printer._printError("You do not have enough permissions to set the VM!")
 
-def set_system_classpath(option, opt, value, parser):
-    # TODO: MAKE THIS MODULAR!!
-    env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
+def system_classpath_target():
+    # TODO: MAKE THIS MODULAR!! (compnerd)
+    return [{'file': '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
 
+def user_classpath_target():
+    # TODO: MAKE THIS MODULAR!! (compnerd)
+    return [
+            {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath'),     'format': 'export %s=%s\n' },
+            {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
+        ]
+
+def set_system_classpath(option, opt, value, parser):
     if os.getuid() is 0:
-        manager.set_classpath(env_file, value.split(","))
+        pkgs = value.split(',')
+        manager.set_classpath(system_classpath_target(), pkgs)
+        
+        for package in pkgs:
+            printer._printError("Package %s was not found!" % package)
+            
         update_env()
     else:
        printer._printError("You do not have enough permissions to set the system classpath!")
 
 def set_user_classpath(option, opt, value, parser):
-    # TODO: MAKE THIS MODULAR!!
-    env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+    pkgs = value.split(',')
+    manager.set_classpath(user_classpath_target(), pkgs)
 
-    manager.set_classpath(env_file, value.split(","))
+    for package in pkgs:
+        printer._printError("Package %s was not found!" % package)
+
+    user_update_env()
 
 def append_system_classpath(option, opt, value, parser):
-    # TODO: MAKE THIS MODULAR!!
-    env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
-
     if os.getuid() is 0:
-        manager.append_classpath(env_file, value.split(','))
+        pkgs = value.split(',')
+        manager.append_classpath(system_classpath_target(), pkgs)
+
+        for package in pkgs:
+            printer._printError("Package %s was not found!" % package)
+
         update_env()
     else:
         printer._printError("You do not have enough permissioins to append to the system classpath!")
 
 def append_user_classpath(option, opt, value, parser):
-    # TODO: MAKE THIS MODUlAR!!
-    env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
+    pkgs = value.split(',')
+    manager.append_classpath(user_classpath_target(),  pkgs)
 
-    manager.append_classpath(env_file, value.split(','))
+    for package in pkgs:
+        printer._printError("Package %s was not found!" % package)
 
-    update_env()
+    user_update_env()
 
 def clean_system_classpath(option, opt, value, parser):
-    # TODO: MAKE THIS MODULAR!!
-    env_file = os.path.join('/', 'etc', 'env.d', '21java-classpath')
-
     if os.getuid() is 0:
-        manager.clean_classpath(env_file)
+        manager.clean_classpath(system_classpath_target())
         update_env()
     else:
         printer._printError("You do not have enough permissions to clean the system classpath!")
 
 def clean_user_classpath(option, opt, value, parser):
-    # TODO: MAKE THIS MODULAR!!
-    env_file = os.path.join(os.environ.get("HOME"), '.gentoo', 'java-classpath')
-
-    manager.clean_classpath(env_file)
-    update_env()
-
+    manager.clean_classpath(user_classpath_target())
+    
 def library(option, opt, value, parser):
     packages = value.split(',')
     library = manager.query_packages(packages, "LIBRARY_PATH")
@@ -236,9 +246,12 @@ def select_vm(option, opt, value, parser):
 
 def update_env():
     printer._print(getoutput("/usr/sbin/env-update"))
-    printer._printAlert("If you want the changes too take effect in your current session, you should update\nyour environment by running:\nsource /etc/profile")
+    printer._printAlert("If you want the changes too take effect in your current session, you should update\n\
+            your environment by running: source /etc/profile")
 
-
+def user_update_env():
+    printer._printAlert("Environment files in ~/.gentoo/ have been updated. You should source these from your shell's profile.\n\
+            If you want the changes too take effect in your current sessiosn, you should resource these files")
 
 if __name__ == '__main__':
     global printer, manager
@@ -271,10 +284,10 @@ if __name__ == '__main__':
                      make_option ("-S", "--set-system-vm",           action="callback", callback=set_system_vm,             help="Set the default Java VM for the system",                   type="string", dest="vm"),
                      make_option ("-s", "--set-user-vm",             action="callback", callback=set_user_vm,               help="Set the default Java VM for the user",                     type="string", dest="vm"),
                      make_option ("-A", "--set-system-classpath",    action="callback", callback=set_system_classpath,      help="Set the system classpath to include the libraries",        type="string", dest="package(s)" ),
-                     make_option ("-a", "--set-user-classpath",      action="callback", callback=set_user_classpath,        help="Set the user classpath to include the libraries",          type="string", dest="package(s)"),
                      make_option ("-B", "--append-system-classpath", action="callback", callback=append_system_classpath,   help="Append the libraries to the system classpath",             type="string", dest="package(s)"),
-                     make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,     help="Append the libraries to the user classpath",               type="string", dest="package(s)"),
                      make_option ("-X", "--clean-system-classpath",  action="callback", callback=clean_system_classpath,    help="Clean the current system classpath"),
+                     make_option ("-a", "--set-user-classpath",      action="callback", callback=set_user_classpath,        help="Set the user classpath to include the libraries",          type="string", dest="package(s)"),
+                     make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,     help="Append the libraries to the user classpath",               type="string", dest="package(s)"),
                      make_option ("-x", "--clean-user-classpath",    action="callback", callback=clean_user_classpath,      help="Clean the current user classpath"),
                      make_option (""  , "--select-vm",               action="callback", callback=select_vm,                 help="Use this vm when returning information not the active vm", type="string", dest="vm"),
                      make_option ("-i", "--library",                 action="callback", callback=library,                   help="Print entries in the package library")
