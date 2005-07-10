@@ -6,9 +6,10 @@
 # $Header: $
 
 from FileParser import *
-import os
-
 from Errors import *
+import os
+from string import upper
+
 
 class VM:
 
@@ -46,7 +47,7 @@ class VM:
         return self.is_type("JDK")
 
     def is_type(self, type):
-        if self.query('PROVIDES_TYPE') == type:
+        if upper(self.query('PROVIDES_TYPE')) == upper(type):
             return True
         else:
             return False

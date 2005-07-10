@@ -18,8 +18,8 @@ import os.path
 # Does however do the right thing for the only types of deps we should see
 # (i hope)
 class VersionManager:
-    #atom_parser = re.compile(r"(?P<equality>[~!<>=]*)virtual/(?P<environment>jre|jdk)-(?P<version>[0-9\.]+)")
-    atom_parser = re.compile(r"(?P<equality>[!<>=]+)virtual/(?P<environment>jre|jdk)-(?P<version>[0-9\.]+)")
+    #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
+    atom_parser = re.compile(r"([!<>=]+)virtual/(jre|jdk)-([0-9\.]+)")
     pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
     _prefs = None
 
@@ -43,7 +43,7 @@ class VersionManager:
 
         if len(matches) >  0:
             for match in matches:
-                matched_atoms.append({'equality':match[0], 'item':upper(match[1]), 'version':match[2]})
+                matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
 
         return matched_atoms
 
@@ -61,13 +61,11 @@ class VersionManager:
         return False
 
     def version_satisfies(self, atoms, vm):
-        item = upper(vm.type())
         version = vm.version()
         matched_atoms = self.parse_depend(atoms)
 
         for atom in matched_atoms:
-            #print "%s %s %s %s %s" % (item, version, atom['equality'], atom['item'], atom['version'])
-            if atom['item'] == item:
+            if vm.is_type(atom['type']):
                 if self.matches(version, atom['version'], atom['equality']):
                     return True
         return False
@@ -97,10 +95,11 @@ class VersionManager:
 
         prefs = self.get_prefs()
         low = None
-
+        
         for atom in matched_atoms:
             version = atom['version']
             eq = atom['equality']
+            type = atom['type']
 
             if low is None:
                 low = atom
@@ -111,7 +110,7 @@ class VersionManager:
                 if pref[0] == version or pref[0] == "*":
                     for vm in pref[1]:
                         gvm = self.find_vm(vm, atom)
-                        if gvm is not None:
+                        if gvm:
                             return gvm
 
         return self.find_vm("", low)
@@ -121,7 +120,7 @@ class VersionManager:
         vm_list.sort()
         vm_list.reverse()
         for vm in vm_list:
-            if self.matches(vm.version(), atom['version'], atom['equality']):
+            if vm.is_type(atom['type']) and self.matches(vm.version(), atom['version'], atom['equality']):
                  return vm
         return None
             
