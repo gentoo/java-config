@@ -94,9 +94,7 @@ def classpath(option, opt, value, parser):
     for package in packages:
         printer._printError("Package %s was not found!" % package)
 
-    cp = ':'.join(classpath)
-    if cp:
-        printer._print(cp)
+    printer._print(':'.join(classpath))
 
 def get_env(option, opt, value, parser):
     try:
@@ -247,9 +245,7 @@ def library(option, opt, value, parser):
     for package in packages:
         printer._printError("Package %s was not found!" % package)
 
-    library = ':'.join(library)
-    if library:
-        printer._print(library)
+    printer._print(':'.join(library))
     
 def select_vm(option, opt, value, parser):
     manager.set_active_vm(manager.get_vm(value))
