@@ -78,7 +78,7 @@ class VersionManager:
         atoms = self.parse_depend(atoms)
         lowest = None
         for atom in atoms:
-            version = atom['version']
+            version = atom['version'].strip('*')
             equality = atom['equality']
             if '!' in equality: continue
             if not '=' in equality and '>' in equality: 
