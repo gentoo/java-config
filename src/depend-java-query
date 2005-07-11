@@ -39,11 +39,18 @@ def is_sufficient(option, opt, value, parser):
         sys.exit(1)
 
 def get_vm(option, opt, value, parser):
-    printer._print(verman.get_vm(value))
+    try:
+        printer._print(verman.get_vm(value))
+    except Exception, ex:
+        printer._printError(str(ex))
+        sys.exit(1)
 
 def get_lowest(option, opt, value, parse):
-    printer._print(verman.get_lowest(value))
-
+    try:
+        printer._print(verman.get_lowest(value))
+    except Exception, ex:
+        printer._printError(str(ex))
+        sys.exit(1)
 
 if __name__ == '__main__':
     global printer, manager, verman

@@ -14,12 +14,11 @@ import os, glob, re
 import os.path
 
 
-# Does not handle deps correctly in any way
+# Does not handle deps correctly
 # Does however do the right thing for the only types of deps we should see
-# (i hope)
 class VersionManager:
     #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
-    atom_parser = re.compile(r"([!<>=]+)virtual/(jre|jdk)-([0-9\.]+)")
+    atom_parser = re.compile(r"([!<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
     pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
     _prefs = None
 
@@ -48,18 +47,23 @@ class VersionManager:
         return matched_atoms
 
     def matches(self, version_a, version_b, operator):
+        #print "matches: %s %s %s" % (version_a, version_b, operator)
+        val = self.version_cmp(version_a, version_b)
+        #print "val: %f" % (val)
         if operator == '!': 
-            operator = '!='
-        if operator == '=': 
-            operator = '=='
+            rop = '!='
+        else:
+            rop = operator.replace('!','')
+            if rop == '=':
+                rop = '=='
+
+        res = eval("%f %s 0" % (val, rop))
 
         if operator.find('!') is -1:
-            return eval(version_a + operator + version_b)
+            return res
         else:
-            return not (eval(version_a + operator.replace('!', '') + version_b)) 
-
-        return False
-
+            return not res
+        
     def version_satisfies(self, atoms, vm):
         version = vm.version()
         matched_atoms = self.parse_depend(atoms)
@@ -85,7 +89,11 @@ class VersionManager:
             else:
                 if lowest > version:
                     lowest = version
-        return lowest
+
+        if lowest:
+            return '.'.join(lowest.split('.')[0:2])
+        else:
+            raise Exception("Couldnt find a jdk dep")
 
     def get_vm(self, atoms):
         matched_atoms = self.parse_depend(atoms)
@@ -94,26 +102,56 @@ class VersionManager:
             return None
 
         prefs = self.get_prefs()
-        low = None
+
+        low = self.get_lowest(atoms)
         
-        for atom in matched_atoms:
-            version = atom['version']
-            eq = atom['equality']
-            type = atom['type']
+        vm_list_b = []
+        for pref in prefs:
+            if pref[0] == low or pref[0] == "*":
+                for vm in pref[1]:
+                    vm_list = EnvironmentManager().find_vm(vm)
+                    vm_list.sort()
+                    vm_list.reverse()
+                    for vm in vm_list:
+                        vm_list_b.append(vm)
+        #print "prefs: " + str([vm.name() for vm in vm_list_b])
+ 
+        vm = self.find_matching_vm(vm_list_b, matched_atoms)
+        if vm:
+            return vm
+        else:
+            vms = EnvironmentManager().get_virtual_machines().values()
+            vms.sort()
+            vms.reverse()
+            vm = self.find_matching_vm(vms, matched_atoms)
+            if vm:
+                return vm
+            else:
+                raise Exception("Couldnt find suitable VM, possible Invalid dep string")
 
-            if low is None:
-                low = atom
-            elif low['version'] > version:
-                low = atom
+    def find_matching_vm(self, vm_list, atoms):
+        cur_good = False
+        for vm in vm_list:
+            #print "testing: " + str(vm)
+            for atom in atoms:
+                version = atom['version']
+                eq = atom['equality']
+                type = atom['type']
 
-            for pref in prefs:
-                if pref[0] == version or pref[0] == "*":
-                    for vm in pref[1]:
-                        gvm = self.find_vm(vm, atom)
-                        if gvm:
-                            return gvm
+                #print "\t %s %s" % (eq, version)
+                
+                if self.matches(vm.version(), atom['version'], atom['equality']):
+                    #print "good"
+                    cur_good = True
+                else:
+                    #print "bad"
+                    cur_good = False
+                    break 
 
-        return self.find_vm("", low)
+            if cur_good:
+                return vm
+
+        return None
 
     def find_vm(self, vm, atom):
         vm_list = EnvironmentManager().find_vm(vm)
@@ -123,12 +161,63 @@ class VersionManager:
             if vm.is_type(atom['type']) and self.matches(vm.version(), atom['version'], atom['equality']):
                  return vm
         return None
-            
+
+    def version_cmp(self, version1, version2):
+        if version1 == version2:
+            return 0
+
+        version1 = version1.split('.')
+        version2 = version2.split('.')
+
+        check_len = None
+        for x in range(1, len(version1)):
+            if version1[x][-1] == '*':
+                version1[x] = version1[x][:-1]
+                check_len = x
+            if version1[x][0] == '0':
+                version1[x]='.' + version1[x]
+
+        for x in range(1, len(version2)):
+            if version2[x][-1] == '*':
+                version2[x] = version2[x][:-1]
+                if (not check_len) or (check_len and check_len > x):
+                    check_len = x
+            if version2[x][0] == '0':
+                version2[x]='.' + version2[x]
+
+       
+        if len(version2) < len(version1):
+            version2.extend(["0"]*(len(version1)-len(version2)))
+        elif len(version1) < len(version2):
+            version1.extend(["0"]*(len(version2)-len(version1)))
+
+        for x in range(0, len(version1)):
+            if check_len and x > check_len:
+                return 0
+            ret = float(version1[x]) - float(version2[x])
+            if ret != 0:
+                return ret
+        return 0
 
 #vator=VersionManager()
-#for i in [">=virtual/jdk-1.3",">=virtual/jdk-1.4",">=virtual/jdk-1.5","=virtual/jdk-1.3 =virtual/jdk-1.4","=virtual/jdk-1.5*","=virtual/jdk-1.4*"]:
-#    print i
+#for i in [  
+#            ">=virtual/jdk-1.3",
+#            ">=virtual/jdk-1.4",
+#            ">=virtual/jdk-1.5",
+#            "!=virtual/jdk-1.3 =virtual/jdk-1.4",
+#            "=virtual/jdk-1.4 =virtual/jdk-1.3",
+#            "!=virtual/jdk-1.5 !=virtual/jdk-1.4 >=virtual/jdk-1.3",
+#            "!=virtual/jdk-1.4 =virtual/jdk-1.3*",
+#            "=virtual/jdk-1.5*",
+#            "=virtual/jdk-1.4*",
+#            ">=virtual/jdk-1.3.1* !>=virtual/jdk-1.4",
+#            ">=virtual/jdk-1.3.1* !=virtual/jdk-1.4*"
+#        ]:
+#    rint i
+#    try:
 #    print vator.get_vm(i)
+#    except Exception, ex:
+#        print ex
 #    print
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

@@ -65,7 +65,7 @@ class PrefsFileParser(FileParser):
         self.parse(file)
 
     def pair(self, key, value):
-        self.config.append([key,value.split(' ')])
+        self.config.append([key,value.strip('\t ').split(' ')])
 
     def get_config(self):
         return self.config
