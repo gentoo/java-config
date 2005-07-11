@@ -4,11 +4,22 @@ abort() {
 	echo ${@} >> /dev/stderr
 	exit 1
 }
+getjar() {
+	local jar=${1}
+	for x in $(java-config -p ${package} | tr ':' ' '); do
+		if [ "$(basename ${x})" == "${jar}" ] ; then
+			echo ${x}
+			return 0
+		fi
+	done
+	return 1
+}
 
 if [[ -n ${main} ]]; then
 	starte=${main}
 elif [[ -n ${jar} ]]; then
-	starte="-jar ${jar}"
+	fjar=$(getjar ${jar}) || fjar=${jar}
+	starte="-jar ${fjar}"
 else
 	abort "Need main or jar to start" 
 fi
