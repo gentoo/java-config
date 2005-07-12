@@ -6,7 +6,7 @@ abort() {
 }
 getjar() {
 	local jar=${1}
-	for x in $(java-config -p ${package} | tr ':' ' '); do
+	for x in $(java-config -p ${gjl_package} | tr ':' ' '); do
 		if [ "$(basename ${x})" == "${jar}" ] ; then
 			echo ${x}
 			return 0
@@ -15,21 +15,30 @@ getjar() {
 	return 1
 }
 
-if [[ -n ${main} ]]; then
-	starte=${main}
-elif [[ -n ${jar} ]]; then
-	fjar=$(getjar ${jar}) || fjar=${jar}
-	starte="-jar ${fjar}"
+gjl_user_env=${HOME}/.gentoo/env.d/22${gjl_package}
+gjl_system_env=/etc/env.d/java/22${gjl_package}
+if [[ -f ${gjl_user_env} ]]; then
+	source ${gjl_user_env}
+elif [[ -f ${gjl_system_env} ]]; then
+	source ${gjl_system_env}
+fi
+
+
+if [[ -n ${gjl_main} ]]; then
+	gjl_starte=${gjl_main}
+elif [[ -n ${gjl_jar} ]]; then
+	gjl_fjar=$(getjar ${gjl_jar}) || gjl_fjar=${gjl_jar}
+	gjl_starte="-jar ${gjl_fjar}"
 else
 	abort "Need main or jar to start" 
 fi
 
 if [[ -z ${GENTOO_VM} ]]; then
-	export GENTOO_VM=$(gjl --get-vm ${package}) || abort "Couldn't get a vm"
+	export GENTOO_VM=$(gjl --get-vm ${gjl_package}) || abort "Couldn't get a vm"
 else
 	echo "found \$GENTOO_VM not trying to change vm" >> /dev/stderr
 fi
 
-args=$(gjl --get-args ${package}) || abort "Couldn't build classpath"
+gjl_args=$(gjl --get-args ${gjl_package}) || abort "Couldn't build classpath"
 
-exec java ${args} ${java_args} ${starte} ${pkg_args} "${@}"
+exec java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} "${@}"
