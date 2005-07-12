@@ -47,7 +47,7 @@ class VM:
         return self.is_type("JDK")
 
     def is_type(self, type):
-        if upper(self.query('PROVIDES_TYPE')) == upper(type):
+        if upper(type) in [upper(t) for t in self.query('PROVIDES_TYPE').split(' ')]:
             return True
         else:
             return False

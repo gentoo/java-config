@@ -70,23 +70,29 @@ class VersionManager:
                     return True
         return False
 
-    def get_lowest(self, atoms):
-        atoms = self.parse_depend(atoms)
+    def get_lowest_atom(self, atoms):
         lowest = None
         for atom in atoms:
-            version = atom['version']
-            equality = atom['equality']
-
             if not lowest:
-                lowest = version
+                lowest = atom
             else:
-                if self.version_cmp(lowest,version) > 0:
-                    lowest = version
+                if self.version_cmp(lowest['version'], atom['version']) > 0:
+                    lowest = atom
+
+        if lowest:
+            return atom
+        else:
+            raise Exception("Couldnt find a vm dep")
+
+    def get_lowest(self, atoms):
+        atoms = self.parse_depend(atoms)
+        lowest = self.get_lowest_atom(atoms)
+        lowest = lowest['version']
 
         if lowest:
             return '.'.join(lowest.strip('*').split('.')[0:2])
         else:
-            raise Exception("Couldnt find a jdk dep")
+            raise Exception("Couldnt find a vm dep")
 
 
     def get_vm(self, atoms):
@@ -106,6 +112,7 @@ class VersionManager:
                         if gvm:
                             return gvm
 
+        low = self.get_lowest_atom(matched_atoms)
         vm = self.find_vm("", low)
         if vm:
             return vm
