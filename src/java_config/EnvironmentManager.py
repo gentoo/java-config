@@ -24,6 +24,9 @@ class EnvironmentManager:
     def __init__(self):
         pass
 
+    def __call__(self):
+        return self
+
     def load_vms(self):
         self.virtual_machines = {} 
         
@@ -246,5 +249,7 @@ class EnvironmentManager:
     
             stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
             stream.close()
+
+EnvironmentManager = EnvironmentManager()
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

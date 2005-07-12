@@ -16,9 +16,10 @@ import os.path
 
 # Does not handle deps correctly
 # Does however do the right thing for the only types of deps we should see
+# Ignore blockers: portage doesn't support them in a way that is usefull for us
 class VersionManager:
     #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
-    atom_parser = re.compile(r"([!<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
+    atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
     pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
     _prefs = None
 
@@ -44,25 +45,20 @@ class VersionManager:
             for match in matches:
                 matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
 
+        matched_atoms.sort()
+        matched_atoms.reverse()
+
         return matched_atoms
 
     def matches(self, version_a, version_b, operator):
-        #print "matches: %s %s %s" % (version_a, version_b, operator)
         val = self.version_cmp(version_a, version_b)
-        #print "val: %f" % (val)
-        if operator == '!': 
-            rop = '!='
-        else:
-            rop = operator.replace('!','')
-            if rop == '=':
-                rop = '=='
 
-        res = eval("%f %s 0" % (val, rop))
-
-        if operator.find('!') is -1:
-            return res
-        else:
-            return not res
+        if operator == '=':    return val == 0
+        elif operator == '>=': return val >= 0
+        elif operator == '<=': return val <= 0
+        elif operator == '>':  return val > 0
+        elif operator == '<':  return val < 0
+        else:                  return False
         
     def version_satisfies(self, atoms, vm):
         version = vm.version()
@@ -78,22 +74,20 @@ class VersionManager:
         atoms = self.parse_depend(atoms)
         lowest = None
         for atom in atoms:
-            version = atom['version'].strip('*')
+            version = atom['version']
             equality = atom['equality']
-            if '!' in equality: continue
-            if not '=' in equality and '>' in equality: 
-                version = version[:-1]+str(int(version[-1])+1)
 
-            if lowest is None: 
+            if not lowest:
                 lowest = version
             else:
-                if lowest > version:
+                if self.version_cmp(lowest,version) > 0:
                     lowest = version
 
         if lowest:
-            return '.'.join(lowest.split('.')[0:2])
+            return '.'.join(lowest.strip('*').split('.')[0:2])
         else:
             raise Exception("Couldnt find a jdk dep")
+
 
     def get_vm(self, atoms):
         matched_atoms = self.parse_depend(atoms)
@@ -104,62 +98,28 @@ class VersionManager:
         prefs = self.get_prefs()
 
         low = self.get_lowest(atoms)
-        
-        vm_list_b = []
-        for pref in prefs:
-            if pref[0] == low or pref[0] == "*":
-                for vm in pref[1]:
-                    vm_list = EnvironmentManager().find_vm(vm)
-                    vm_list.sort()
-                    vm_list.reverse()
-                    for vm in vm_list:
-                        vm_list_b.append(vm)
-        #print "prefs: " + str([vm.name() for vm in vm_list_b])
- 
-        vm = self.find_matching_vm(vm_list_b, matched_atoms)
+        for atom in matched_atoms: 
+            for pref in prefs:
+                if pref[0] == low or pref[0] == "*":
+                    for vm in pref[1]:
+                        gvm = self.find_vm(vm, atom)
+                        if gvm:
+                            return gvm
+
+        vm = self.find_vm("", low)
         if vm:
             return vm
         else:
-            vms = EnvironmentManager().get_virtual_machines().values()
-            vms.sort()
-            vms.reverse()
-            vm = self.find_matching_vm(vms, matched_atoms)
-            if vm:
-                return vm
-            else:
-                raise Exception("Couldnt find suitable VM, possible Invalid dep string")
-
-    def find_matching_vm(self, vm_list, atoms):
-        cur_good = False
-        for vm in vm_list:
-            #print "testing: " + str(vm)
-            for atom in atoms:
-                version = atom['version']
-                eq = atom['equality']
-                type = atom['type']
-
-                #print "\t %s %s" % (eq, version)
-                
-                if self.matches(vm.version(), atom['version'], atom['equality']):
-                    #print "good"
-                    cur_good = True
-                else:
-                    #print "bad"
-                    cur_good = False
-                    break 
-
-            if cur_good:
-                return vm
-
-        return None
+            raise Exception("Couldnt find suitable VM, possible Invalid dep string")
 
     def find_vm(self, vm, atom):
         vm_list = EnvironmentManager().find_vm(vm)
         vm_list.sort()
         vm_list.reverse()
         for vm in vm_list:
-            if vm.is_type(atom['type']) and self.matches(vm.version(), atom['version'], atom['equality']):
-                 return vm
+            if vm.is_type(atom['type']):
+                if self.matches(vm.version(), atom['version'], atom['equality']):
+                    return vm
         return None
 
     def version_cmp(self, version1, version2):
@@ -204,16 +164,13 @@ class VersionManager:
 #            ">=virtual/jdk-1.3",
 #            ">=virtual/jdk-1.4",
 #            ">=virtual/jdk-1.5",
-#            "!=virtual/jdk-1.3 =virtual/jdk-1.4",
-#            "=virtual/jdk-1.4 =virtual/jdk-1.3",
-#            "!=virtual/jdk-1.5 !=virtual/jdk-1.4 >=virtual/jdk-1.3",
-#            "!=virtual/jdk-1.4 =virtual/jdk-1.3*",
+#            "|| ( =virtual/jdk-1.4* =virtual/jdk-1.3* )",
+#            "|| ( =virtual/jdk-1.3* =virtual/jdk-1.4* )",
 #            "=virtual/jdk-1.5*",
 #            "=virtual/jdk-1.4*",
-#            ">=virtual/jdk-1.3.1* !>=virtual/jdk-1.4",
-#            ">=virtual/jdk-1.3.1* !=virtual/jdk-1.4*"
+#            "=virtual/jdk-1.3*",
 #        ]:
-#    rint i
+#    print i
 #    try:
 #    print vator.get_vm(i)
 #    except Exception, ex:
