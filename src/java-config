@@ -143,7 +143,7 @@ def set_system_vm(option, opt, value, parser):
         printer._printError("Could not find a vm matching: %s" % value)
     else:
         if os.getuid() is 0:
-            if vm.is_jre():
+            if not vm.is_jdk():
                 printer._printWarning("The specified VM is a JRE! It is suggested you use a JDK!")
 
             try:
