@@ -13,6 +13,6 @@ bin=${vmpath}/bin/$(basename $0)
 if [[ -x ${bin} ]]; then
 	exec ${bin} "${@}"
 else
-	echo "Want too run ${bin} but it does not exist or is not executable" > /dev/stderr
+	echo "Want too run ${bin} but it does not exist or is not executable" >&2
 	exit 1
 fi
