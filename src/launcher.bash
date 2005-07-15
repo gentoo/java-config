@@ -1,7 +1,7 @@
 #!/bin/bash
 
 abort() {
-	echo ${@} >> /dev/stderr
+	echo ${@} >&2
 	exit 1
 }
 getjar() {
