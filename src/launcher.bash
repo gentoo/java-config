@@ -36,7 +36,7 @@ fi
 if [[ -z ${GENTOO_VM} ]]; then
 	export GENTOO_VM=$(gjl --get-vm ${gjl_package}) || abort "Couldn't get a vm"
 else
-	echo "found \$GENTOO_VM not trying to change vm" >> /dev/stderr
+	echo "found \$GENTOO_VM not trying to change vm" >&2
 fi
 
 gjl_args=$(gjl --get-args ${gjl_package}) || abort "Couldn't build classpath"
