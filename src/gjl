@@ -122,10 +122,10 @@ def get_args(option, opt, value, parser):
     
     classpath, library = get_pkg_args(pkg)
     if classpath:
-        args += '-classpath %s' % (classpath)
+        args += ' -classpath %s' % (classpath)
 
     if library:
-        args += '-Djava.library.path="%s"' % (library)
+        args += ' -Djava.library.path="%s"' % (library)
 
     if args:
         printer._print(args)
