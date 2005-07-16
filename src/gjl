@@ -15,6 +15,7 @@ from string import join
 from sets import Set
 from optparse import OptionParser, make_option, OptionValueError
 from os.path import basename
+import sys
 
 # Needs some cleanup!
 
@@ -103,8 +104,15 @@ def get_vm(option, opt, value, parser):
         abort("Invalid package")
 
     target = get_needed_target(pkg)
-    vm = verman.get_vm(">=virtual/jre-%s" % (target))
-    printer._print(vm.name())
+    if target:
+        vm = verman.get_vm(">=virtual/jre-%s" % (target))
+    else:
+        vm = verman.get_vm(pkg.query("VM"))
+
+    if vm:
+        printer._print(vm.name())
+    else:
+        sys.exit(1)
      
 def get_args(option, opt, value, parser):
     pkg = manager.get_package(value)
