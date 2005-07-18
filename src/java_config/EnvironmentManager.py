@@ -56,6 +56,13 @@ class EnvironmentManager:
             self.packages[pkg.name()] = pkg
 
     def load_active_vm(self):
+        vm_name = os.getenv("GENTOO_VM")
+        if vm_name:
+            vm = self.get_vm(vm_name)
+            if vm:
+                self.active = vm
+                return vm
+
         for link in self.vm_links():
             if os.path.islink(link):
                 vm_name = basename(os.readlink(link))
