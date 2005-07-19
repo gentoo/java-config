@@ -38,7 +38,7 @@ class VM:
 
     def name(self):
         # TODO: MAKE THIS MODULAR!
-        return self.file.lstrip("/etc/env.d/java/20")
+        return self.file.split("/etc/env.d/java/20")[-1]
 
     def is_jre(self):
         return self.is_type("JRE")
