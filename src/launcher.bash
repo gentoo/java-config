@@ -44,5 +44,7 @@ gjl_args=$(gjl --get-args ${gjl_package}) || abort "Couldn't build classpath"
 if [[ -n ${GJL_DEBUG} ]]; then
 	echo java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} "${@}" >&2
 fi
-
+if [[ -n ${gjl_pwd} ]]; then
+	cd ${gjl_pwd}
+fi
 exec java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} "${@}"
