@@ -51,13 +51,15 @@ def get_needed_target(pkg):
 
 
 def add_classpath(pkg, dep, classpath): 
-    if not dep or len(dep) == 1:
-        for cp in pkg.classpath().split(':'):
-            classpath.add(cp)
-    else:
-        for cp in pkg.classpath().split(':'):
-            if basename(cp) == dep[0]:
+    pkg_cp = pkg.classpath()
+    if pkg_cp:
+        if not dep or len(dep) == 1:
+            for cp in pkg_cp.split(':'):
                 classpath.add(cp)
+        else:
+            for cp in pkg_cp.split(':'):
+                if basename(cp) == dep[0]:
+                    classpath.add(cp)
 
 def add_library(pkg, library): 
     libpaths = pkg.query("LIBRARY_PATH")
