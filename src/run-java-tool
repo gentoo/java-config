@@ -7,11 +7,14 @@ elif [[ -h ${HOME}/.gentoo/user-vm ]]; then
 else
 	vmpath=/etc/java-config/vms/system-vm/
 fi
-
-bin=${vmpath}/bin/$(basename $0)
+tool=$(basename $0)
+bin=${vmpath}/bin/${tool}
+args=""
+[[ "${tool}" == "javac" ]] && args="${GENTOO_JAVACFLAGS}"
+[[ "${tool}" =  "java" ]] && args="${GENTOO_JAVAFLAGS}"
 
 if [[ -x ${bin} ]]; then
-	exec ${bin} "${@}"
+	exec ${bin} ${args} "${@}"
 else
 	echo "Want too run ${bin} but it does not exist or is not executable" >&2
 	exit 1
