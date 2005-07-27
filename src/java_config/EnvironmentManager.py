@@ -4,6 +4,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+from OutputFormatter import *
 from Package import *
 from VM import *
 from Errors import *
@@ -11,7 +12,7 @@ from Errors import *
 from os.path import basename, dirname
 from glob import glob
 from sets import Set
-import os, re
+import os, re, sys
 
 class EnvironmentManager:
     virtual_machines = None
@@ -42,9 +43,13 @@ class EnvironmentManager:
                     try:
                         vm = VM(conf)
                     except InvalidConfigError:
-                        pass
+                        continue
                     except PermissionError:
-                        pass
+                        continue
+                    except InvalidVMError, ex:
+                        printer = OutputFormatter()
+                        printer._printAlert("Old vm configuration file found: %s\nPlease update the vm package associated with the file\n(%s)" % ( conf, ex ))
+                        continue
 
                     self.virtual_machines[count] = vm
                     count += 1

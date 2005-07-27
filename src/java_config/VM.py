@@ -12,10 +12,15 @@ from string import upper
 
 
 class VM:
+    needed_vars = [ "JAVA_HOME", "PROVIDES_TYPE", "PROVIDES_VERSION" ]
 
     def __init__(self, file):
         self.file = file
         self.config = EnvFileParser(file).get_config()
+    
+        for var in self.needed_vars:
+            if not self.config.has_key(var):
+                raise InvalidVMError("Missing: %s" %var)
 
     def __cmp__(self, other):
         return cmp(self.version(), other.version())

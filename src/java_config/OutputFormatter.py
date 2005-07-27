@@ -36,7 +36,10 @@ class OutputFormatter:
             if os.environ["TERM"] not in [ "xterm", "Eterm", "aterm", "rxvt" ]:
                 self.consoleTitle = False
 
-    def setColorOuputStatus(self, status):
+    def __call__(self, displayColor=True, displayTitle=True, autoIndent=True):
+        return self
+
+    def setColorOutputStatus(self, status):
         self.colorOutput = status
 
     def setDisplayTitleStatus(self, status):
@@ -116,4 +119,6 @@ class OutputFormatter:
     def setTitle(self, message):
         self.__setTitle(self.__parseColor(message))
 
+
+OutputFormatter = OutputFormatter()
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
