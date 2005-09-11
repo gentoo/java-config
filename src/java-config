@@ -28,25 +28,25 @@ def java(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().find_exec('java'))
     except PermissionError:
-        printer._printError("The java executable was not found in the Java path")
+        fatalError("The java executable was not found in the Java path")
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def javac(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().find_exec('javac'))
     except PermissionError:
-        printer._printError("The javac executable was not found in the Java path")
+        fatalError("The javac executable was not found in the Java path")
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def jar(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().find_exec('jar'))
     except PermissionError:
-        printer._printError("The jar executable was not found in the Java path")
+        fatalError("The jar executable was not found in the Java path")
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def jdk_home(option, opt, value, parser):
     try:
@@ -54,7 +54,7 @@ def jdk_home(option, opt, value, parser):
     except EnvironmentUndefinedError:
         print
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def jre_home(option, opt, value, parser):
     try:
@@ -62,7 +62,7 @@ def jre_home(option, opt, value, parser):
     except EnvironmentUndefinedError:
         print
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def runtime(option, opt, value, parser):
     try:
@@ -70,29 +70,29 @@ def runtime(option, opt, value, parser):
     except EnvironmentUndefinedError:
         print
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 
 def show_active_vm(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().name())
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def java_version(option, opt, value, parser):
     try:
         printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
     except PermissionError:
-        printer._printError("The java executable was not found in the Java path")
+        fatalError("The java executable was not found in the Java path")
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def classpath(option, opt, value, parser):
     packages = value.split(',')
     classpath = manager.build_classpath(packages)
 
     for package in packages:
-        printer._printError("Package %s was not found!" % package)
+        fatalError("Package %s was not found!" % package)
 
     printer._print(':'.join(classpath))
 
@@ -103,7 +103,7 @@ def get_env(option, opt, value, parser):
     except EnvironmentUndefinedError:
         print
     except InvalidVMError:
-        printer._printError("The active vm could not be found")
+        fatalError("The active vm could not be found")
 
 def exec_cmd(option, opt, value, parser):
     for cmd in iter(value.split(',')):
@@ -134,13 +134,13 @@ def print_environment(option, opt, value, parser):
     if vm:
         manager.create_env_entry(vm, printer, "%s=%s")
     else:
-        printer._printError("Could not find a vm matching: %s" % value)
+        fatalError("Could not find a vm matching: %s" % value)
 
 def set_system_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
 
     if not vm:
-        printer._printError("Could not find a vm matching: %s" % value)
+        fatalError("Could not find a vm matching: %s" % value)
     else:
         if os.getuid() is 0:
             if not vm.is_jdk():
@@ -149,25 +149,25 @@ def set_system_vm(option, opt, value, parser):
             try:
                 manager.set_system_vm(vm)
             except PermissionError:
-                printer._printError("You do not have enough permissions to set the system VM!")
+                fatalError("You do not have enough permissions to set the system VM!")
             except EnvironmentUndefinedError:
-                printer._printError("The selected VM is missing critical environment variables.")
+                fatalError("The selected VM is missing critical environment variables.")
         else:
-            printer._printError("You do not have enough permissions to set the system VM!")
+            fatalError("You do not have enough permissions to set the system VM!")
 
 def set_user_vm(option, opt, value, parser):
     vm = manager.get_vm(value)
 
     if not vm:
-        printer._printError("Could not find a vm matching: %s" % value)
+        fatalError("Could not find a vm matching: %s" % value)
     else:
         if os.getuid() is 0:
-            printer._printError("The user 'root' should always use the System VM")
+            fatalError("The user 'root' should always use the System VM")
         else:
             try:
                 manager.set_user_vm(vm)
             except PermissionError:
-                printer._printError("You do not have enough permissions to set the VM!")
+                fatalError("You do not have enough permissions to set the VM!")
 
 def system_classpath_target():
     # TODO: MAKE THIS MODULAR!! (compnerd)
@@ -187,11 +187,11 @@ def set_system_classpath(option, opt, value, parser):
         manager.set_classpath(system_classpath_target(), pkgs)
         
         for package in pkgs:
-            printer._printError("Package %s was not found!" % package)
+            fatalError("Package %s was not found!" % package)
             
         update_env()
     else:
-       printer._printError("You do not have enough permissions to set the system classpath!")
+       fatalError("You do not have enough permissions to set the system classpath!")
 
 def set_user_classpath(option, opt, value, parser):
     deprecation_notice()
@@ -199,7 +199,7 @@ def set_user_classpath(option, opt, value, parser):
     manager.set_classpath(user_classpath_target(), pkgs)
 
     for package in pkgs:
-        printer._printError("Package %s was not found!" % package)
+        fatalError("Package %s was not found!" % package)
 
     user_update_env()
 
@@ -210,11 +210,11 @@ def append_system_classpath(option, opt, value, parser):
         manager.append_classpath(system_classpath_target(), pkgs)
 
         for package in pkgs:
-            printer._printError("Package %s was not found!" % package)
+            fatalError("Package %s was not found!" % package)
 
         update_env()
     else:
-        printer._printError("You do not have enough permissioins to append to the system classpath!")
+        fatalError("You do not have enough permissioins to append to the system classpath!")
 
 def append_user_classpath(option, opt, value, parser):
     deprecation_notice()
@@ -222,7 +222,7 @@ def append_user_classpath(option, opt, value, parser):
     manager.append_classpath(user_classpath_target(),  pkgs)
 
     for package in pkgs:
-        printer._printError("Package %s was not found!" % package)
+        fatalError("Package %s was not found!" % package)
 
     user_update_env()
 
@@ -232,7 +232,7 @@ def clean_system_classpath(option, opt, value, parser):
         manager.clean_classpath(system_classpath_target())
         update_env()
     else:
-        printer._printError("You do not have enough permissions to clean the system classpath!")
+        fatalError("You do not have enough permissions to clean the system classpath!")
 
 def clean_user_classpath(option, opt, value, parser):
     deprecation_notice()
@@ -243,12 +243,16 @@ def library(option, opt, value, parser):
     library = manager.query_packages(packages, "LIBRARY_PATH")
 
     for package in packages:
-        printer._printError("Package %s was not found!" % package)
+        fatalError("Package %s was not found!" % package)
 
     printer._print(':'.join(library))
     
 def select_vm(option, opt, value, parser):
-    manager.set_active_vm(manager.get_vm(value))
+    vm = manager.get_vm(value)
+    if vm:
+        manager.set_active_vm(manager.get_vm(value))
+    else:
+        fatalError("The vm could not be found")
 
 def update_env():
     printer._print(getoutput("/usr/sbin/env-update"))
@@ -261,6 +265,10 @@ def user_update_env():
 
 def deprecation_notice():
     printer._printWarning("Setting a user and system classpath is deprecated, this option will be removed from future versions.")
+
+def fatalError(msg):
+    printer._printError(msg)
+    sys.exit(1)
 
 if __name__ == '__main__':
     global printer, manager

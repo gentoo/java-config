@@ -138,15 +138,15 @@ class EnvironmentManager:
                     return vm 
 
                 # Check if the vm is specified by name 
-                elif machine == vm.name():
+                if machine == vm.name():
                     return vm
 
                 # Check if the vm is specified via JAVA_HOME
-                elif machine == vm.query('JAVA_HOME'):
+                if machine == vm.query('JAVA_HOME'):
                     return vm
 
                 # Check if vm is specified by partial name 
-                elif vm.name().startswith(machine):
+                if vm.name().startswith(machine):
                     selected = vm
 
         if selected:

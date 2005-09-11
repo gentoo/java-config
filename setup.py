@@ -5,7 +5,7 @@ import os
 
 setup (
 	name = 'java-config',
-	version = '2.0.0',
+	version = '2.0.1',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
