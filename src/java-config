@@ -92,7 +92,7 @@ def classpath(option, opt, value, parser):
     classpath = manager.build_classpath(packages)
 
     for package in packages:
-        fatalError("Package %s was not found!" % package)
+        printer._printError("Package %s was not found!" % package)
 
     printer._print(':'.join(classpath))
 
@@ -187,7 +187,7 @@ def set_system_classpath(option, opt, value, parser):
         manager.set_classpath(system_classpath_target(), pkgs)
         
         for package in pkgs:
-            fatalError("Package %s was not found!" % package)
+            printer._printError("Package %s was not found!" % package)
             
         update_env()
     else:
@@ -199,7 +199,7 @@ def set_user_classpath(option, opt, value, parser):
     manager.set_classpath(user_classpath_target(), pkgs)
 
     for package in pkgs:
-        fatalError("Package %s was not found!" % package)
+        printer._printError("Package %s was not found!" % package)
 
     user_update_env()
 
@@ -210,7 +210,7 @@ def append_system_classpath(option, opt, value, parser):
         manager.append_classpath(system_classpath_target(), pkgs)
 
         for package in pkgs:
-            fatalError("Package %s was not found!" % package)
+            printer._printError("Package %s was not found!" % package)
 
         update_env()
     else:
@@ -222,7 +222,7 @@ def append_user_classpath(option, opt, value, parser):
     manager.append_classpath(user_classpath_target(),  pkgs)
 
     for package in pkgs:
-        fatalError("Package %s was not found!" % package)
+        printer._printError("Package %s was not found!" % package)
 
     user_update_env()
 
@@ -243,7 +243,7 @@ def library(option, opt, value, parser):
     library = manager.query_packages(packages, "LIBRARY_PATH")
 
     for package in packages:
-        fatalError("Package %s was not found!" % package)
+        printer._printError("Package %s was not found!" % package)
 
     printer._print(':'.join(library))
     
