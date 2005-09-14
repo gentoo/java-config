@@ -1,46 +1,56 @@
 #!/bin/bash
+# Not-so-elegant? patches more then welcome
 
 abort() {
 	echo ${@} >&2
 	exit 1
 }
-getjar() {
-	local jar=${1}
-	for x in $(java-config -p ${gjl_package} | tr ':' ' '); do
-		if [ "$(basename ${x})" == "${jar}" ] ; then
-			echo ${x}
-			return 0
-		fi
-	done
-	return 1
-}
 
-gjl_user_env=${HOME}/.gentoo/env.d/22${gjl_package}
-gjl_system_env=/etc/env.d/java/22${gjl_package}
-if [[ -f ${gjl_user_env} ]]; then
-	source ${gjl_user_env}
-elif [[ -f ${gjl_system_env} ]]; then
-	source ${gjl_system_env}
+# Source package env
+# ---------------------
+gjl_user_env="${HOME}/.gentoo/env.d/22${gjl_package}"
+gjl_system_env="/etc/env.d/java/22${gjl_package}"
+if [[ -f "${gjl_user_env}" ]]; then
+	source "${gjl_user_env}"
+elif [[ -f "${gjl_system_env}" ]]; then
+	source "${gjl_system_env}"
 fi
 
+# Build gjl arguments
+# ---------------------
+request="--package ${gjl_package} --get-args"
 
 if [[ -n ${gjl_main} ]]; then
 	gjl_starte=${gjl_main}
 elif [[ -n ${gjl_jar} ]]; then
-	gjl_fjar=$(getjar ${gjl_jar}) || gjl_fjar=${gjl_jar}
-	gjl_starte="-jar ${gjl_fjar}"
+	request="${request} --get-jar ${gjl_jar}"
 else
-	abort "Need main or jar to start" 
+	abort "Need main or jar to start"
 fi
 
 if [[ -z ${GENTOO_VM} ]]; then
-	export GENTOO_VM=$(gjl --get-vm ${gjl_package}) || abort "Couldn't get a vm"
+	request="${request} --get-vm"
 else
 	echo "found \$GENTOO_VM not trying to change vm" >&2
 fi
 
-gjl_args=$(gjl --get-args ${gjl_package}) || abort "Couldn't build classpath"
+# Get the information we need
+# ----------------------------
+results=$(gjl ${request}) || abort "Couldn't get needed information"
+eval $results
 
+if [[ -n ${gjl_vm} ]]; then
+	export GENTOO_VM="${gjl_vm}"
+fi
+
+if [[ -z ${gjl_starte} ]]; then
+	abort "Dont know what to run :(("
+fi
+
+# Run it
+# --------
+
+# Rebuild arg list so it doesnt get messed up
 for arg in "${@}"; do
 	gjl_cmd_arg="${gjl_cmd_arg} \"${arg}\""
 done
@@ -52,7 +62,7 @@ fi
 
 if [[ -n ${GJL_DEBUG} ]]; then
 	echo "Using: ${GENTOO_VM}" >&2
-	echo ${gjl_cmd} >&2
+	echo "Running: ${gjl_cmd}" >&2
 fi
 
 eval ${gjl_cmd}

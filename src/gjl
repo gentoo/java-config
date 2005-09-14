@@ -18,6 +18,7 @@ from os.path import basename
 import sys
 
 # Needs some cleanup!
+# Someone please?
 
 def get_needed_packages(package):
     unresolved = Set()
@@ -67,6 +68,7 @@ def add_library(pkg, library):
         for libpath in libpaths.split(':'):
             library.add(libpath)
 
+
 def get_pkg_args(package):
     classpath = Set()
     library = Set()
@@ -100,26 +102,18 @@ def abort(msg):
 
 
 # Options:
-def get_vm(option, opt, value, parser):
-    pkg = manager.get_package(value)
-    if not pkg:
-        abort("Invalid package")
-
+def get_vm(pkg):
     target = get_needed_target(pkg)
-    if target:
-        vm = verman.get_vm(">=virtual/jre-%s" % (target))
+    if target:        
+	needed = ">=virtual/jre-%s" % ( target )
+	if verman.version_satisfies(needed, manager.get_active_vm()):
+            return None
+        else:
+            return verman.get_vm(needed)
     else:
-        vm = verman.get_vm(pkg.query("VM"))
+        return verman.get_vm(pkg.query("VM"))
 
-    if vm:
-        printer._print(vm.name())
-    else:
-        sys.exit(1)
-     
-def get_args(option, opt, value, parser):
-    pkg = manager.get_package(value)
-    if not pkg:
-        abort("Invalid package")
+def get_args(pkg):
     args=""
     
     classpath, library = get_pkg_args(pkg)
@@ -130,14 +124,20 @@ def get_args(option, opt, value, parser):
         args += ' -Djava.library.path="%s"' % (library)
 
     if args:
-        printer._print(args)
+        return args
+    else:
+        return None
+
+def get_jar(pkg, gjar):
+    jars = pkg.classpath()
+    if jars:
+        for jar in jars.split(':'):
+            if gjar == sys.path.basename(jar):
+                return gjar
+    return None
+
 
 if __name__ == '__main__':
-    global printer, manager, verman
-    printer = OutputFormatter(True, True)
-    manager = EnvironmentManager()
-    verman = VersionManager()
-
     usage =  "%prog [options]\n\n"
     usage += "Java Utility Version " + str(__version__) + "\n"
     usage += "Copyright 2004-2005 Gentoo Foundation\n"
@@ -145,11 +145,42 @@ if __name__ == '__main__':
     usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
     options_list = [
-                     make_option ("-v", "--get-vm",   action="callback", callback=get_vm,   help="Get prefered vm for this package",  type="string",dest="package"),
-                     make_option ("-a", "--get-args", action="callback", callback=get_args, help="Get args for running this package", type="string",dest="package")
+                     make_option ("-p", "--package",  action="store", type="string", dest="package", help="The package"),
+                     make_option ("-v", "--get-vm",   action="store_true", dest="get_vm"),
+                     make_option ("-a", "--get-args", action="store_true", dest="get_args"),
+                     make_option ("-j", "--get-jar", action="store", type="string", dest="jar")
                    ]
 
     parser = OptionParser(usage, options_list)
     (options, args) = parser.parse_args()
+
+    global printer, manager, verman
+    printer = OutputFormatter(True, True)
+    manager = EnvironmentManager()
+    verman = VersionManager()
+
+    if not options.package:
+        abort("Too dumb todo anything without -p")
+
+    pkg = manager.get_package(options.package)
+    if not pkg:
+        abort("Invalid package: %s" ( options.package ) )
+
+    if options.get_vm:
+        vm = get_vm(pkg)
+        if vm:
+            print 'gjl_vm="%s"' % ( vm )
+
+    if options.get_args:
+        args = get_args(pkg)
+        if args:
+            print 'gjl_args="%s"' % ( args )
+
+    if options.jar:
+        jar = get_jar(pkg, options.jar)
+        if jar:
+            print 'gjl_starte="-jar %s"' % (  )
+        else:
+            abort("Couldn't find %s" % ( gjar ) )
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
