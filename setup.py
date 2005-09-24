@@ -5,7 +5,7 @@ import os
 
 setup (
 	name = 'java-config',
-	version = '2.0.3',
+	version = '2.0.5',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
@@ -23,7 +23,8 @@ setup (
 		('man/man1', ['man/java-config.1']),
 		('share/java-config/config', ['config/jdk-defaults.conf']),
 		('share/java-config/launcher', ['src/launcher.bash']),
-		('/etc/java-config/', ['config/jdk.conf','config/symlink-tools']),
+		('share/eselect/modules', ['src/eselect/java.eselect']),
+		('/etc/java-config/', ['config/jdk.conf','config/symlink-tools','config/compilers.conf']),
 		('/etc/java-config/vms', ['src/env']),
 		('/etc/env.d/',['config/20java-config']),
 	]
