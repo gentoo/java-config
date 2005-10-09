@@ -1,2 +1,2 @@
-MANPATH=/etc/java-config/vms/system-vm/man/
+MANPATH=/etc/java-config/system-vm/man/
 CONFIG_PROTECT_MASK="/etc/java-config/vms/ /etc/env.d/java/"

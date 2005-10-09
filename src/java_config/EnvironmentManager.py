@@ -182,7 +182,7 @@ class EnvironmentManager:
         if os.path.islink(target):
             os.remove(target)
 
-        os.symlink('/etc/java-config/vms/'+vm.name(),target)
+        os.symlink('/usr/lib/jvm/'+vm.name(),target)
 
     def vm_links(self):
         return [ self.user_vm_link(), self.system_vm_link() ]
@@ -191,7 +191,7 @@ class EnvironmentManager:
         return  os.path.join(os.environ.get('HOME'), '.gentoo/user-vm')
 
     def system_vm_link(self):
-        return '/etc/java-config/vms/system-vm'
+        return '/etc/java-config/system-vm'
 
     def clean_classpath(self, targets):
         for target in targets:

@@ -9,14 +9,14 @@ MAINTAINER="axxo@gentoo.org"
 SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
 
-VM_BASE=${ROOT}/etc/java-config/vms
-VM_SYSTEM=${VM_BASE}/system-vm
+VM_BASE=/usr/lib/jvm/
+VM_SYSTEM=/etc/java-config/system-vm
 VM_USER=${HOME}/.gentoo/user-vm
 
 find_targets() {
 	local f
 	for f in ${VM_BASE}/* ; do
-		[[ -d ${f} && ! -L ${f} ]] && echo $(basename ${f})
+		[[ -L ${f} ]] && echo $(basename ${f})
 	done
 }
 
