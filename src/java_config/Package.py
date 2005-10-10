@@ -7,10 +7,13 @@
 from FileParser import *
 
 class Package:
-    def __init__(self, file, name):
+    def __init__(self, name,file = None):
         self._file = file
         self._name = name
-        self._config = EnvFileParser(file).get_config()
+        if self._file:
+            self._config = EnvFileParser(file).get_config()
+        else:
+            self._config = {}
 
     def __str__(self):
         return self.name()
@@ -45,5 +48,11 @@ class Package:
             return [dep.split("@") for dep in depstr.split(":")]
         else:
             return []
+
+    def provides(self):
+        pv = self.query('PROVIDES')
+        if pv:
+            return pv.split(" ")
+        return []
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

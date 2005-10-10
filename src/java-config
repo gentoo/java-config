@@ -91,10 +91,13 @@ def classpath(option, opt, value, parser):
     packages = value.split(',')
     classpath = manager.build_classpath(packages)
 
-    for package in packages:
-        printer._printError("Package %s was not found!" % package)
-
     printer._print(':'.join(classpath))
+
+    if len(packages) > 0:
+        for package in packages:
+            printer._printError("Package %s was not found!" % package)
+        sys.exit(1)
+
 
 def get_env(option, opt, value, parser):
     try:

@@ -95,7 +95,7 @@ class VersionManager:
             raise Exception("Couldnt find a vm dep")
 
 
-    def get_vm(self, atoms):
+    def get_vm(self, atoms, need_virtual = None):
         matched_atoms = self.parse_depend(atoms)
 
         if len(matched_atoms) == 0:
@@ -110,7 +110,14 @@ class VersionManager:
                     for vm in pref[1]:
                         gvm = self.find_vm(vm, atom)
                         if gvm:
-                            return gvm
+                            if need_virtual:
+                                if gvm.provides(need_virtual):
+                                    return gvm
+                                else:
+                                    if EnvironmentManager().have_provider(need_virtual):
+                                        return gvm
+                            else:
+                                return gvm
 
         low = self.get_lowest_atom(matched_atoms)
         vm = self.find_vm("", low)

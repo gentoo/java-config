@@ -39,11 +39,16 @@ def is_sufficient(option, opt, value, parser):
         sys.exit(1)
 
 def get_vm(option, opt, value, parser):
-    try:
-        printer._print(verman.get_vm(value))
-    except Exception, ex:
-        printer._printError(str(ex))
-        sys.exit(1)
+    #try:
+        if parser.values.need_virtual is not None:
+           vm = verman.get_vm(value, parser.values.need_virtual)
+        else:
+           vm = verman.get_vm(value)
+
+        printer._print(vm)
+    #except Exception, ex:
+    #    printer._printError(str(ex))
+    #    sys.exit(1)
 
 def get_lowest(option, opt, value, parse):
     try:
@@ -69,7 +74,8 @@ if __name__ == '__main__':
                      make_option ("-n", "--nocolor",        action="callback", callback=nocolor,       help="Disable color output"),
                      make_option ("-s", "--is-sufficient",  action="callback", callback=is_sufficient, help="Check a depend string and see if current-vm is sufficiant",                        type="string", dest="dependstr"),
                      make_option ("-v", "--get-vm",         action="callback", callback=get_vm,        help="Return the best vm for this dep string",                                           type="string", dest="dependstr"),
-                     make_option ("-l", "--get-lowest",     action="callback", callback=get_lowest,    help="Return the lowest version in the depend, to be used with -target/-source fex.",    type="string", dest="dependstr")
+                     make_option ("-l", "--get-lowest",     action="callback", callback=get_lowest,    help="Return the lowest version in the depend, to be used with -target/-source fex.",    type="string", dest="dependstr"),
+                     make_option ("-p", "--need-virtual",   action="store",  help="When searching for a vm, make sure this virtual can be provided for.",             type="string", dest="need_virtual")
                    ]
 
     parser = OptionParser(usage, options_list)

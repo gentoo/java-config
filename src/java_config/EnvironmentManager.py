@@ -17,6 +17,7 @@ import os, re, sys
 class EnvironmentManager:
     virtual_machines = None
     packages = None
+    virtuals = None
     active = None
 
     vms_path = '/etc/env.d/java/'
@@ -56,9 +57,35 @@ class EnvironmentManager:
          
     def load_packages(self):
         self.packages = {}
+        self.virtuals = {}
         for package in iter(glob(self.pkg_path)):
-            pkg = Package(package, basename(dirname(package)))
+            pkg = Package(basename(dirname(package)), package)
             self.packages[pkg.name()] = pkg
+
+            for virt in pkg.provides():
+                if self.virtuals.has_key(virt):
+                    self.virtuals[virt].append(pkg)
+                else:
+                    self.virtuals[virt] = [pkg]
+
+        virtual_prefs = {}
+        try:
+            vprefs = EnvFileParser("/etc/java-config/virtuals")
+            virtual_prefs = vprefs.get_config()
+        except:
+            pass
+
+        for virt, providers in self.virtuals.iteritems():
+            if virtual_prefs.has_key(virt):
+                pref = virtual_prefs[virt]
+                for pkg in providers:
+                    if pkg.name() == pref:
+                        self.packages[virt] = pkg
+            else:
+                self.packages[virt] = providers[0]
+
+        for virt in self.get_active_vm().get_provides():
+            self.packages[virt] = Package("Provided by the active vm")
 
     def load_active_vm(self):
         vm_name = os.getenv("GENTOO_VM")
@@ -109,6 +136,11 @@ class EnvironmentManager:
         if self.packages is None:
             self.load_packages()
         return self.packages
+
+    def get_virtuals(self):
+        if self.virtuals is None:
+            self.load_packages()
+        return self.virtuals
 
     def query_packages(self, packages, query):
         results = []
@@ -206,6 +238,7 @@ class EnvironmentManager:
         for lcp in self.query_packages(pkgs, "CLASSPATH"):
             for cp in lcp.split(':'):
                 classpath.add(cp)
+
         return classpath
 
     def set_classpath(self, targets, pkgs):
@@ -261,6 +294,12 @@ class EnvironmentManager:
     
             stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
             stream.close()
+
+    def have_provider(self, virtual):
+        if self.get_virtuals().has_key(virtual):
+            return True
+        
+        return False
 
 EnvironmentManager = EnvironmentManager()
 
