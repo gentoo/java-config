@@ -23,7 +23,7 @@ setup (
 		('man/man1', ['man/java-config.1']),
 		('share/java-config/launcher', ['src/launcher.bash']),
 		('share/eselect/modules', ['src/eselect/java.eselect']),
-		('/etc/java-config/', ['config/jdk.conf','config/symlink-tools','config/compilers.conf']),
+		('/etc/java-config/', ['config/jdk.conf','config/symlink-tools','config/compilers.conf','config/virtuals']),
 		('/etc/env.d/',['config/20java-config']),
 	]
 )
