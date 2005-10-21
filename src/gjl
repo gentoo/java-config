@@ -164,7 +164,7 @@ if __name__ == '__main__':
 
     pkg = manager.get_package(options.package)
     if not pkg:
-        abort("Invalid package: %s" ( options.package ) )
+        abort("Invalid package: %s" % ( options.package ) )
 
     if options.get_vm:
         vm = get_vm(pkg)
