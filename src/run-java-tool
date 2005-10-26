@@ -16,7 +16,13 @@ if [[ -x ${bin} ]]; then
 elif [[ -x ${jrebin} ]]; then
 	exec ${jrebin} "${@}"
 else
-	echo "Want too run ${vmpath}/{,jre}/bin/${tool} but it does not exist or is not executable" >&2
+	if [[ ! -d ${vmpath} ]]; then
+		echo "Could not find: ${vmpath}" >&2
+		echo "Wrong system/user vm or GENTOO_VM" >&2
+	else
+		echo "Want too run ${vmpath}/{,jre}/bin/${tool} but it does not exist or is not executable" >&2
+		echo "Broken vm install" >&2
+	fi
 	exit 1
 fi
 

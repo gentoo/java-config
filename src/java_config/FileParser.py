@@ -26,7 +26,8 @@ class FileParser:
                 value = line [index+1:]
 
                 if value == '':
-                    raise InvalidConfigError(file)
+                    continue
+                    #raise InvalidConfigError(file)
 
                 value = value.strip('\\\'\"')
 
