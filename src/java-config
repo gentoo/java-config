@@ -50,7 +50,8 @@ def jar(option, opt, value, parser):
 
 def jdk_home(option, opt, value, parser):
     try:
-        printer._print(manager.get_active_vm().query('JDK_HOME'))
+        #printer._print(manager.get_active_vm().query('JDK_HOME'))
+        printer._print(manager.get_active_vm().query('JAVA_HOME'))
     except EnvironmentUndefinedError:
         print
     except InvalidVMError:
@@ -58,7 +59,8 @@ def jdk_home(option, opt, value, parser):
 
 def jre_home(option, opt, value, parser):
     try:
-        printer._print(manager.get_active_vm().query('JRE_HOME'))
+        #printer._print(manager.get_active_vm().query('JRE_HOME'))
+        printer._print(manager.get_active_vm().query('JAVA_HOME'))
     except EnvironmentUndefinedError:
         print
     except InvalidVMError:
