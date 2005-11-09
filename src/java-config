@@ -24,70 +24,47 @@ def version(option, opt, value, parser):
 def nocolor(option, opt, value, parser):
     printer.setColorOutputStatus(False)
 
-def java(option, opt, value, parser):
+def jdk_command(command):
     try:
-        printer._print(manager.get_active_vm().find_exec('java'))
+        printer._print(manager.get_active_vm().find_exec(command))
     except PermissionError:
-        fatalError("The java executable was not found in the Java path")
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+        fatalError("The " + command + " executable was not found in the Java path")
+
+def java(option, opt, value, parser):
+    jdk_command('java')
 
 def javac(option, opt, value, parser):
-    try:
-        printer._print(manager.get_active_vm().find_exec('javac'))
-    except PermissionError:
-        fatalError("The javac executable was not found in the Java path")
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+    jdk_command('javac')
 
 def jar(option, opt, value, parser):
+    jdk_command('jar')
+
+def print_java_home():
     try:
-        printer._print(manager.get_active_vm().find_exec('jar'))
-    except PermissionError:
-        fatalError("The jar executable was not found in the Java path")
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+        printer._print(manager.get_active_vm().query('JAVA_HOME'))
+    except EnvironmentUndefinedError:
+        print
 
 def jdk_home(option, opt, value, parser):
-    try:
-        #printer._print(manager.get_active_vm().query('JDK_HOME'))
-        printer._print(manager.get_active_vm().query('JAVA_HOME'))
-    except EnvironmentUndefinedError:
-        print
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+    print_java_home()
 
 def jre_home(option, opt, value, parser):
-    try:
-        #printer._print(manager.get_active_vm().query('JRE_HOME'))
-        printer._print(manager.get_active_vm().query('JAVA_HOME'))
-    except EnvironmentUndefinedError:
-        print
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+    print_java_home()
 
 def runtime(option, opt, value, parser):
     try:
         printer._print(manager.get_active_vm().query('BOOTCLASSPATH'))
     except EnvironmentUndefinedError:
         print
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
-
 
 def show_active_vm(option, opt, value, parser):
-    try:
-        printer._print(manager.get_active_vm().name())
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+    printer._print(manager.get_active_vm().name())
 
 def java_version(option, opt, value, parser):
     try:
         printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
     except PermissionError:
         fatalError("The java executable was not found in the Java path")
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
 
 def classpath(option, opt, value, parser):
     packages = value.split(',')
@@ -107,8 +84,6 @@ def get_env(option, opt, value, parser):
             printer._print(manager.get_active_vm().query(env))
     except EnvironmentUndefinedError:
         print
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
 
 def exec_cmd(option, opt, value, parser):
     for cmd in iter(value.split(',')):
@@ -316,6 +291,9 @@ if __name__ == '__main__':
                    ]
 
     parser = OptionParser(usage, options_list)
-    (options, args) = parser.parse_args()
+    try:
+        (options, args) = parser.parse_args()
+    except InvalidVMError:
+        fatalError("The active vm could not be found")
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
