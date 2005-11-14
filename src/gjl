@@ -14,7 +14,8 @@ from commands import getoutput
 from string import join
 from sets import Set
 from optparse import OptionParser, make_option, OptionValueError
-from os.path import basename, normpath
+import os
+from os.path import basename
 import sys
 
 # Needs some cleanup!
@@ -138,6 +139,11 @@ def get_jar(pkg, gjar):
                 return gjar
     return None
 
+def normpath(mypath):
+    newpath = os.path.normpath(mypath)
+    if newpath.startswith('//'):
+        return newpath[1:]
+    return newpath
 
 if __name__ == '__main__':
     usage =  "%prog [options]\n\n"
