@@ -291,9 +291,13 @@ if __name__ == '__main__':
                    ]
 
     parser = OptionParser(usage, options_list)
-    try:
-        (options, args) = parser.parse_args()
-    except InvalidVMError:
-        fatalError("The active vm could not be found")
+
+    if len(sys.argv) < 2: 
+        parser.print_help()
+    else:        
+        try:
+            (options, args) = parser.parse_args()
+        except InvalidVMError:
+            fatalError("The active vm could not be found")
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
