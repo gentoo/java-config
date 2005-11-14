@@ -14,7 +14,7 @@ from commands import getoutput
 from string import join
 from sets import Set
 from optparse import OptionParser, make_option, OptionValueError
-from os.path import basename
+from os.path import basename, normpath
 import sys
 
 # Needs some cleanup!
@@ -132,7 +132,9 @@ def get_jar(pkg, gjar):
     jars = pkg.classpath()
     if jars:
         for jar in jars.split(':'):
-            if gjar == sys.path.basename(jar):
+            if gjar == basename(jar):
+                return jar
+            if normpath(gjar) == normpath(jar):
                 return gjar
     return None
 
@@ -179,8 +181,8 @@ if __name__ == '__main__':
     if options.jar:
         jar = get_jar(pkg, options.jar)
         if jar:
-            print 'gjl_starte="-jar %s"' % (  )
+            print 'gjl_starte="-jar %s"' % ( jar )
         else:
-            abort("Couldn't find %s" % ( gjar ) )
+            abort("Couldn't find %s" % ( options.jar ) )
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
