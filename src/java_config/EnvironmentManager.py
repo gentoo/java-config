@@ -295,11 +295,12 @@ class EnvironmentManager:
             stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
             stream.close()
 
-    def have_provider(self, virtual):
-        if self.get_virtuals().has_key(virtual):
-            return True
+    def have_provider(self, virtuals):
+        for virtual in virtuals.split():
+            if not self.get_virtuals().has_key(virtual):
+                return False
         
-        return False
+        return True
 
 EnvironmentManager = EnvironmentManager()
 
