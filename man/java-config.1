@@ -44,6 +44,12 @@ Figure full path to one of the JDK/JRE utilities, such as
 and others.
 .
 .TP 
+\fB\-i PACKAGE(S), \-\-library=PACKAGE(S)\fI
+Print java library paths for these packages. Used for example in wrapper
+scripts like this: -Djava.library.path=$(java-config -i swt-3). Follows the same
+pkg[\-SLOT] convention as for example \-\-classpath.
+.
+.TP 
 \fB\-l \-\-list\-available\-packages\fI
 List available Java packages. Used for selection by
 .I \-\-classpath
