@@ -12,6 +12,7 @@ from string import upper
 
 
 class VM:
+    # Dont accept env files without these variables
     needed_vars = [ "JAVA_HOME", "PROVIDES_TYPE", "PROVIDES_VERSION" ]
 
     def __init__(self, file):
@@ -42,7 +43,7 @@ class VM:
         return self.file
 
     def name(self):
-        # TODO: MAKE THIS MODULAR!
+        # TODO: MAKE THIS MODULAR!a (compnerd)
         return self.file.split("/etc/env.d/java/20")[-1]
 
     def is_jre(self):

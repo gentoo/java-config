@@ -18,6 +18,9 @@ import os.path
 # Does however do the right thing for the only types of deps we should see
 # Ignore blockers: portage doesn't support them in a way that is usefull for us
 class VersionManager:
+    """
+    Used to parse dependency stringsa, and find the best/prefered vm to use.
+    """
     #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
     atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
     pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
@@ -37,6 +40,7 @@ class VersionManager:
             return self._prefs
 
     def parse_depend(self, atoms):
+        """Filter the dep string for usefull information"""
         matched_atoms = []
 
         matches = self.atom_parser.findall(atoms)
@@ -103,21 +107,21 @@ class VersionManager:
 
         prefs = self.get_prefs()
 
-        low = self.get_lowest(atoms)
+        low = self.get_lowest(atoms) # Lowest vm version we can use
         for atom in matched_atoms: 
             for pref in prefs:
-                if pref[0] == low or pref[0] == "*":
-                    for vm in pref[1]:
-                        gvm = self.find_vm(vm, atom)
+                if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
+                    for vm in pref[1]:               # Loop over the prefered once, and check if they are valid
+                        gvm = self.find_vm(vm, atom) 
                         if gvm:
-                            if need_virtual:
-                                if gvm.provides(need_virtual):
+                            if need_virtual:         # Package we are finding a vm for needs a virtual
+                                if gvm.provides(need_virtual): # we provide the virtual ourself good!
                                     return gvm
                                 else:
-                                    if EnvironmentManager().have_provider(need_virtual):
+                                    if EnvironmentManager().have_provider(need_virtual): # We have a package available that provides it, will use that
                                         return gvm
                             else:
-                                return gvm
+                                return gvm          # use it!
 
         low = self.get_lowest_atom(matched_atoms)
         vm = self.find_vm("", low)
@@ -137,6 +141,7 @@ class VersionManager:
         return None
 
     def version_cmp(self, version1, version2):
+        #Parly stolen from portage.py
         if version1 == version2:
             return 0
 

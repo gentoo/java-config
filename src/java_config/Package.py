@@ -7,7 +7,10 @@
 from FileParser import *
 
 class Package:
-    def __init__(self, name,file = None):
+    """
+    Class represeting an installed java package
+    """
+    def __init__(self, name, file = None):
         self._file = file
         self._name = name
         if self._file:
@@ -31,18 +34,27 @@ class Package:
             return "No Description"
 
     def classpath(self):
+        """
+        Returns this package's classpath
+        """
         if self._config.has_key("CLASSPATH"):
             return self._config["CLASSPATH"]
         else:
             return None
 
     def query(self, var):
+        """
+        Return the value of the requested var form the env file
+        """
         if self._config.has_key(var):
             return self._config[var]
         else:
             return None
 
     def deps(self):
+        """
+        Return all packages this package depeds on
+        """
         depstr = self.query("DEPEND")
         if depstr:
             return [dep.split("@") for dep in depstr.split(":")]
@@ -50,6 +62,9 @@ class Package:
             return []
 
     def provides(self):
+        """
+        Return the virtuals this package provides
+        """
         pv = self.query('PROVIDES')
         if pv:
             return pv.split(" ")

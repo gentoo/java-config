@@ -5,6 +5,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+import sys
+sys.path = ['/usr/share/java-config/pym']+sys.path
+
 from java_config import __version__
 from java_config.OutputFormatter import OutputFormatter
 from java_config.EnvironmentManager import EnvironmentManager
@@ -24,20 +27,20 @@ def version(option, opt, value, parser):
 def nocolor(option, opt, value, parser):
     printer.setColorOutputStatus(False)
 
-def jdk_command(command):
+def get_command(command):
     try:
         printer._print(manager.get_active_vm().find_exec(command))
     except PermissionError:
         fatalError("The " + command + " executable was not found in the Java path")
 
 def java(option, opt, value, parser):
-    jdk_command('java')
+    get_command('java')
 
 def javac(option, opt, value, parser):
-    jdk_command('javac')
+    get_command('javac')
 
 def jar(option, opt, value, parser):
-    jdk_command('jar')
+    get_command('jar')
 
 def print_java_home():
     try:
@@ -149,6 +152,7 @@ def set_user_vm(option, opt, value, parser):
             except PermissionError:
                 fatalError("You do not have enough permissions to set the VM!")
 
+# Deprecated
 def system_classpath_target():
     # TODO: MAKE THIS MODULAR!! (compnerd)
     return [{'file': '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
@@ -159,7 +163,7 @@ def user_classpath_target():
             {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath'),     'format': 'export %s=%s\n' },
             {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
         ]
-
+# Deprecated
 def set_system_classpath(option, opt, value, parser):
     deprecation_notice()
     if os.getuid() is 0:
@@ -173,6 +177,7 @@ def set_system_classpath(option, opt, value, parser):
     else:
        fatalError("You do not have enough permissions to set the system classpath!")
 
+# Deprecated
 def set_user_classpath(option, opt, value, parser):
     deprecation_notice()
     pkgs = value.split(',')
@@ -183,6 +188,7 @@ def set_user_classpath(option, opt, value, parser):
 
     user_update_env()
 
+# Deprecated
 def append_system_classpath(option, opt, value, parser):
     deprecation_notice()
     if os.getuid() is 0:
@@ -196,6 +202,7 @@ def append_system_classpath(option, opt, value, parser):
     else:
         fatalError("You do not have enough permissioins to append to the system classpath!")
 
+# Deprecated
 def append_user_classpath(option, opt, value, parser):
     deprecation_notice()
     pkgs = value.split(',')
@@ -206,6 +213,7 @@ def append_user_classpath(option, opt, value, parser):
 
     user_update_env()
 
+# Deprecated
 def clean_system_classpath(option, opt, value, parser):
     deprecation_notice()
     if os.getuid() is 0:
@@ -214,6 +222,7 @@ def clean_system_classpath(option, opt, value, parser):
     else:
         fatalError("You do not have enough permissions to clean the system classpath!")
 
+# Deprecated
 def clean_user_classpath(option, opt, value, parser):
     deprecation_notice()
     manager.clean_classpath(user_classpath_target())

@@ -15,12 +15,15 @@ from sets import Set
 import os, re, sys
 
 class EnvironmentManager:
+    """This is the central class, which manages all information from the 'environment'"""
     virtual_machines = None
     packages = None
     virtuals = None
     active = None
 
+    # Location of the vm ev files
     vms_path = '/etc/env.d/java/'
+    # Location of the package env files to load
     pkg_path = '/usr/share/*/package.env'
 
     def __init__(self):
@@ -30,6 +33,7 @@ class EnvironmentManager:
         return self
 
     def load_vms(self):
+        """Load all the vm files, and check for correctness"""
         self.virtual_machines = {} 
         
         if os.path.isdir(self.vms_path):
@@ -49,7 +53,7 @@ class EnvironmentManager:
                         continue
                     except InvalidVMError, ex:
                         printer = OutputFormatter()
-                        printer._printAlert("Old vm configuration file found: %s\nPlease update the vm package associated with the file\n(%s)" % ( conf, ex ))
+                        printer._printAlert("Invalid vm configuration file found: %s\nJava-config 2 requires some new variables, please update all your jdk/jre:  file\n(%s)" % ( conf, ex ))
                         continue
 
                     self.virtual_machines[count] = vm
@@ -250,6 +254,7 @@ class EnvironmentManager:
             self.write_classpath(targets, classpath)
 
     def get_old_classpath(self, target):
+        """Returns the current set classpath in the file"""
         oldClasspath = ''
         if os.path.isfile(target['file']):
             try:
@@ -302,6 +307,7 @@ class EnvironmentManager:
         
         return True
 
+# Singleton hack 
 EnvironmentManager = EnvironmentManager()
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

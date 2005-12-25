@@ -9,6 +9,10 @@ import os
 
 
 class FileParser:
+    """
+    Parse some basic key=value configuration files.
+    Values are passed to the pair function.
+    """
     def parse(self, file):
         if not os.path.isfile(file):
             raise InvalidConfigError(file)
@@ -50,6 +54,9 @@ class FileParser:
         pass
 
 class EnvFileParser(FileParser):
+    """
+    Stores the configuation in a dictionary
+    """
     def __init__(self, file):
         self.config = {}
         self.parse(file)
@@ -61,6 +68,9 @@ class EnvFileParser(FileParser):
         return self.config.copy()
 
 class PrefsFileParser(FileParser):
+    """
+    Stores it in a list.
+    """
     def __init__(self, file):
         self.config = []
         self.parse(file)
