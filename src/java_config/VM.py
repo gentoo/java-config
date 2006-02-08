@@ -44,7 +44,7 @@ class VM:
 
     def name(self):
         # TODO: MAKE THIS MODULAR!a (compnerd)
-        return self.file.split("/etc/env.d/java/20")[-1]
+        return self.file.split("/usr/share/java-config-2/vm/")[-1]
 
     def is_jre(self):
         return self.is_type("JRE")

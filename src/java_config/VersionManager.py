@@ -23,7 +23,7 @@ class VersionManager:
     """
     #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
     atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
-    pref_files = ['/etc/java-config/jdk.conf', '/usr/share/java-config/config/jdk-defaults.conf']
+    pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
     _prefs = None
 
     def __init__(self):

@@ -6,7 +6,7 @@ from os import listdir
 
 setup (
 	name = 'java-config',
-	version = '2.0.19',
+	version = '2.0.20',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
@@ -21,11 +21,12 @@ setup (
 	#package_dir = { 'java_config' : 'src/java_config' },
 	scripts = ['src/java-config','src/depend-java-query','src/run-java-tool', 'src/gjl'],
 	data_files = [
-		('share/java-config/pym/java_config/', ['src/java_config/'+file for file in listdir('src/java_config/')] ),
+		('share/java-config-2/pym/java_config/', ['src/java_config/'+file for file in listdir('src/java_config/')] ),
 		('share/man/man1', ['man/java-config.1']),
-		('share/java-config/launcher', ['src/launcher.bash']),
+		('share/java-config-2/launcher', ['src/launcher.bash']),
 		('share/eselect/modules', ['src/eselect/java.eselect']),
-		('/etc/java-config/', ['config/jdk.conf','config/symlink-tools','config/compilers.conf','config/virtuals']),
+		('/etc/java-config-2/', ['config/virtuals']),
+		('/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
 		('/etc/env.d/',['config/20java-config']),
 	]
 )

@@ -22,7 +22,7 @@ class EnvironmentManager:
     active = None
 
     # Location of the vm ev files
-    vms_path = '/etc/env.d/java/'
+    vms_path = '/usr/share/java-config-2/vm'
     # Location of the package env files to load
     pkg_path = '/usr/share/*/package.env'
 
@@ -41,23 +41,22 @@ class EnvironmentManager:
             filelist = os.listdir(self.vms_path)
             filelist.sort()
             for file in filelist:
-                if file.startswith("20"):
-                    conf = os.path.join(self.vms_path,file)
-                    vm = None
+                conf = os.path.join(self.vms_path,file)
+                vm = None
 
-                    try:
-                        vm = VM(conf)
-                    except InvalidConfigError:
-                        continue
-                    except PermissionError:
-                        continue
-                    except InvalidVMError, ex:
-                        printer = OutputFormatter()
-                        printer._printAlert("Invalid vm configuration file found: %s\nJava-config 2 requires some new variables, please update all your jdk/jre:  file\n(%s)" % ( conf, ex ))
-                        continue
+                try:
+                    vm = VM(conf)
+                except InvalidConfigError:
+                    continue
+                except PermissionError:
+                    continue
+                except InvalidVMError, ex:
+                    printer = OutputFormatter()
+                    printer._printAlert("Invalid vm configuration file found: %s\nJava-config 2 requires some new variables, please update all your jdk/jre:  file\n(%s)" % ( conf, ex ))
+                    continue
 
-                    self.virtual_machines[count] = vm
-                    count += 1
+                self.virtual_machines[count] = vm
+                count += 1
          
     def load_packages(self):
         self.packages = {}
@@ -74,7 +73,7 @@ class EnvironmentManager:
 
         virtual_prefs = {}
         try:
-            vprefs = EnvFileParser("/etc/java-config/virtuals")
+            vprefs = EnvFileParser("/etc/java-config-2/virtuals")
             virtual_prefs = vprefs.get_config()
         except:
             pass
@@ -224,10 +223,10 @@ class EnvironmentManager:
         return [ self.user_vm_link(), self.system_vm_link() ]
 
     def user_vm_link(self):
-        return  os.path.join(os.environ.get('HOME'), '.gentoo/user-vm')
+        return  os.path.join(os.environ.get('HOME'), '.gentoo/java-config-2/current-user-vm')
 
     def system_vm_link(self):
-        return '/etc/java-config/system-vm'
+        return '/etc/java-config-2/current-system-vm'
 
     def clean_classpath(self, targets):
         for target in targets:

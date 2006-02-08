@@ -8,8 +8,8 @@ abort() {
 
 # Source package env
 # ---------------------
-gjl_user_env="${HOME}/.gentoo/env.d/22${gjl_package}"
-gjl_system_env="/etc/env.d/java/22${gjl_package}"
+gjl_user_env="${HOME}/.gentoo/java-config-2/launcher.d/${gjl_package}"
+gjl_system_env="/etc/java-config-2/launcher.d/${gjl_package}"
 if [[ -f "${gjl_user_env}" ]]; then
 	source "${gjl_user_env}"
 elif [[ -f "${gjl_system_env}" ]]; then
