@@ -19,7 +19,7 @@ setup (
 	url = 'http://www.gentoo.org',
 	#packages = ['java_config'],
 	#package_dir = { 'java_config' : 'src/java_config' },
-	scripts = ['src/java-config','src/depend-java-query','src/run-java-tool', 'src/gjl'],
+	scripts = ['src/java-config-2','src/depend-java-query','src/run-java-tool', 'src/gjl'],
 	data_files = [
 		('share/java-config-2/pym/java_config/', ['src/java_config/'+file for file in listdir('src/java_config/')] ),
 		('share/man/man1', ['man/java-config.1']),
