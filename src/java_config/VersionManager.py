@@ -40,7 +40,7 @@ class VersionManager:
             return self._prefs
 
     def parse_depend(self, atoms):
-        """Filter the dep string for usefull information"""
+        """Filter the dependency string for useful information"""
         matched_atoms = []
 
         matches = self.atom_parser.findall(atoms)
@@ -86,7 +86,7 @@ class VersionManager:
         if lowest:
             return atom
         else:
-            raise Exception("Couldnt find a vm dep")
+            raise Exception("Couldn't find a VM dep")
 
     def get_lowest(self, atoms):
         atoms = self.parse_depend(atoms)
@@ -96,7 +96,7 @@ class VersionManager:
         if lowest:
             return '.'.join(lowest.strip('*').split('.')[0:2])
         else:
-            raise Exception("Couldnt find a vm dep")
+            raise Exception("Couldn't find a VM dep")
 
 
     def get_vm(self, atoms, need_virtual = None):
@@ -128,7 +128,7 @@ class VersionManager:
         if vm:
             return vm
         else:
-            raise Exception("Couldnt find suitable VM, possible Invalid dep string")
+            raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
 
     def find_vm(self, vm, atom):
         vm_list = EnvironmentManager().find_vm(vm)

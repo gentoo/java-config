@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     usage =  "depend-java-query [options]\n\n"
     usage += "Java Dep Query Utility Version " + str(__version__) + "\n"
-    usage += "Copyright 2004-2005 Gentoo Foundation\n"
+    usage += "Copyright 2004-2006 Gentoo Foundation\n"
     usage += "Distributed under the terms of the GNU General Public License v2\n"
     usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
