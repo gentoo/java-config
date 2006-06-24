@@ -4,7 +4,7 @@
 
 # Based on kernel.eselect
 
-DESCRIPTION="Manage the java system and user vm"
+DESCRIPTION="Manage the Java system and user VM"
 MAINTAINER="java@gentoo.org"
 SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
