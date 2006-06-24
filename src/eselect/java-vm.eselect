@@ -10,8 +10,8 @@ SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
 
 VM_BASE=/usr/lib/jvm/
-VM_SYSTEM=/etc/java-config/system-vm
-VM_USER=${HOME}/.gentoo/user-vm
+VM_SYSTEM="/etc/java-config-2/current-system-vm"
+VM_USER="${HOME}/.gentoo/java-config-2/current-user-vm"
 
 find_targets() {
 	local f
@@ -54,12 +54,12 @@ my_show() {
 ### list action ###
 
 describe_list() {
-	echo "List available vms"
+	echo "List Available Virtual Machines"
 }
 
 do_list() {
 	targets=( $(find_targets) )
-	write_list_start "Available java vms:"
+	write_list_start "Available Java Virtual Machines:"
 	if [[ -n ${targets[@]} ]] ; then
 		local i system_name user_name
 	
@@ -67,12 +67,14 @@ do_list() {
 		[[ -L ${VM_USER} ]] && user_name=$(sym_to_vm ${VM_USER})
 
 		for (( i = 0 ; i < ${#targets[@]} ; i = i + 1 )) ; do
+			local mark=""
 			if [[ ${targets[${i}]} == ${system_name} ]]; then
-				targets[${i}]="${targets[${i}]} $(highlight 'system-vm')"
+				mark="${mark} $(highlight 'system-vm')"
 			fi
-			if [[ ${targets[${i}]} == ${user_user} ]]; then
-				targets[${i}]="${targets[${i}]} $(highlight 'user-vm' )"
+			if [[ ${targets[${i}]} == ${user_name} ]]; then
+				mark="${mark} $(highlight 'user-vm' )"
 			fi
+			targets[${i}]="${targets[${i}]} ${mark}"
 		done
 		write_numbered_list "${targets[@]}"
 	else
@@ -83,7 +85,7 @@ do_list() {
 ### set action ###
 
 describe_set() {
-	echo "Set a new system vm"
+	echo "Set a new system-vm"
 }
 
 do_set() {
@@ -97,7 +99,11 @@ do_set() {
 			die -q "Sorry, you don't have enough premission to set system"
 		fi
 	elif [[ ${1} == "user" ]]; then
-		my_set ${VM_USER} ${2}
+		if [[ ${UID} != 0 ]]; then 
+			my_set ${VM_USER} ${2}
+		else
+			die -q "Sorry, you cannot set a user vm as root. Set the system vm instead"
+		fi
 	fi
 }
 
@@ -113,7 +119,7 @@ my_set() {
 		die -q "Sorry, ${symlink}"
 
 	else
-		set_symlink "${target}" "${symlink}"|| die -q "Couldn't set a new symlink"
+		set_symlink "${target}" "${symlink}" || die -q "Couldn't set a new symlink"
 	fi
 }
 
