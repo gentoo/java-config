@@ -23,6 +23,29 @@ class VersionManager:
     """
     #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
     atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
+    or_parser = re.compile(r"\|\| \( (.*) \)")
+    # TODO have a || parser
+    # TODO have a java use flag parser
+    re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
+    or_parser = re.compile(r"\|\| \( (.*) \)")
+    # TODO have a || parser
+    # TODO have a java use flag parser
+    pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
+    _prefs = None
+
+    def __init__(self):
+        pass
+
+    def get_prefs(self):
+        if self._prefs:
+            return self._prefs
+        else:
+            self._prefs = []
+            for file in self.pref_files:
+                if os.path.exists(file):
+                    self._prefs += PrefsFileParser(file).get_config()
+            return self._prefs
+
     pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
     _prefs = None
 

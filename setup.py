@@ -22,7 +22,7 @@ setup (
 	scripts = ['src/java-config-2','src/depend-java-query','src/run-java-tool', 'src/gjl'],
 	data_files = [
 		('share/java-config-2/pym/java_config/', ['src/java_config/'+file for file in listdir('src/java_config/')] ),
-		('share/man/man1', ['man/java-config.1']),
+		('share/man/man1', ['man/java-config-2.1']),
 		('share/java-config-2/launcher', ['src/launcher.bash']),
 		('share/eselect/modules', ['src/eselect/java-vm.eselect']),
 		('/etc/java-config-2/', ['config/virtuals']),
