@@ -25,6 +25,7 @@ SYSTEM_PLUGIN="${SYSTEM_PLUGIN_DIR}/javaplugin.so"
 
 		for (( i = 0 ; i < ${#targets[@]} ; i = i + 1 )) ; do
 			local vm=${targets[${i}]}
+			local mark=""
 			if [[ ${vm} == ${system_name} ]]; then
 				mark="${mark} $(highlight 'current')"
 			fi
