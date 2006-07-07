@@ -45,6 +45,10 @@ SYSTEM_PLUGIN="${SYSTEM_PLUGIN_DIR}/javaplugin.so"
 	do_set() {
 		# TODO check for # of args
 		local vm=${1}
+		if is_number "${vm}" ; then
+			local targets=( $(get_targets) )
+			vm=${targets[$(( ${vm} - 1 ))]}
+		fi
 		local plugin="${PLUGINS_HOME}/${vm}-javaplugin.so"
 
 		if [[ ! -f ${plugin} ]]; then
