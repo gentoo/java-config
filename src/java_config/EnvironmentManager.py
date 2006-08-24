@@ -220,7 +220,11 @@ class EnvironmentManager:
         os.symlink('/usr/lib/jvm/'+vm.name(),target)
 
     def vm_links(self):
-        return [ self.user_vm_link(), self.system_vm_link() ]
+        # Don't try to use user-vm if HOME is undefined
+        if os.environ.get('HOME') == None:
+            return [ self.system_vm_link() ]
+        else:
+            return [ self.user_vm_link(), self.system_vm_link() ]
 
     def user_vm_link(self):
         return  os.path.join(os.environ.get('HOME'), '.gentoo/java-config-2/current-user-vm')
