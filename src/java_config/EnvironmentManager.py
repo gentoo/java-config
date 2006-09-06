@@ -244,7 +244,8 @@ class EnvironmentManager:
         classpath = Set()
         for lcp in self.query_packages(pkgs, "CLASSPATH"):
             for cp in lcp.split(':'):
-                classpath.add(cp)
+                if cp != '':
+                    classpath.add(cp)
 
         return classpath
 
