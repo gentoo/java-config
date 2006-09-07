@@ -35,7 +35,7 @@ class EnvironmentManager:
     def load_vms(self):
         """Load all the vm files, and check for correctness"""
         self.virtual_machines = {} 
-        
+
         if os.path.isdir(self.vms_path):
             count = 1
             filelist = os.listdir(self.vms_path)
@@ -57,7 +57,7 @@ class EnvironmentManager:
 
                 self.virtual_machines[count] = vm
                 count += 1
-         
+
     def load_packages(self):
         self.packages = {}
         self.virtuals = {}
@@ -134,7 +134,7 @@ class EnvironmentManager:
             return all_pkg[pkgname]
         else:
             return  None
-    
+
     def get_packages(self):
         if self.packages is None:
             self.load_packages()
@@ -240,14 +240,66 @@ class EnvironmentManager:
                 except IOError:
                     raise PermissionError
 
-    def build_classpath(self, pkgs):
-        classpath = Set()
-        for lcp in self.query_packages(pkgs, "CLASSPATH"):
-            for cp in lcp.split(':'):
-                if cp != '':
-                    classpath.add(cp)
+    def add_path_elements(self, elements, path):
+        if elements:
+            for p in elements.split(':'):
+                if p != '':
+                    path.add(p)
 
-        return classpath
+    def build_path(self, pkgs, query):
+        path = Set()
+        for lpath in self.query_packages(pkgs, query):
+            self.add_path_elements(lpath, path)
+
+        return path
+
+    def build_classpath(self, pkgs):
+        return self.build_path(pkgs, "CLASSPATH")
+
+    def add_dep_classpath(self, pkg, dep, classpath): 
+        pkg_cp = pkg.classpath()
+        if pkg_cp:
+            if not dep or len(dep) == 1:
+                self.add_path_elements(pkg_cp, classpath)
+            else:
+                for cp in pkg_cp.split(':'):
+                    if basename(cp) == dep[0]:
+                        classpath.add(cp)
+
+    def build_dep_path(self, pkgs, query, missing_deps):
+        path = Set()
+
+        unresolved = Set()
+        resolved = Set()
+
+        for p in pkgs[:]:
+            pkg = self.get_package(p)
+            if pkg:
+                pkgs.remove(p)
+                lpath = pkg.query(query)
+                self.add_path_elements(lpath, path)
+                unresolved.add(pkg)
+
+        while len(unresolved) > 0:
+            pkg = unresolved.pop()
+            resolved.add(pkg)
+
+            if query != "CLASSPATH":
+                lpath = pkg.query(query)
+                self.add_path_elements(lpath, path)
+
+            for dep in pkg.deps():
+                p = self.get_package(dep[-1])
+
+                if p:
+                    if p not in resolved:
+                        unresolved.add(p)
+                    if query == "CLASSPATH":
+                        self.add_dep_classpath(p, dep, path)
+                else:
+                    missing_deps.add(dep[-1])
+
+        return path
 
     def set_classpath(self, targets, pkgs):
         classpath = self.build_classpath(pkgs)
@@ -285,7 +337,7 @@ class EnvironmentManager:
             for target in targets:
                 for cp in self.get_old_classpath(target).split(':'):
                     classpath.add(cp)
-    
+
             self.clean_classpath(targets)
 
             self.write_classpath(targets, classpath)
@@ -300,7 +352,7 @@ class EnvironmentManager:
                 stream = open(target['file'], 'w')
             except IOError:
                 raise PermissionError
-    
+
             stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
             stream.close()
 
@@ -308,7 +360,7 @@ class EnvironmentManager:
         for virtual in virtuals.split():
             if not self.get_virtuals().has_key(virtual):
                 return False
-        
+
         return True
 
 # Singleton hack 
