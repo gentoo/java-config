@@ -150,6 +150,8 @@ def set_system_vm(option, opt, value, parser):
                 fatalError("You do not have enough permissions to set the system VM!")
             except EnvironmentUndefinedError:
                 fatalError("The selected VM is missing critical environment variables.")
+            except InvalidConfigError, e:
+                fatalError("Target file already exists and is not a symlink: %s" % e.file)
         else:
             fatalError("You do not have enough permissions to set the system VM!")
 
@@ -166,6 +168,8 @@ def set_user_vm(option, opt, value, parser):
                 manager.set_user_vm(vm)
             except PermissionError:
                 fatalError("You do not have enough permissions to set the VM!")
+            except InvalidConfigError, e:
+                fatalError("Target file already exists and is not a symlink: %s" % e.file)
 
 # Deprecated
 def system_classpath_target():

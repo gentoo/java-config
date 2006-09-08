@@ -116,7 +116,7 @@ my_set() {
 		set_symlink "${target}" "${symlink}"  || die -q "Couldn't set a new symlink"
 
 	elif [[ -e "${symlink}" ]] ; then
-		die -q "Sorry, ${symlink}"
+		die -q "Target file already exists and is not a symlink: ${symlink}"
 
 	else
 		set_symlink "${target}" "${symlink}" || die -q "Couldn't set a new symlink"
