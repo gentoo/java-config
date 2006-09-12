@@ -89,7 +89,7 @@ def get_args(pkg):
 
     classpath, library = get_pkg_args(pkg)
     if classpath:
-        envcp = os.environ['CLASSPATH']
+        envcp = os.getenv('CLASSPATH')
 
         if envcp:
             classpath = ':'.join((envcp, classpath))
