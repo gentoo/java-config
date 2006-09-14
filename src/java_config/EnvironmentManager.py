@@ -214,11 +214,10 @@ class EnvironmentManager:
         if not os.path.isdir(sym_dir):
             os.makedirs(sym_dir)
 
-        if os.path.lexists(target):
-            if os.path.islink(target):
-                os.remove(target)
-            else:
-                raise InvalidConfigError(target)
+        if os.path.islink(target):
+            os.remove(target)
+        elif os.path.exists(target):
+            raise InvalidConfigError(target)
 
         os.symlink('/usr/lib/jvm/'+vm.name(),target)
 
