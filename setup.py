@@ -6,7 +6,7 @@ from os import listdir
 
 setup (
 	name = 'java-config',
-	version = '2.0.28',
+	version = '2.0.29',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
