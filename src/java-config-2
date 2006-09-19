@@ -61,6 +61,18 @@ def runtime(option, opt, value, parser):
     except EnvironmentUndefinedError:
         print
 
+def tools(option, opt, value, parser):
+	jh = ''
+	try:
+		jh = manager.get_active_vm().query('JAVA_HOME')
+	except EnvironmentUndefinedError:
+		print
+	tools_jar = jh + '/lib/tools.jar'
+	if os.path.exists(tools_jar):
+		printer._print(tools_jar)
+	else:
+		print
+
 def show_active_vm(option, opt, value, parser):
     printer._print(manager.get_active_vm().name())
 
@@ -290,6 +302,7 @@ if __name__ == '__main__':
                      make_option ("-O", "--jdk-home",                action="callback", callback=jdk_home,                  help="Print the location of the active JAVA_HOME"),
                      make_option ("-o", "--jre-home",                action="callback", callback=jre_home,                  help="Print the location of the active JAVA_HOME"),
                      make_option ("-r", "--runtime",                 action="callback", callback=runtime,                   help="Print the runtime classpathh"),
+                     make_option ("-t", "--tools",                 action="callback", callback=tools,                   help="Print the path to tools.jar"),
                      make_option ("-f", "--show-active-vm",          action="callback", callback=show_active_vm,            help="Print the active Virtual Machine"),
                      make_option ("-v", "--java-version",            action="callback", callback=java_version,              help="Print version information for the active VM"),
                      make_option ("-g", "--get-env",                 action="callback", callback=get_env,                   help="Print an environment variable from the active VM",                 type="string", dest="var"),
