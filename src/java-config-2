@@ -135,10 +135,7 @@ def list_available_vms(option, opt, value, parser):
         if vm is active:
             printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
         else:
-            if vm.is_jdk():
-                printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
-            else:
-                printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
+            printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
 
 def print_environment(option, opt, value, parser):
     vm = manager.get_vm(value) 
