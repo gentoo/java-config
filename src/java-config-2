@@ -130,12 +130,13 @@ def list_available_vms(option, opt, value, parser):
     except InvalidVMError:
         active = None
 
+    printer._print('%HThe following VMs are available for generation-2:%$')
     for i, vm in vm_list.iteritems():
         if vm is active:
-            printer._print('%H%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
+            printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
         else:
             if vm.is_jdk():
-                printer._print('%H' + '%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
+                printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
             else:
                 printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
 
