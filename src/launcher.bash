@@ -25,7 +25,13 @@ if [[ -n ${gjl_main} ]]; then
 elif [[ -n ${gjl_jar} ]]; then
 	request="${request} --get-jar ${gjl_jar}"
 else
-	abort "Need main or jar to start"
+	# Check if the installed package has only one jar and use that
+	jars=$(java-config --classpath=${gjl_package})
+	if [[ "${jars/:}" = "${jars}" ]]; then
+		request="${request} --get-jar ${jars}"
+	else
+		abort "Need main or jar to start"
+	fi
 fi
 
 if [[ -z ${GENTOO_VM} ]]; then
