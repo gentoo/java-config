@@ -36,8 +36,8 @@ fi
 
 if [[ -z ${GENTOO_VM} ]]; then
 	request="${request} --get-vm"
-else
-	echo "found \$GENTOO_VM not trying to change vm" >&2
+elif [[ -n ${GJL_DEBUG} ]]; then
+	echo "Detected \$GENTOO_VM is set, not trying to change vm" >&2
 fi
 
 # Get the information we need
