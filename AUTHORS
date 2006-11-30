@@ -1,8 +1,14 @@
-Author: Saleem Abdulrasool <compnerd@gentoo.org>
-Author: 
-Maintainer: Gentoo Java Herd <java@gentoo.org>
-Java Subsystem Configuration Utility for Gentoo Linux
+Maintainer: Gentoo Java Team <java@gentoo.org>
+Java Configuration Utility for Gentoo
 
-Based on the collective works of the following:
+Some people who have contributed over time:
+Jason A Mobarak <aether@gentoo.org>
+Josh Nichols <nichoj@gentoo.org>
 Karl Trygve Kalleberg <karltk@gentoo.org>
-Jason A Mobarak <aether@gentoo.org> 
+Petteri Räty <betelgeuse@gentoo.org>
+Saleem Abdulrasool <compnerd@gentoo.org>
+Thomas Matthijs <axxo@gentoo.org>
+Vlastimil Badka <caster@gentoo.org>
+
+Mail java@gentoo.org to your name on this list if you
+have contributed to java-config in the past.
