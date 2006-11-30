@@ -1,7 +1,7 @@
 #!/usr/bin/python -E
 # -*- coding: UTF-8 -*-
 
-# Copyright 2004-2005 Gentoo Foundation
+# Copyright 2004-2006 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -43,35 +43,26 @@ def javac(option, opt, value, parser):
 def jar(option, opt, value, parser):
     get_command('jar')
 
-def print_java_home():
+def query_active_vm(var):
     try:
-        printer._print(manager.get_active_vm().query('JAVA_HOME'))
+        printer._print(manager.get_active_vm().query(var))
     except EnvironmentUndefinedError:
-        print
+        fatalError("%s could not be found in the active VM environment" % var)
 
-def jdk_home(option, opt, value, parser):
-    print_java_home()
-
-def jre_home(option, opt, value, parser):
-    print_java_home()
-
-def runtime(option, opt, value, parser):
-    try:
-        printer._print(manager.get_active_vm().query('BOOTCLASSPATH'))
-    except EnvironmentUndefinedError:
-        print
+def query_active_vm_cb(option, opt, value, parse, *args):
+    return query_active_vm(args[0])
 
 def tools(option, opt, value, parser):
 	jh = ''
 	try:
 		jh = manager.get_active_vm().query('JAVA_HOME')
 	except EnvironmentUndefinedError:
-		print
+		fatalError("JAVA_HOME not found in the active VM environment")
 	tools_jar = jh + '/lib/tools.jar'
 	if os.path.exists(tools_jar):
 		printer._print(tools_jar)
 	else:
-		print
+		sys.exit(1);
 
 def show_active_vm(option, opt, value, parser):
     printer._print(manager.get_active_vm().name())
@@ -109,11 +100,8 @@ def query_pkg_path(option, opt, value, parser, query):
         sys.exit(1)
 
 def get_env(option, opt, value, parser):
-    try:
-        for env in value.split(','):
-            printer._print(manager.get_active_vm().query(env))
-    except EnvironmentUndefinedError:
-        print
+    for env in value.split(','):
+        query_active_vm(env)
 
 def exec_cmd(option, opt, value, parser):
     for cmd in iter(value.split(',')):
@@ -296,9 +284,6 @@ if __name__ == '__main__':
                      make_option ("-J", "--java",                    action="callback", callback=java,                      help="Print the location of the java executable"),
                      make_option ("-c", "--javac",                   action="callback", callback=javac,                     help="Print the location of the javac executable"),
                      make_option ("-j", "--jar",                     action="callback", callback=jar,                       help="Print the location of the jar executable"),
-                     make_option ("-O", "--jdk-home",                action="callback", callback=jdk_home,                  help="Print the location of the active JAVA_HOME"),
-                     make_option ("-o", "--jre-home",                action="callback", callback=jre_home,                  help="Print the location of the active JAVA_HOME"),
-                     make_option ("-r", "--runtime",                 action="callback", callback=runtime,                   help="Print the runtime classpathh"),
                      make_option ("-t", "--tools",                 action="callback", callback=tools,                   help="Print the path to tools.jar"),
                      make_option ("-f", "--show-active-vm",          action="callback", callback=show_active_vm,            help="Print the active Virtual Machine"),
                      make_option ("-v", "--java-version",            action="callback", callback=java_version,              help="Print version information for the active VM"),
@@ -317,7 +302,14 @@ if __name__ == '__main__':
                      make_option ("-X", "--clean-system-classpath",  action="callback", callback=clean_system_classpath,    help="(Deprecated) Clean the current system classpath"),
                      make_option ("-a", "--set-user-classpath",      action="callback", callback=set_user_classpath,        help="(Deprecated) Set the user classpath to include the libraries",     type="string", dest="package(s)"),
                      make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,     help="(Deprecated) Append the libraries to the user classpath",          type="string", dest="package(s)"),
-                     make_option ("-x", "--clean-user-classpath",    action="callback", callback=clean_user_classpath,      help="(Deprecated) Clean the current user classpath")
+                     make_option ("-x", "--clean-user-classpath",    action="callback", callback=clean_user_classpath,      help="(Deprecated) Clean the current user classpath"),
+
+                     make_option ("-r", "--runtime",                 action="callback", help="Print the runtime classpath",
+                                     callback=query_active_vm_cb, callback_args=("BOOTCLASSPATH",)),
+                     make_option ("-O", "--jdk-home",                action="callback", help="Print the location of the active JAVA_HOME",
+                                     callback=query_active_vm_cb, callback_args=("JAVA_HOME",)),
+                     make_option ("-o", "--jre-home",                action="callback", help="Print the location of the active JAVA_HOME",
+                                     callback=query_active_vm_cb, callback_args=("JAVA_HOME",))
                    ]
 
     parser = OptionParser(usage, options_list)
