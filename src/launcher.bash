@@ -42,6 +42,7 @@ fi
 
 # Get the information we need
 # ----------------------------
+[[ "${GJL_DEBUG}" ]] && echo "Calling: gjl ${request}"
 results=$(gjl ${request}) || abort "Couldn't get needed information"
 eval $results
 
