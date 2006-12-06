@@ -6,8 +6,6 @@
 
 import sys
 sys.path.insert(0, "/usr/lib/portage/pym")
-from portage_dep import use_reduce,paren_reduce
-from portage import flatten
 
 import re
 from string import upper
@@ -52,6 +50,11 @@ class VersionManager:
         # gjl does not use use flags
         try:
             use = os.environ["USE"]
+
+            # Local import to avoid initializing portage elsewhere
+            from portage_dep import use_reduce,paren_reduce
+            from portage import flatten
+
             # Normalize white space for Portage
             atoms = " ".join(atoms.split())
 
