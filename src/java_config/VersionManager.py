@@ -4,6 +4,11 @@
 # Distributed under the terms of the GNU General Public license v2
 # $Header: $
 
+import sys
+sys.path.insert(0, "/usr/lib/portage/pym")
+from portage_dep import use_reduce,paren_reduce
+from portage import flatten
+
 import re
 from string import upper
 
@@ -42,6 +47,18 @@ class VersionManager:
     def parse_depend(self, atoms):
         """Filter the dependency string for useful information"""
         matched_atoms = []
+
+        import os
+        # gjl does not use use flags
+        try:
+            use = os.environ["USE"]
+            # Normalize white space for Portage
+            atoms = " ".join(atoms.split())
+
+            # Remove conditional depends that are not turned on
+            atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
+        except KeyError:
+            pass
 
         matches = self.atom_parser.findall(atoms)
 
