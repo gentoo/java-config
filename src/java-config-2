@@ -318,7 +318,18 @@ if __name__ == '__main__':
         parser.print_help()
     else:        
         try:
-            (options, args) = parser.parse_args()
+            # Makes sure that --nocolor is always the first argument 
+            # because otherwise callbacks before it will output
+            # colored output
+            args = sys.argv[1:]
+            for opt in ( '-n', '--nocolor'):
+                try:
+                    args.remove(opt)
+                    args.insert(0,opt)
+                except ValueError:
+                    pass
+
+            (options, args) = parser.parse_args(args=args)
         except InvalidVMError:
             fatalError("The active vm could not be found")
 
