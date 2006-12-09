@@ -244,6 +244,9 @@ def clean_user_classpath(option, opt, value, parser):
     manager.clean_classpath(user_classpath_target())
 
 def select_vm(option, opt, value, parser):
+    if value == '':
+        return
+
     vm = manager.get_vm(value)
     if vm:
         manager.set_active_vm(manager.get_vm(value))
