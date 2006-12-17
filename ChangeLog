@@ -1,0 +1,10 @@
+ChangeLog was empty before 2.0.31
+
+Changes in 2.0.31:
+  * Added support for conditional DEPEND atoms
+    http://bugs.gentoo.org/show_bug.cgi?id=156228
+  * java-config now always respects --nocolor
+    http://bugs.gentoo.org/show_bug.cgi?id=154493
+  * gjl can now be run with only a jar if the jar
+    does not have dependencies
+  * prefer sun-jdk over ibm-jdk-bin on x86 and amd64
