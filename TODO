@@ -1,1 +1,5 @@
 1) EnvFileParser chokes on multiline vars
+For 2.1:
+  - handling virtuals
+    http://overlays.gentoo.org/proj/java/wiki/Virtuals
+  - Make this install ChangeLog
