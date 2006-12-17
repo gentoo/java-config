@@ -8,3 +8,4 @@ Changes in 2.0.31:
   * gjl can now be run with only a jar if the jar
     does not have dependencies
   * prefer sun-jdk over ibm-jdk-bin on x86 and amd64
+  * Added jdk-defaults-x86-fbsd.conf
