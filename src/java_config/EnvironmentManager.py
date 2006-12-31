@@ -136,6 +136,11 @@ class EnvironmentManager:
             return  None
 
     def get_packages(self):
+        """
+        Returns a dictionary of Packages indexed by their names.
+        For java-config-3 we probably want to change this to return
+        the list of packages directly.
+        """
         if self.packages is None:
             self.load_packages()
         return self.packages

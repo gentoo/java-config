@@ -3,3 +3,8 @@ For 2.1:
   - handling virtuals
     http://overlays.gentoo.org/proj/java/wiki/Virtuals
   - Make this install ChangeLog
+
+For 3.0:
+  - Make EnvironmentManager's get_packages function return
+    a list packages instead of a dictionary. For lookup by name
+	we already have the get_package function.
