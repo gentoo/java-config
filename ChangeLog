@@ -1,5 +1,8 @@
 ChangeLog was empty before 2.0.31
 
+Changes in 2.0.32:
+  * Fixed jrockit-jdk-bin in jdk-defaults-ia64.conf
+
 Changes in 2.0.31:
   * Added support for conditional DEPEND atoms
     http://bugs.gentoo.org/show_bug.cgi?id=156228
