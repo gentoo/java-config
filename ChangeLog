@@ -1,5 +1,10 @@
+#Keeping this file started after version 2.0.31
+
+  28 Feb 2007; Petteri Räty <betelgeuse@gentoo.org> man/java-config-2.1:
+  The default browser plugin can be set by eselect java-nsplugin so that is
+  not a bug any more.
+
   16 Feb 2007; Petteri Räty <betelgeuse@gentoo.org>
   config/jdk-defaults-amd64.conf, config/jdk-defaults-x86.conf:
   Prefer sun-jdk over blackdown-jdk when both are installed.
 
-#Keeping this file started after version 2.0.31
