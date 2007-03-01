@@ -38,13 +38,20 @@ def get_needed_packages(package):
             dep_pkg = dep[-1]
             p = manager.get_package(dep_pkg)
             if p is None:
-                msg = """
+                if ',' in dep_pkg:
+                    msg = """
+Package %s has a broken DEPEND entry in package.env. Please reinstall it.
+If this does not fix it, please report this to http://bugs.gentoo.org
+"""
+                    msg = msg % pkg
+                else:
+                    msg = """
 Package %s not found in the system. This package is listed as a
 dependency of %s. Please run emerge -uDa %s and if it does not bring in the
 needed dependency, report this to http://bugs.gentoo.org.
 """
-
-                abort(msg % (dep_pkg,pkg,pkg))
+                    msg = msg % (dep_pkg,pkg,pkg)
+                abort(msg)
 
             if p not in resolved:
                 unresolved.add(p)

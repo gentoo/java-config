@@ -1,6 +1,10 @@
 #Keeping this file started after version 2.0.31
 
   01 Mar 2007; Petteri Räty <betelgeuse@gentoo.org> src/gjl:
+  Separate error message for broken package.env files with commas in DEPEND
+  and for missing dependencies.
+
+  01 Mar 2007; Petteri Räty <betelgeuse@gentoo.org> src/gjl:
   Make gjl report missing dependencies with a useful error message instead of
   a stack trace. Bug #168855.
 
