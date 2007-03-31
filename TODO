@@ -2,7 +2,6 @@
 For 2.1:
   - handling virtuals
     http://overlays.gentoo.org/proj/java/wiki/Virtuals
-  - Make this install ChangeLog
 
 For 3.0:
   - Make EnvironmentManager's get_packages function return

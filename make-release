@@ -4,6 +4,7 @@ if [[ -z ${version} ]]; then
 	echo "I want a version"
 	exit 1
 fi
+svn2cl
 sed -i "s/version =.*/version = \'${version}\',/" setup.py
 sed -i "s/__version__ =.*/__version__ = \'${version}\'/" src/java_config/__init__.py
 python setup.py sdist --formats=bztar
