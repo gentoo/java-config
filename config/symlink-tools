@@ -10,6 +10,7 @@ javap
 javaws
 jconsole
 jdb
+keytool
 rmic
 rmid
 rmiregistry
