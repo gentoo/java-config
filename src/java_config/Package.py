@@ -53,7 +53,7 @@ class Package:
 
     def deps(self):
         """
-        Return all packages this package depeds on
+        Return all packages this package depends on
         """
         depstr = self.query("DEPEND")
         if depstr:
