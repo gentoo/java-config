@@ -4,3 +4,4 @@ include src/*.bash
 include src/eselect/*.eselect
 include src/java_config/*.py
 include ChangeLog
+include NEWS
