@@ -5,6 +5,7 @@ Changes in 2.0.32:
   * Prefer sun-jdk over blackdown-jdk in amd64 and x86 defaults
   * Add keytool to wrappers
   * improve gjl error handling when deps are not installed
+  * include this file in the release
 
 Changes in 2.0.31:
   * Added support for conditional DEPEND atoms
