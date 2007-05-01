@@ -10,4 +10,4 @@ sed -i "s/version =.*/version = \'${version}\',/" setup.py
 sed -i "s/__version__ =.*/__version__ = \'${version}\'/" src/java_config/__init__.py
 python setup.py sdist --formats=bztar
 
-cp dist/java-config-${version}.tar.bz2 $(portageq envvar DISTDIR)
+cp -v dist/java-config-${version}.tar.bz2 $(portageq envvar DISTDIR)
