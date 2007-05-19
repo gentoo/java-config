@@ -112,8 +112,18 @@ def get_args(pkg):
 
         args += ' -classpath %s' % (classpath)
 
+    envlp = os.getenv('LD_LIBRARY_PATH')
+    envjlp = os.getenv('JAVA_LIBRARY_PATH')
+
+    newlibrary = '/lib:/usr/lib'
     if library:
-        args += ' -Djava.library.path="%s"' % (library)
+    	newlibrary = ':'.join((library, newlibrary))
+    if envjlp:
+    	newlibrary = ':'.join((newlibrary, envjlp))
+    if envlp:
+    	newlibrary = ':'.join((newlibrary, envlp))
+
+    args += ' -Djava.library.path="%s"' % (newlibrary)
 
     if args:
         return args
