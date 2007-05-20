@@ -28,6 +28,8 @@ setup (
 		('/etc/java-config-2/', ['config/virtuals']),
 		('/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
 		('/etc/env.d/',['config/20java-config']),
+		('/etc/profile.d/', ['src/profile.d/'+file for file in listdir('src/profile.d')]),
+		('/etc/revdep-rebuild/', ['src/revdep-rebuild/60-java'])
 	]
 )
 
