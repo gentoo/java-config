@@ -308,6 +308,52 @@ class EnvironmentManager:
 
         return path
 
+    def add_pkg_env_vars(self, pkg, env):
+        """
+        Adds variables declared in `pkg`'s package.env via ENV_VARS
+        into the dictionary `env`
+        """
+        env_vars = pkg.query("ENV_VARS")
+        if (env_vars):
+            for var in env_vars.split(' '):
+                val = pkg.query(var)
+                assert val
+                if (not env.has_key(var)):
+                    env[var] = val
+
+    def build_dep_env_vars(self, pkgs, missing_deps):
+        """
+        Returns a dictionary of variables declared via ENV_VARS in
+        package.env of all packages in list `pkgs` and all dependencies.
+        Encountered missing dependencies are recorded in `missing_deps`.
+        """
+        env = {}
+
+        unresolved = Set()
+        resolved = Set()
+
+        for p in pkgs:
+            pkg = self.get_package(p)
+            if pkg:
+                pkgs.remove(p)
+                unresolved.add(pkg)
+
+        while len(unresolved) > 0:
+            pkg = unresolved.pop()
+            resolved.add(pkg)
+
+            self.add_pkg_env_vars(pkg, env)
+
+            for dep in pkg.deps():
+                p = self.get_package(dep[-1])
+
+                if p:
+                    if p not in resolved:
+                        unresolved.add(p)
+                else:
+                    missing_deps.add(dep[-1])
+        return env
+
     def set_classpath(self, targets, pkgs):
         classpath = self.build_classpath(pkgs)
 

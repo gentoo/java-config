@@ -130,6 +130,10 @@ def get_args(pkg):
     else:
         return None
 
+def get_env(package):
+    env = manager.build_dep_env_vars([package.name()], Set())
+    return env
+
 def get_jar(pkg, gjar):
     jars = pkg.classpath()
     if jars:
@@ -183,7 +187,10 @@ if __name__ == '__main__':
     if options.get_args:
         args = get_args(pkg)
         if args:
-            print 'gjl_args="%s"' % ( args )
+            print 'gjl_args="%s";' % ( args )
+        env = get_env(pkg)
+        for k, v in env.iteritems():
+            print 'export %s="%s";' % ( k, v )
 
     if options.jar:
         jar = get_jar(pkg, options.jar)
