@@ -5,7 +5,7 @@
 # $Header: $
 
 import sys
-sys.path.insert(0, "/usr/lib/portage/pym")
+sys.path.append("/usr/lib/portage/pym")
 
 import re
 from string import upper
