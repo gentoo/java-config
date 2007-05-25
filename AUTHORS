@@ -1,14 +1,10 @@
-Maintainer: Gentoo Java Team <java@gentoo.org>
-Java Configuration Utility for Gentoo
+aether: Jason A Mobarak <aether@gentoo.org>
+ali_bush: Alistair Bush <ali_bush@gentoo.org>
+axxo: Thomas Matthijs <axxo@gentoo.org>
+betelgeuse: Petteri Räty <betelgeuse@gentoo.org>
+caster: Vlastimil Babka <caster@gentoo.org>
+compnerd: Saleem Abdulrasool <compnerd@gentoo.org>
+nichoj: Joshua Nichols <nichoj@gentoo.org>
+karltk: Karl Trygve Kalleberg <karltk@gentoo.org>
 
-Some people who have contributed over time:
-Jason A Mobarak <aether@gentoo.org>
-Josh Nichols <nichoj@gentoo.org>
-Karl Trygve Kalleberg <karltk@gentoo.org>
-Petteri Räty <betelgeuse@gentoo.org>
-Saleem Abdulrasool <compnerd@gentoo.org>
-Thomas Matthijs <axxo@gentoo.org>
-Vlastimil Badka <caster@gentoo.org>
-
-Mail java@gentoo.org to your name on this list if you
-have contributed to java-config in the past.
+Mail java@gentoo.org if you are missing
