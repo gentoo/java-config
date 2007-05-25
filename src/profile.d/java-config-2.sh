@@ -27,7 +27,8 @@ elif [ -L /etc/java-config-2/current-system-vm ]; then
 	export JAVA_HOME=${gentoo_system_vm}
 fi
 
-export MANPATH="${MANPATH}:${JAVA_HOME}/man"
+# prepending to come before generation 1
+export MANPATH="${JAVA_HOME}/man:${MANPATH}"
 export JDK_HOME=${JAVA_HOME}
 export JAVAC=${JDK_HOME}/bin/javac
 unset gentoo_user_vm gentoo_system_vm user_id
