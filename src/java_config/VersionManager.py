@@ -127,6 +127,7 @@ class VersionManager:
 
         prefs = self.get_prefs()
 
+        # first try to find vm based on preferences
         low = self.get_lowest(atoms) # Lowest vm version we can use
         for atom in matched_atoms: 
             for pref in prefs:
@@ -143,12 +144,14 @@ class VersionManager:
                             else:
                                 return gvm          # use it!
 
-        low = self.get_lowest_atom(matched_atoms)
-        vm = self.find_vm("", low)
-        if vm:
-            return vm
-        else:
-            raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
+        # no match in preferences, find anything we have
+        for atom in matched_atoms:
+            vm = self.find_vm("", atom)
+            if vm:
+                return vm
+
+        # nothing found
+        raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
 
     def find_vm(self, vm, atom):
         vm_list = EnvironmentManager().find_vm(vm)
