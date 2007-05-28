@@ -263,6 +263,19 @@ class EnvironmentManager:
     def build_classpath(self, pkgs):
         return self.build_path(pkgs, "CLASSPATH")
 
+    def get_pkg_deps(self, pkg):
+        """
+        Returns list of package's deps and optional deps.
+        Filters out optional deps that are not present.
+        """
+        deps = pkg.deps();
+        for opt_dep in pkg.opt_deps():
+            p = self.get_package(opt_dep[-1])
+            if p:
+                deps.append(opt_dep)
+
+        return deps
+
     def add_dep_classpath(self, pkg, dep, classpath): 
         pkg_cp = pkg.classpath()
         if pkg_cp:
@@ -295,7 +308,7 @@ class EnvironmentManager:
                 lpath = pkg.query(query)
                 self.add_path_elements(lpath, path)
 
-            for dep in pkg.deps():
+            for dep in self.get_pkg_deps(pkg):
                 p = self.get_package(dep[-1])
 
                 if p:
@@ -344,7 +357,7 @@ class EnvironmentManager:
 
             self.add_pkg_env_vars(pkg, env)
 
-            for dep in pkg.deps():
+            for dep in self.get_pkg_deps(pkg):
                 p = self.get_package(dep[-1])
 
                 if p:

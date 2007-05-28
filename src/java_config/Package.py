@@ -55,11 +55,13 @@ class Package:
         """
         Return all packages this package depends on
         """
-        depstr = self.query("DEPEND")
-        if depstr:
-            return [dep.split("@") for dep in depstr.split(":")]
-        else:
-            return []
+        return self.__get_deps("DEPEND")
+        
+    def opt_deps(self):
+        """
+        Return all packages this package optionally depends on
+        """
+        return self.__get_deps("OPTIONAL_DEPEND")
 
     def provides(self):
         """
@@ -69,5 +71,18 @@ class Package:
         if pv:
             return pv.split(" ")
         return []
+    
+    def __get_deps(self, query):
+        """
+        Internal function to get package's (optional) dependencies;
+        @param query: variable to read from package.env
+        """
+        depstr = self.query(query)
+        if depstr:
+            return [dep.split("@") for dep in depstr.split(":")]
+        else:
+            return []
+        
+    
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
