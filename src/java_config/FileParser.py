@@ -81,5 +81,4 @@ class PrefsFileParser(FileParser):
     def get_config(self):
         return self.config
 
-    
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

@@ -19,12 +19,15 @@ class EnvironmentManager:
     virtual_machines = None
     packages = None
     virtuals = None
+    virtuals_pref = None
     active = None
 
     # Location of the vm ev files
     vms_path = '/usr/share/java-config-2/vm'
     # Location of the package env files to load
     pkg_path = '/usr/share/*/package.env'
+
+    system_config_path="/etc/java-config-2/"
 
     def __init__(self):
         pass
@@ -89,6 +92,14 @@ class EnvironmentManager:
 
         for virt in self.get_active_vm().get_provides():
             self.packages[virt] = Package("Provided by the active vm")
+
+    def get_virtuals_pref(self):
+    	if self.virtuals_pref is None:
+            self.load_virtuals_pref()
+        return self.virtuals_pref
+
+    def load_virtuals_pref(self):
+    	self.virtuals_pref = EnvFileParser("/etc/java-config-2/virtuals")
 
     def load_active_vm(self):
         vm_name = os.getenv("GENTOO_VM")
