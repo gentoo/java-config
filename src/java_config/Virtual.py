@@ -13,29 +13,33 @@ class Virtual:
     _packages = None
     active_package = None
 
-    def __init__(self, name, file = None):
+    def __init__(self, name, manager, file = None):
         self._file = file
         self._name = name
+	self._manager = manager
         if self._file:
             self._config = EnvFileParser(file).get_config()
-	    self._packages = self.query("PACKAGES").split(',')
+	    self._packages = self._config["PROVIDERS"].split(' ')
         else:
             self._config = {}
 	#Now load system pref
-	preference = manager.get_virtuals_pref()[self._name]
-	if preference:
-		self._packages.insert(0, preference)
+	all_prefs = self._manager.get_virtuals_pref().get_config()
+	if all_prefs.has_key(self.name()):
+		self._packages.insert(0, all_pref[self.name()])
 	# Dont load active_package now, we may want active_package
 	# To be another, yet unloaded, (virtual) package.
 		
     def __str__(self):
-        return self.get_active_package().name()
+        return self.name()
 
     def name(self):
-        return self.get_active_package().name()
+        #return self.get_active_package().name()
+	return self._name
 
     def file(self):
-        return self.get_active_package().file()
+    	# Investigate if anything uses this
+	# and whether what it should therefore return.
+        return self._file
 
     def description(self):
         #if self._config.has_key("DESCRIPTION"):
@@ -43,6 +47,9 @@ class Virtual:
         #else:
         #    return "No Description"
 	return self.get_active_package().description()
+
+    def get_packages(self):
+    	return self._packages
 
     def classpath(self):
         """
@@ -92,10 +99,10 @@ class Virtual:
 	return self.active_package
 
     def load_active_package(self):
-    	#Active package is the first package 
+    	#Active package is the first available package 
 	for package in self._packages:
-	    if manager.get_package(package):
-	    	self.active_package = manager.get_package(package)`
+	    if self._manager.get_package(package) is not None :
+	    	self.active_package = self._manager.get_package(package)
 	
 	if self.active_package is None:
 	    #Eventually this should throw an error?

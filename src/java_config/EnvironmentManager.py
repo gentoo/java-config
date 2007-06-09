@@ -6,6 +6,7 @@
 
 from OutputFormatter import *
 from Package import *
+from Virtual import *
 from VM import *
 from Errors import *
 
@@ -26,6 +27,7 @@ class EnvironmentManager:
     vms_path = '/usr/share/java-config-2/vm'
     # Location of the package env files to load
     pkg_path = '/usr/share/*/package.env'
+    virtual_path = '/usr/share/java-config-2/virtuals/*'
 
     system_config_path="/etc/java-config-2/"
 
@@ -68,30 +70,9 @@ class EnvironmentManager:
             pkg = Package(basename(dirname(package)), package)
             self.packages[pkg.name()] = pkg
 
-            for virt in pkg.provides():
-                if self.virtuals.has_key(virt):
-                    self.virtuals[virt].append(pkg)
-                else:
-                    self.virtuals[virt] = [pkg]
-
-        virtual_prefs = {}
-        try:
-            vprefs = EnvFileParser("/etc/java-config-2/virtuals")
-            virtual_prefs = vprefs.get_config()
-        except:
-            pass
-
-        for virt, providers in self.virtuals.iteritems():
-            if virtual_prefs.has_key(virt):
-                pref = virtual_prefs[virt]
-                for pkg in providers:
-                    if pkg.name() == pref:
-                        self.packages[virt] = pkg
-            else:
-                self.packages[virt] = providers[0]
-
-        for virt in self.get_active_vm().get_provides():
-            self.packages[virt] = Package("Provided by the active vm")
+        for virtual in iter(glob(self.virtual_path)):
+	    virt = Virtual(basename(virtual), self, virtual)
+	    self.packages[virt.name()] = virt
 
     def get_virtuals_pref(self):
     	if self.virtuals_pref is None:
