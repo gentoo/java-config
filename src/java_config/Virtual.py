@@ -10,22 +10,28 @@ class Virtual:
     """
     Class represeting an installed java virtual.
     """
-    _packages = None
+    _packages = []
     active_package = None
 
     def __init__(self, name, manager, file = None):
         self._file = file
         self._name = name
 	self._manager = manager
+	temp_packages = []
         if self._file:
             self._config = EnvFileParser(file).get_config()
-	    self._packages = self._config["PROVIDERS"].split(' ')
+	    temp_packages = self._config["PROVIDERS"].split(' ')
         else:
             self._config = {}
 	#Now load system pref
 	all_prefs = self._manager.get_virtuals_pref().get_config()
 	if all_prefs.has_key(self.name()):
-		self._packages.insert(0, all_pref[self.name()])
+	    if self.name() in temp_packages:
+		self._packages.append(all_pref[self.name()])
+	
+	for element in temp_packages:
+	    if not element in self._packages:
+	    	self._packages.append(element)
 	# Dont load active_package now, we may want active_package
 	# To be another, yet unloaded, (virtual) package.
 		
@@ -99,7 +105,7 @@ class Virtual:
 	return self.active_package
 
     def load_active_package(self):
-    	#Active package is the first available package 
+    	# Active package is the first available package.
 	for package in self._packages:
 	    if self._manager.get_package(package) is not None :
 	    	self.active_package = self._manager.get_package(package)
