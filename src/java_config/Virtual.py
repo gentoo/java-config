@@ -26,7 +26,7 @@ class Virtual:
 	#Now load system pref
 	all_prefs = self._manager.get_virtuals_pref().get_config()
 	if all_prefs.has_key(self.name()):
-	    if all_prefs[self.name()].name() in temp_packages:
+	    if all_prefs[self.name()] in temp_packages:
 		self._packages.append(all_pref[self.name()])
 	
 	for element in temp_packages:
