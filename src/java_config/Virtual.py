@@ -71,7 +71,7 @@ class Virtual:
         """
         Return the value of the requested var form the env file
         """
-	return self.get_active_package().query()
+	return self.get_active_package().query(var)
         #if self._config.has_key(var):
         #    return self._config[var]
         #else:
