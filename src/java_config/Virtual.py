@@ -10,24 +10,24 @@ class Virtual:
     """
     Class represeting an installed java virtual.
     """
-    _packages = []
-    active_package = None
-
     def __init__(self, name, manager, file = None):
         self._file = file
         self._name = name
 	self._manager = manager
-	temp_packages = []
+	self._packages = []
+	self.active_package = None
         if self._file:
             self._config = EnvFileParser(file).get_config()
 	    temp_packages = self._config["PROVIDERS"].split(' ')
         else:
             self._config = {}
-	#Now load system pref
+	    self.temp_packages = []
+	# Now load system pref. Really should support
+	# List of packages instead of singular.
 	all_prefs = self._manager.get_virtuals_pref().get_config()
 	if all_prefs.has_key(self.name()):
 	    if all_prefs[self.name()] in temp_packages:
-		self._packages.append(all_pref[self.name()])
+		self._packages.append(all_prefs[self.name()])
 	
 	for element in temp_packages:
 	    if not element in self._packages:
@@ -107,12 +107,12 @@ class Virtual:
     def load_active_package(self):
     	# Active package is the first available package.
 	for package in self._packages:
-	    if self._manager.get_package(package) is not None :
+	    if self._manager.get_package(package) is not None:
 	    	self.active_package = self._manager.get_package(package)
 	
 	if self.active_package is None:
 	    #Eventually this should throw an error?
-	    self.active_package = Package("No package provided")
+	    self.active_package = Package("No package provided.")
 
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
