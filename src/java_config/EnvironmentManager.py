@@ -71,16 +71,17 @@ class EnvironmentManager:
             self.packages[pkg.name()] = pkg
 
         for virtual in iter(glob(self.virtual_path)):
-	    virt = Virtual(basename(virtual), self, virtual)
-	    self.packages[virt.name()] = virt
+            virt = Virtual(basename(virtual), self, virtual)
+            self.packages[virt.name()] = virt
+            self.virtuals[virt.name()] = virt
 
     def get_virtuals_pref(self):
-    	if self.virtuals_pref is None:
+        if self.virtuals_pref is None:
             self.load_virtuals_pref()
         return self.virtuals_pref
 
     def load_virtuals_pref(self):
-    	self.virtuals_pref = EnvFileParser("/etc/java-config-2/virtuals")
+        self.virtuals_pref = EnvFileParser("/etc/java-config-2/virtuals")
 
     def load_active_vm(self):
         vm_name = os.getenv("GENTOO_VM")
@@ -141,6 +142,13 @@ class EnvironmentManager:
         if self.virtuals is None:
             self.load_packages()
         return self.virtuals
+
+    def get_virtual(self, virtname):
+        all_virt = self.get_virtuals()
+        if all_virt.has_key(virtname):
+            return all_virt[virtname]
+        else:
+            return None
 
     def query_packages(self, packages, query):
         results = []
