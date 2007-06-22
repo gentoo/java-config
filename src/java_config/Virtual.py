@@ -7,7 +7,7 @@
 from FileParser import *
 from Package import *
 
-class Virtual:
+class Virtual(Package):
     """
     Class represeting an installed java virtual.
     """
@@ -34,13 +34,6 @@ class Virtual:
                 self._packages.append(element)
         # Dont load active_package now, we may want active_package
         # To be another, yet unloaded, (virtual) package.
-
-
-    def __str__(self):
-        return self.name()
-
-    def name(self):
-        return self._name
 
     def file(self):
         # Investigate if anything uses this
@@ -71,6 +64,12 @@ class Virtual:
         Return all packages this package depends on
         """
         return self.get_active_package().deps()
+
+    def opt_deps(self):
+        """
+        Return all packages this package optionally depends on
+        """
+        return self.get_active_package().opt_deps()
 
     def provides(self):
         """
