@@ -5,6 +5,7 @@
 # $Header: $
 
 from FileParser import *
+from Package import *
 
 class Virtual:
     """
@@ -33,7 +34,8 @@ class Virtual:
                 self._packages.append(element)
         # Dont load active_package now, we may want active_package
         # To be another, yet unloaded, (virtual) package.
-		
+
+
     def __str__(self):
         return self.name()
 
@@ -77,7 +79,7 @@ class Virtual:
         return self.get_active_package().provides()
 
     def get_active_package(self):
-        if self.active_package:
+        if not self.active_package:
             self.load_active_package()
         return self.active_package
 
@@ -86,7 +88,8 @@ class Virtual:
         for package in self._packages:
             if self._manager.get_package(package) is not None:
                 self.active_package = self._manager.get_package(package)
-        if self.active_package:
+                break
+        if not self.active_package:
             #Eventually this should throw an error?
             self.active_package = Package("No package provided.")
 
