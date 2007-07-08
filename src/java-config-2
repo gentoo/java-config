@@ -99,6 +99,14 @@ def query_pkg_path(option, opt, value, parser, query):
     if error:
         sys.exit(1)
 
+def get_virtuals_packages( option, opt, value, parser):
+    if manager.get_virtual(value):
+        output = manager.get_virtual(value).get_packages()
+        printer._print(','.join(output))
+    else:
+        printer._printError("Virtual package %s was not found" % value)
+        sys.exit(1)
+
 def get_env(option, opt, value, parser):
     for env in value.split(','):
         query_active_vm(env)
@@ -306,7 +314,7 @@ if __name__ == '__main__':
                      make_option ("-a", "--set-user-classpath",      action="callback", callback=set_user_classpath,        help="(Deprecated) Set the user classpath to include the libraries",     type="string", dest="package(s)"),
                      make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,     help="(Deprecated) Append the libraries to the user classpath",          type="string", dest="package(s)"),
                      make_option ("-x", "--clean-user-classpath",    action="callback", callback=clean_user_classpath,      help="(Deprecated) Clean the current user classpath"),
-
+                     make_option ("",   "--get-virtuals-packages",   action="callback", callback=get_virtuals_packages,     help="(Experimental) Return a list of packages that a virtual provides", type="string", dest="package(s)"),
                      make_option ("-r", "--runtime",                 action="callback", help="Print the runtime classpath",
                                      callback=query_active_vm_cb, callback_args=("BOOTCLASSPATH",)),
                      make_option ("-O", "--jdk-home",                action="callback", help="Print the location of the active JAVA_HOME",
