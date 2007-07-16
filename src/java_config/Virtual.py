@@ -6,6 +6,7 @@
 
 from FileParser import *
 from Package import *
+import re
 
 class Virtual(Package):
     """
@@ -29,6 +30,13 @@ class Virtual(Package):
         if all_prefs.has_key(self.name()):
             if all_prefs[self.name()] in temp_packages:
                 self._packages.append(all_prefs[self.name()])
+        else:
+            if all_prefs.has_key['PREFER_UPSTREAM']:
+                for package in temp-packages:
+                    if re.compile(all_prefs['PREFER_UPSTREAM'] + '*').match(package):
+                        self._package.append(package)
+                        break
+
         for element in temp_packages:
             if not element in self._packages:
                 self._packages.append(element)
