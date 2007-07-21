@@ -24,16 +24,16 @@ elif [[ -x ${jrebin} ]]; then
 else
 	if [[ ! -d ${vmpath} ]]; then
 		echo "* Home for VM '${vm_handle}' does not exist: ${vmpath}" >&2
-        if [[ -n ${GENTOO_VM} ]]; then
-            echo "* Invalid value for GENTOO_VM: ${GENTOO_VM}"
-        elif [[ -h ${user_vm} ]]; then
-            echo "* Invalid User VM: ${vm_handle}" >&2
-        else
-            echo "* Invalid System VM: ${vm_handle}" >&2
-        fi
+		if [[ -n ${GENTOO_VM} ]]; then
+			echo "* Invalid value for GENTOO_VM: ${GENTOO_VM}"
+		elif [[ -h ${user_vm} ]]; then
+			echo "* Invalid User VM: ${vm_handle}" >&2
+		else
+			echo "* Invalid System VM: ${vm_handle}" >&2
+		fi
 	else
-        echo "* ${tool} is not available for ${vm_handle} on $(uname -m)" >&2
-        echo "* IMPORTANT: some Java tools are not available on some VMs on some architectures" >&2
+		echo "* ${tool} is not available for ${vm_handle} on $(uname -m)" >&2
+		echo "* IMPORTANT: some Java tools are not available on some VMs on some architectures" >&2
 	fi
 	exit 1
 fi
