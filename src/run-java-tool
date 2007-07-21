@@ -32,8 +32,13 @@ else
 			echo "* Invalid System VM: ${vm_handle}" >&2
 		fi
 	else
-		echo "* ${tool} is not available for ${vm_handle} on $(uname -m)" >&2
-		echo "* IMPORTANT: some Java tools are not available on some VMs on some architectures" >&2
+		if [[ ${tool} = "run-java-tool" ]]; then
+			echo "* run-java-tool was invoked directly" >&2
+			echo "* run-java-tool should only be used via symlinks to it" >&2
+		else
+			echo "* ${tool} is not available for ${vm_handle} on $(uname -m)" >&2
+			echo "* IMPORTANT: some Java tools are not available on some VMs on some architectures" >&2
+		fi
 	fi
 	exit 1
 fi
