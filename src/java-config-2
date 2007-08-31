@@ -6,7 +6,7 @@
 # $Header: $
 
 import sys
-sys.path = ['/usr/share/java-config-2/pym']+sys.path
+#sys.path = ['/usr/share/java-config-2/pym']+sys.path
 
 from java_config import __version__
 from java_config.OutputFormatter import OutputFormatter
@@ -22,35 +22,35 @@ from optparse import OptionParser, make_option
 from sets import Set
 
 def version(option, opt, value, parser):
-    printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
-    raise SystemExit()
+	printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
+	raise SystemExit()
 
 def nocolor(option, opt, value, parser):
-    printer.setColorOutputStatus(False)
+	printer.setColorOutputStatus(False)
 
 def get_command(command):
-    try:
-        printer._print(manager.get_active_vm().find_exec(command))
-    except PermissionError:
-        fatalError("The " + command + " executable was not found in the Java path")
+	try:
+		printer._print(manager.get_active_vm().find_exec(command))
+	except PermissionError:
+		fatalError("The " + command + " executable was not found in the Java path")
 
 def java(option, opt, value, parser):
-    get_command('java')
+	get_command('java')
 
 def javac(option, opt, value, parser):
-    get_command('javac')
+	get_command('javac')
 
 def jar(option, opt, value, parser):
-    get_command('jar')
+	get_command('jar')
 
 def query_active_vm(var):
-    try:
-        printer._print(manager.get_active_vm().query(var))
-    except EnvironmentUndefinedError:
-        fatalError("%s could not be found in the active VM environment" % var)
+	try:
+		printer._print(manager.get_active_vm().query(var))
+	except EnvironmentUndefinedError:
+		fatalError("%s could not be found in the active VM environment" % var)
 
 def query_active_vm_cb(option, opt, value, parse, *args):
-    return query_active_vm(args[0])
+	return query_active_vm(args[0])
 
 def tools(option, opt, value, parser):
 	jh = ''
@@ -65,283 +65,286 @@ def tools(option, opt, value, parser):
 		sys.exit(1);
 
 def show_active_vm(option, opt, value, parser):
-    printer._print(manager.get_active_vm().name())
+	printer._print(manager.get_active_vm().name())
 
 def java_version(option, opt, value, parser):
-    try:
-        printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
-    except PermissionError:
-        fatalError("The java executable was not found in the Java path")
+	try:
+		printer._print(getoutput('%s -version' % manager.get_active_vm().find_exec('java')))
+	except PermissionError:
+		fatalError("The java executable was not found in the Java path")
 
 def query_pkg_path(option, opt, value, parser, query):
-    packages = value.split(',')
-    path = Set()
-    missing_deps = Set()
-    if not parser.values.with_deps:
-        path = manager.build_path(packages, query)
-    else:
-        path = manager.build_dep_path(packages, query, missing_deps)
+	packages = value.split(',')
+	path = Set()
+	missing_deps = Set()
+	if not parser.values.with_deps:
+		path = manager.build_path(packages, query)
+	else:
+		path = manager.build_dep_path(packages, query, missing_deps)
 
-    printer._print(':'.join(path))
+	printer._print(':'.join(path))
 
-    error = False
+	error = False
 
-    if len(packages) > 0:
-        for package in packages:
-            printer._printError("Package %s was not found!" % package)
-        error = True
+	if len(packages) > 0:
+		for package in packages:
+			printer._printError("Package %s was not found!" % package)
+		error = True
 
-    if len(missing_deps) > 0:
-        for dep in missing_deps:
-            printer._printError("Dependency package %s was not found!" % dep)
-        error = True
+	if len(missing_deps) > 0:
+		for dep in missing_deps:
+			printer._printError("Dependency package %s was not found!" % dep)
+		error = True
 
-    if error:
-        sys.exit(1)
+	if error:
+		sys.exit(1)
 
 def get_virtuals_packages( option, opt, value, parser):
-    if manager.get_virtual(value):
-        output = manager.get_virtual(value).get_packages()
-        printer._print(','.join(output))
-    else:
-        printer._printError("Virtual package %s was not found" % value)
-        sys.exit(1)
+	if manager.get_virtual(value):
+		output = manager.get_virtual(value).get_packages()
+		printer._print(','.join(output))
+	else:
+		printer._printError("Virtual package %s was not found" % value)
+		sys.exit(1)
 
 def get_env(option, opt, value, parser):
-    for env in value.split(','):
-        query_active_vm(env)
+	for env in value.split(','):
+		query_active_vm(env)
 
 def exec_cmd(option, opt, value, parser):
-    for cmd in iter(value.split(',')):
-        os.system(cmd)
+	for cmd in iter(value.split(',')):
+		os.system(cmd)
 
 def list_available_packages(option, opt, value, parser):
-    for package in manager.get_packages().itervalues():
-        printer._print("[%s] %s (%s)" % (package.name(), package.description(), package.file()))
+	for package in manager.get_packages().itervalues():
+		printer._print("[%s] %s (%s)" % (package.name(), package.description(), package.file()))
 
 def list_available_vms(option, opt, value, parser):
-    vm_list = manager.get_virtual_machines()
-    try:
-        active = manager.get_active_vm()
-    except InvalidVMError:
-        active = None
+	vm_list = manager.get_virtual_machines()
+	try:
+		active = manager.get_active_vm()
+	except InvalidVMError:
+		active = None
 
-    printer._print('%HThe following VMs are available for generation-2:%$')
-    for i, vm in vm_list.iteritems():
-        if vm is active:
-            printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
-        else:
-            printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
+	printer._print('%HThe following VMs are available for generation-2:%$')
+	for i, vm in vm_list.iteritems():
+		if vm is active:
+			printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
+		else:
+			printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
 
 def print_environment(option, opt, value, parser):
-    vm = manager.get_vm(value) 
-    if vm:
-        manager.create_env_entry(vm, printer, "%s=%s")
-    else:
-        fatalError("Could not find a vm matching: %s" % value)
+	vm = manager.get_vm(value) 
+	if vm:
+		manager.create_env_entry(vm, printer, "%s=%s")
+	else:
+		fatalError("Could not find a vm matching: %s" % value)
 
 def set_system_vm(option, opt, value, parser):
-    vm = manager.get_vm(value)
+	vm = manager.get_vm(value)
 
-    if not vm:
-        fatalError("Could not find a vm matching: %s" % value)
-    else:
-        if os.getuid() is 0:
-            try:
-                manager.set_system_vm(vm)
-                printer._print("Now using %s as your generation-2 system JVM" % (vm) )
-            except PermissionError:
-                fatalError("You do not have enough permissions to set the system VM!")
-            except EnvironmentUndefinedError:
-                fatalError("The selected VM is missing critical environment variables.")
-            except InvalidConfigError, e:
-                fatalError("Target file already exists and is not a symlink: %s" % e.file)
-        else:
-            fatalError("You do not have enough permissions to set the system VM!")
+	if not vm:
+		fatalError("Could not find a vm matching: %s" % value)
+	else:
+		if os.getuid() is 0:
+			try:
+				manager.set_system_vm(vm)
+				printer._print("Now using %s as your generation-2 system JVM" % (vm) )
+			except PermissionError:
+				fatalError("You do not have enough permissions to set the system VM!")
+			except EnvironmentUndefinedError:
+				fatalError("The selected VM is missing critical environment variables.")
+			except InvalidConfigError, e:
+				fatalError("Target file already exists and is not a symlink: %s" % e.file)
+		else:
+			fatalError("You do not have enough permissions to set the system VM!")
 
 def set_user_vm(option, opt, value, parser):
-    vm = manager.get_vm(value)
+	vm = manager.get_vm(value)
 
-    if not vm:
-        fatalError("Could not find a vm matching: %s" % value)
-    else:
-        if os.getuid() is 0:
-            fatalError("The user 'root' should always use the System VM")
-        else:
-            try:
-                manager.set_user_vm(vm)
-                printer._print("Now using %s as your user JVM" % (vm))
-            except PermissionError:
-                fatalError("You do not have enough permissions to set the VM!")
-            except InvalidConfigError, e:
-                fatalError("Target file already exists and is not a symlink: %s" % e.file)
+	if not vm:
+		fatalError("Could not find a vm matching: %s" % value)
+	else:
+		if os.getuid() is 0:
+			fatalError("The user 'root' should always use the System VM")
+		else:
+			try:
+				manager.set_user_vm(vm)
+				printer._print("Now using %s as your user JVM" % (vm))
+			except PermissionError:
+				fatalError("You do not have enough permissions to set the VM!")
+			except InvalidConfigError, e:
+				fatalError("Target file already exists and is not a symlink: %s" % e.file)
 
 # Deprecated
 def system_classpath_target():
-    # TODO: MAKE THIS MODULAR!! (compnerd)
-    return [{'file': '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
+	# TODO: MAKE THIS MODULAR!! (compnerd)
+	return [{'file': '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
 
 def user_classpath_target():
-    # TODO: MAKE THIS MODULAR!! (compnerd)
-    return [
-            {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath'),     'format': 'export %s=%s\n' },
-            {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
-        ]
+	# TODO: MAKE THIS MODULAR!! (compnerd)
+	return [
+			{'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath'),	 'format': 'export %s=%s\n' },
+			{'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
+		]
 # Deprecated
 def set_system_classpath(option, opt, value, parser):
-    deprecation_notice()
-    if os.getuid() is 0:
-        pkgs = value.split(',')
-        manager.set_classpath(system_classpath_target(), pkgs)
-        
-        for package in pkgs:
-            printer._printError("Package %s was not found!" % package)
-            
-        update_env()
-    else:
-       fatalError("You do not have enough permissions to set the system classpath!")
+	deprecation_notice()
+	if os.getuid() is 0:
+		pkgs = value.split(',')
+		manager.set_classpath(system_classpath_target(), pkgs)
+		
+		for package in pkgs:
+			printer._printError("Package %s was not found!" % package)
+			
+		update_env()
+	else:
+	   fatalError("You do not have enough permissions to set the system classpath!")
 
 # Deprecated
 def set_user_classpath(option, opt, value, parser):
-    deprecation_notice()
-    pkgs = value.split(',')
-    manager.set_classpath(user_classpath_target(), pkgs)
+	deprecation_notice()
+	pkgs = value.split(',')
+	manager.set_classpath(user_classpath_target(), pkgs)
 
-    for package in pkgs:
-        printer._printError("Package %s was not found!" % package)
+	for package in pkgs:
+		printer._printError("Package %s was not found!" % package)
 
-    user_update_env()
+	user_update_env()
 
 # Deprecated
 def append_system_classpath(option, opt, value, parser):
-    deprecation_notice()
-    if os.getuid() is 0:
-        pkgs = value.split(',')
-        manager.append_classpath(system_classpath_target(), pkgs)
+	deprecation_notice()
+	if os.getuid() is 0:
+		pkgs = value.split(',')
+		manager.append_classpath(system_classpath_target(), pkgs)
 
-        for package in pkgs:
-            printer._printError("Package %s was not found!" % package)
+		for package in pkgs:
+			printer._printError("Package %s was not found!" % package)
 
-        update_env()
-    else:
-        fatalError("You do not have enough permissioins to append to the system classpath!")
+		update_env()
+	else:
+		fatalError("You do not have enough permissioins to append to the system classpath!")
 
 # Deprecated
 def append_user_classpath(option, opt, value, parser):
-    deprecation_notice()
-    pkgs = value.split(',')
-    manager.append_classpath(user_classpath_target(),  pkgs)
+	deprecation_notice()
+	pkgs = value.split(',')
+	manager.append_classpath(user_classpath_target(),  pkgs)
 
-    for package in pkgs:
-        printer._printError("Package %s was not found!" % package)
+	for package in pkgs:
+		printer._printError("Package %s was not found!" % package)
 
-    user_update_env()
+	user_update_env()
 
 # Deprecated
 def clean_system_classpath(option, opt, value, parser):
-    deprecation_notice()
-    if os.getuid() is 0:
-        manager.clean_classpath(system_classpath_target())
-        update_env()
-    else:
-        fatalError("You do not have enough permissions to clean the system classpath!")
+	deprecation_notice()
+	if os.getuid() is 0:
+		manager.clean_classpath(system_classpath_target())
+		update_env()
+	else:
+		fatalError("You do not have enough permissions to clean the system classpath!")
 
 # Deprecated
 def clean_user_classpath(option, opt, value, parser):
-    deprecation_notice()
-    manager.clean_classpath(user_classpath_target())
+	deprecation_notice()
+	manager.clean_classpath(user_classpath_target())
 
 def select_vm(option, opt, value, parser):
-    if value == '':
-        return
+	if value == '':
+		return
 
-    vm = manager.get_vm(value)
-    if vm:
-        manager.set_active_vm(manager.get_vm(value))
-    else:
-        fatalError("The vm could not be found")
+	vm = manager.get_vm(value)
+	if vm:
+		manager.set_active_vm(manager.get_vm(value))
+	else:
+		fatalError("The vm could not be found")
 
 def update_env():
-    printer._print(getoutput("/usr/sbin/env-update"))
-    printer._printAlert("If you want the changes too take effect in your current session, you should update\n\
-            your environment by running: source /etc/profile")
+	printer._print(getoutput("/usr/sbin/env-update"))
+	printer._printAlert("If you want the changes too take effect in your current session, you should update\n\
+			your environment by running: source /etc/profile")
 
 def user_update_env():
-    printer._printAlert("Environment files in ~/.gentoo/ have been updated. You should source these from your shell's profile.\n\
-            If you want the changes too take effect in your current sessiosn, you should resource these files")
+	printer._printAlert("Environment files in ~/.gentoo/ have been updated. You should source these from your shell's profile.\n\
+			If you want the changes too take effect in your current sessiosn, you should resource these files")
 
 def deprecation_notice():
-    printer._printWarning("Setting a user and system classpath is deprecated, this option will be removed from future versions.")
+	printer._printWarning("Setting a user and system classpath is deprecated, this option will be removed from future versions.")
 
 def fatalError(msg):
-    printer._printError(msg)
-    sys.exit(1)
+	printer._printError(msg)
+	sys.exit(1)
 
 if __name__ == '__main__':
-    global printer, manager
-    printer = OutputFormatter(True, True)
-    manager = EnvironmentManager()
+	global printer, manager
+	printer = OutputFormatter(True, True)
+	manager = EnvironmentManager()
 
-    usage =  "java-config [options]\n\n"
-    usage += "Java Configuration Utility Version " + str(__version__) + "\n"
-    usage += "Copyright 2004-2005 Gentoo Foundation\n"
-    usage += "Distributed under the terms of the GNU General Public License v2\n"
-    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
+	usage =  "java-config [options]\n\n"
+	usage += "Java Configuration Utility Version " + str(__version__) + "\n"
+	usage += "Copyright 2004-2005 Gentoo Foundation\n"
+	usage += "Distributed under the terms of the GNU General Public License v2\n"
+	usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
-    options_list = [
-                     make_option ("-V", "--version",                 action="callback", callback=version,                   help="Print version information"),
-                     make_option ("-n", "--nocolor",                 action="callback", callback=nocolor,                   help="Disable color output"),
-                     make_option (""  , "--select-vm",               action="callback", callback=select_vm,                 help="Use this vm instead of the active vm when returning information",  type="string", dest="vm"),
-                     make_option ("-J", "--java",                    action="callback", callback=java,                      help="Print the location of the java executable"),
-                     make_option ("-c", "--javac",                   action="callback", callback=javac,                     help="Print the location of the javac executable"),
-                     make_option ("-j", "--jar",                     action="callback", callback=jar,                       help="Print the location of the jar executable"),
-                     make_option ("-t", "--tools",                 action="callback", callback=tools,                   help="Print the path to tools.jar"),
-                     make_option ("-f", "--show-active-vm",          action="callback", callback=show_active_vm,            help="Print the active Virtual Machine"),
-                     make_option ("-v", "--java-version",            action="callback", callback=java_version,              help="Print version information for the active VM"),
-                     make_option ("-g", "--get-env",                 action="callback", callback=get_env,                   help="Print an environment variable from the active VM",                 type="string", dest="var"),
-                     make_option ("-P", "--print",                   action="callback", callback=print_environment,         help="Print the environment for the specified VM",                       type="string", dest="vm"),
-                     make_option ("-e", "--exec_cmd",                action="callback", callback=exec_cmd,                  help="Execute something which is in JAVA_HOME",                          type="string", dest="command"),
-                     make_option ("-L", "--list-available-vms",      action="callback", callback=list_available_vms,        help="List available Java Virtual Machines"),
-                     make_option ("-S", "--set-system-vm",           action="callback", callback=set_system_vm,             help="Set the default Java VM for the system",                           type="string", dest="vm"),
-                     make_option ("-s", "--set-user-vm",             action="callback", callback=set_user_vm,               help="Set the default Java VM for the user",                             type="string", dest="vm"),
-                     make_option ("-l", "--list-available-packages", action="callback", callback=list_available_packages,   help="List all available packages on the system."),
-                     make_option ("-d", "--with-dependencies",       action="store_true",                                   help="Include package dependencies in --classpath and --library calls",  default=False, dest="with_deps"),
-                     make_option ("-p", "--classpath",               action="callback", callback=query_pkg_path,            help="Print entries in the environment classpath for these packages",    type="string", dest="package(s)", callback_args = ("CLASSPATH",)),
-                     make_option ("-i", "--library",                 action="callback", callback=query_pkg_path,            help="Print java library paths for these packages",                      type="string", dest="package(s)", callback_args = ("LIBRARY_PATH",)),
-                     make_option ("-A", "--set-system-classpath",    action="callback", callback=set_system_classpath,      help="(Deprecated) Set the system classpath to include the libraries",   type="string", dest="package(s)" ),
-                     make_option ("-B", "--append-system-classpath", action="callback", callback=append_system_classpath,   help="(Deprecated) Append the libraries to the system classpath",        type="string", dest="package(s)"),
-                     make_option ("-X", "--clean-system-classpath",  action="callback", callback=clean_system_classpath,    help="(Deprecated) Clean the current system classpath"),
-                     make_option ("-a", "--set-user-classpath",      action="callback", callback=set_user_classpath,        help="(Deprecated) Set the user classpath to include the libraries",     type="string", dest="package(s)"),
-                     make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,     help="(Deprecated) Append the libraries to the user classpath",          type="string", dest="package(s)"),
-                     make_option ("-x", "--clean-user-classpath",    action="callback", callback=clean_user_classpath,      help="(Deprecated) Clean the current user classpath"),
-                     make_option ("",   "--get-virtuals-packages",   action="callback", callback=get_virtuals_packages,     help="(Experimental) Return a list of packages that a virtual provides", type="string", dest="package(s)"),
-                     make_option ("-r", "--runtime",                 action="callback", help="Print the runtime classpath",
-                                     callback=query_active_vm_cb, callback_args=("BOOTCLASSPATH",)),
-                     make_option ("-O", "--jdk-home",                action="callback", help="Print the location of the active JAVA_HOME",
-                                     callback=query_active_vm_cb, callback_args=("JAVA_HOME",)),
-                     make_option ("-o", "--jre-home",                action="callback", help="Print the location of the active JAVA_HOME",
-                                     callback=query_active_vm_cb, callback_args=("JAVA_HOME",))
-                   ]
+	#ELVANOR
+	#sys.stderr.write("Correct java-config used")
 
-    parser = OptionParser(usage, options_list)
+	options_list = [
+					 make_option ("-V", "--version",				 action="callback", callback=version,				   help="Print version information"),
+					 make_option ("-n", "--nocolor",				 action="callback", callback=nocolor,				   help="Disable color output"),
+					 make_option (""  , "--select-vm",			   action="callback", callback=select_vm,				 help="Use this vm instead of the active vm when returning information",  type="string", dest="vm"),
+					 make_option ("-J", "--java",					action="callback", callback=java,					  help="Print the location of the java executable"),
+					 make_option ("-c", "--javac",				   action="callback", callback=javac,					 help="Print the location of the javac executable"),
+					 make_option ("-j", "--jar",					 action="callback", callback=jar,					   help="Print the location of the jar executable"),
+					 make_option ("-t", "--tools",				 action="callback", callback=tools,				   help="Print the path to tools.jar"),
+					 make_option ("-f", "--show-active-vm",		  action="callback", callback=show_active_vm,			help="Print the active Virtual Machine"),
+					 make_option ("-v", "--java-version",			action="callback", callback=java_version,			  help="Print version information for the active VM"),
+					 make_option ("-g", "--get-env",				 action="callback", callback=get_env,				   help="Print an environment variable from the active VM",				 type="string", dest="var"),
+					 make_option ("-P", "--print",				   action="callback", callback=print_environment,		 help="Print the environment for the specified VM",					   type="string", dest="vm"),
+					 make_option ("-e", "--exec_cmd",				action="callback", callback=exec_cmd,				  help="Execute something which is in JAVA_HOME",						  type="string", dest="command"),
+					 make_option ("-L", "--list-available-vms",	  action="callback", callback=list_available_vms,		help="List available Java Virtual Machines"),
+					 make_option ("-S", "--set-system-vm",		   action="callback", callback=set_system_vm,			 help="Set the default Java VM for the system",						   type="string", dest="vm"),
+					 make_option ("-s", "--set-user-vm",			 action="callback", callback=set_user_vm,			   help="Set the default Java VM for the user",							 type="string", dest="vm"),
+					 make_option ("-l", "--list-available-packages", action="callback", callback=list_available_packages,   help="List all available packages on the system."),
+					 make_option ("-d", "--with-dependencies",	   action="store_true",								   help="Include package dependencies in --classpath and --library calls",  default=False, dest="with_deps"),
+					 make_option ("-p", "--classpath",			   action="callback", callback=query_pkg_path,			help="Print entries in the environment classpath for these packages",	type="string", dest="package(s)", callback_args = ("CLASSPATH",)),
+					 make_option ("-i", "--library",				 action="callback", callback=query_pkg_path,			help="Print java library paths for these packages",					  type="string", dest="package(s)", callback_args = ("LIBRARY_PATH",)),
+					 make_option ("-A", "--set-system-classpath",	action="callback", callback=set_system_classpath,	  help="(Deprecated) Set the system classpath to include the libraries",   type="string", dest="package(s)" ),
+					 make_option ("-B", "--append-system-classpath", action="callback", callback=append_system_classpath,   help="(Deprecated) Append the libraries to the system classpath",		type="string", dest="package(s)"),
+					 make_option ("-X", "--clean-system-classpath",  action="callback", callback=clean_system_classpath,	help="(Deprecated) Clean the current system classpath"),
+					 make_option ("-a", "--set-user-classpath",	  action="callback", callback=set_user_classpath,		help="(Deprecated) Set the user classpath to include the libraries",	 type="string", dest="package(s)"),
+					 make_option ("-b", "--append-user-classpath",   action="callback", callback=append_user_classpath,	 help="(Deprecated) Append the libraries to the user classpath",		  type="string", dest="package(s)"),
+					 make_option ("-x", "--clean-user-classpath",	action="callback", callback=clean_user_classpath,	  help="(Deprecated) Clean the current user classpath"),
+					 make_option ("",   "--get-virtuals-packages",   action="callback", callback=get_virtuals_packages,	 help="(Experimental) Return a list of packages that a virtual provides", type="string", dest="package(s)"),
+					 make_option ("-r", "--runtime",				 action="callback", help="Print the runtime classpath",
+									 callback=query_active_vm_cb, callback_args=("BOOTCLASSPATH",)),
+					 make_option ("-O", "--jdk-home",				action="callback", help="Print the location of the active JAVA_HOME",
+									 callback=query_active_vm_cb, callback_args=("JAVA_HOME",)),
+					 make_option ("-o", "--jre-home",				action="callback", help="Print the location of the active JAVA_HOME",
+									 callback=query_active_vm_cb, callback_args=("JAVA_HOME",))
+				   ]
 
-    if len(sys.argv) < 2: 
-        parser.print_help()
-    else:        
-        try:
-            # Makes sure that --nocolor is always the first argument 
-            # because otherwise callbacks before it will output
-            # colored output
-            args = sys.argv[1:]
-            for opt in ( '-n', '--nocolor'):
-                try:
-                    args.remove(opt)
-                    args.insert(0,opt)
-                except ValueError:
-                    pass
+	parser = OptionParser(usage, options_list)
 
-            (options, args) = parser.parse_args(args=args)
-        except InvalidVMError:
-            fatalError("The active vm could not be found")
+	if len(sys.argv) < 2: 
+		parser.print_help()
+	else:		
+		try:
+			# Makes sure that --nocolor is always the first argument 
+			# because otherwise callbacks before it will output
+			# colored output
+			args = sys.argv[1:]
+			for opt in ( '-n', '--nocolor'):
+				try:
+					args.remove(opt)
+					args.insert(0,opt)
+				except ValueError:
+					pass
+
+			(options, args) = parser.parse_args(args=args)
+		except InvalidVMError:
+			fatalError("The active vm could not be found")
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
