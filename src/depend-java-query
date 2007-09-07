@@ -6,7 +6,7 @@
 # $Header: $
 
 import sys
-#sys.path = ['/usr/share/java-config-2/pym']+sys.path
+sys.path = ['/usr/share/java-config-2/pym']+sys.path
 
 from java_config import __version__
 from java_config.OutputFormatter import OutputFormatter
