@@ -429,7 +429,7 @@ class EnvironmentManager:
 			virtualKey = virtual.replace("java-virtuals/","")
 			if self.get_virtuals().has_key(virtualKey):
 				good_vm = self.get_virtuals()[virtualKey]._config["VM"]
-				sys.stderr.write ("A good VM would be " + good_vm +"\n")
+				#sys.stderr.write ("A good VM would be " + good_vm +"\n")
 				if (not versionManager.version_satisfies(good_vm, virtualMachine)):
 					try:
 						package = self.get_virtuals()[virtualKey].get_active_package()
@@ -439,7 +439,7 @@ class EnvironmentManager:
 					except Exception:
 						return False
 				else:
-					sys.stderr.write ("Current VM version is OK.\n")
+					#sys.stderr.write ("Current VM version is OK.\n")
 			else:
 				# This means the virtual has *not* been merged yet
 				return False
