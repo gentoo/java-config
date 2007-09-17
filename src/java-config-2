@@ -288,9 +288,6 @@ if __name__ == '__main__':
 	usage += "Distributed under the terms of the GNU General Public License v2\n"
 	usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
-	#ELVANOR
-	#sys.stderr.write("Correct java-config used")
-
 	options_list = [
 					 make_option ("-V", "--version",				 action="callback", callback=version,				   help="Print version information"),
 					 make_option ("-n", "--nocolor",				 action="callback", callback=nocolor,				   help="Disable color output"),
