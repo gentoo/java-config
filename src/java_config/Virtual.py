@@ -7,8 +7,6 @@
 from FileParser import *
 from Package import *
 import re, sys
-#from java_config.VersionManager import *
-#import VersionManager
         
 class Virtual(Package):
     """
@@ -18,8 +16,16 @@ class Virtual(Package):
         self._file = file
         self._name = name
         self._manager = manager
+
+        # Store possible installed packages and vms in arrays
         self._packages = []
+        self._vms = []
         self.active_package = None
+        self.needs_jdk = False
+        self.min_target = None
+        self.min_vm_target = None
+        self.loaded = False
+
         if self._file:
             self._config = EnvFileParser(file).get_config()
             temp_packages = self._config["PROVIDERS"].split(' ')
@@ -33,7 +39,7 @@ class Virtual(Package):
     def load_providers(self, temp_packages):
         # Now load system pref.  Really should support
         # List of packages instead of single package.
-        all_prefs = self._manager.get_virtual_pref().get_config()
+        all_prefs = self._manager.get_virtuals_pref().get_config()
         if all_prefs.has_key(self.name()):
             if all_prefs[self.name()] in temp_packages:
                 self._packages.append(all_prefs[self.name()])
@@ -54,6 +60,8 @@ class Virtual(Package):
         return self._file
 
     def description(self):
+        if not self.use_active_package():
+            return self._name + ", Using: " + self._manager.get_active_vm().name()
         return self.get_active_package().description()
 
     def get_packages(self):
@@ -63,7 +71,7 @@ class Virtual(Package):
         """
         Returns this package's classpath
         """
-        if self.get_active_package() == "VM":
+        if not self.use_active_package():
             return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
         return self.get_active_package().classpath()
 
@@ -71,31 +79,26 @@ class Virtual(Package):
         """
         Return the value of the requested var from the env file
         """
-        active_package = self.get_active_package()
+        if (var == "TARGET"):
+            if self.loaded:
+                return self.min_target, self.needs_jdk
+            else:
+                self.load()
+                return self.min_target, self.needs_jdk
         
-        if active_package == "VM":
-            if (var == "TARGET"):
-                import VersionManager
-                verman = VersionManager.VersionManager()
-                r = verman.parse_depend(self._config["VM"])[0]
-                version = r["version"]
-                if r["type"] == "jdk":
-                    needs_jdk = True
-                else:
-                    needs_jdk = False
-                return version, needs_jdk
-            if (var == "CLASSPATH"):
-                return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
-            return ""
-        
-        else:
-            return active_package.query(var)
+        if var == "CLASSPATH":
+            if self.use_active_package():
+                self.active_package.classpath()
+            else:
+                if self._config["VM_CLASSPATH"]:
+                    return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
+        return ""
 
     def deps(self):
         """
         Return all packages this package depends on
         """
-        if self.get_active_package() == "VM":
+        if not self.use_active_package():
             return []
         return self.get_active_package().deps()
 
@@ -103,7 +106,7 @@ class Virtual(Package):
         """
         Return all packages this package optionally depends on
         """
-        if self.get_active_package() == "VM":
+        if not self.use_active_package():
             return []
         return self.get_active_package().opt_deps()
 
@@ -111,37 +114,83 @@ class Virtual(Package):
         """
         Return the virtuals this package provides
         """
+        if not self.use_active_package():
+            return self._manager.get_active_vm().provides()
         return self.get_active_package().provides()
 
     def get_active_package(self):
-        if not self.active_package:
-            self.load_active_package()
+        if not self.loaded:
+            self.load()
         return self.active_package
 
-    def load_active_package(self):      
-        # Must obtain the VersionManager, this is ugly but avoids circular dependencies...
-        import VersionManager
-        verman = VersionManager.VersionManager()
-        if (verman.version_satisfies(self._config["VM"], self._manager.get_active_vm())):
-            # We should return the special string "VM"
-            self.active_package = "VM"
-            return
-        # Active package is the first available package.
-        
+    def use_active_package(self):
+        #Check whether load function has been called.
+        if not self.loaded:
+            self.load()
+
+        if not self._vms and not self.active_package:
+            raise Exception("Couldn't find suitable package or vm to provide: " + self._name)
+
+        # If no vm's then use active_package
+        if not self._vms and self.active_package:
+            #return self.active_package
+            return True
+
+        if self._vms:
+            import VersionManager
+            verman = VersionManager.VersionManager()
+            vm = self._manager.get_active_vm()
+            if verman.version_satisfies( self._config["VM"], vm ):
+                # This is an acceptable so return false
+                return False
+            else:
+                if not self.active_package:
+                    available = ""
+                    for vm in self._vms:
+                        available = vm.name() + "\n"
+                    print "Please use one of the following vm's"
+                    print available
+                else:
+                    return True
+
+    def load(self):
+        # Active package is the first available package
         for package in self._packages:
-            # Improvement: we could put the VM in the list of providers 
-            
+            # Improvement: we could put the VM in the list of providers
             if self._manager.get_package(package) is not None:
                 self.active_package = self._manager.get_package(package)
-                return
-        if self._config["VM"]:
-            self.active_package = "VM"
-            return          
-            
-        if not self.active_package:
-            #Eventually this should throw an error?
-            raise Exception("Couldn't find package providing virtual " + self._name)
-            #self.active_package = Package("No package provided.")
+        # Set the minimum target version to the active package's target.
+        if self.active_package:
+            self.min_target = self.active_package.query("TARGET")
 
+        # Load possible vms.  These are vm's that are installed.
+        vms = self._manager.get_virtual_machines()
+
+        if self._config["VM"]:
+            import VersionManager
+            verman = VersionManager.VersionManager()
+
+            # We assume that there was only one virtual/[jre|jdk] declared.
+            r = verman.parse_depend(self._config["VM"])[0]
+            version = r["version"]
+            if r["type"] == "jdk":
+                self.needs_jdk = True
+
+            for vm_index in vms:
+                vm = vms[vm_index]
+                if self.needs_jdk and not vm.is_jre:
+                    continue
+                if verman.version_satisfies( self._config["VM"], vm ):
+                    self._vms.append(vm)
+                    if self.min_vm_target:
+                        if cmp(vm.version(), self.min_target) < 0:
+                            self.min_target = vm.version()
+                        if cmp(vm.version(), self.min_vm_target) < 0:
+                            self.min_vm_target = vm.version()
+                    else:
+                        self.min_target = vm.version()
+                        self.min_vm_target = vm.version()
+        #Set loaded to true, so function can determine what is going on
+        self.loaded = True
 
 #vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

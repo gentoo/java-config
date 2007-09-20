@@ -6,7 +6,7 @@
 # $Header: $
 
 import sys
-sys.path = ['/usr/share/java-config-2/pym']+sys.path
+#sys.path = ['/usr/share/java-config-2/pym']+sys.path
 
 from java_config import __version__
 from java_config.OutputFormatter import *
@@ -60,14 +60,16 @@ needed dependency, report this to http://bugs.gentoo.org.
 
 def get_needed_target(pkg):
     highest_target = None
-    needs_jdk = None
+    needs_jdk = False
     for pkg in get_needed_packages(pkg):
+        pkg_needs_jdk = False
         x = pkg.query("TARGET")
         try:
-            target, needs_jdk = x
+            target, pkg_needs_jdk = x
         except (ValueError, TypeError):
             target = x
 
+        needs_jdk |= pkg_needs_jdk
         if highest_target:
             if target > highest_target:
                 highest_target = target
@@ -191,6 +193,7 @@ if __name__ == '__main__':
     if options.get_vm:
         vm = get_vm(pkg)
         if vm:
+            manager.set_active_vm(vm)
             print 'gjl_vm="%s"' % ( vm )
 
     if options.get_args:
