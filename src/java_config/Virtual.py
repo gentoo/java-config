@@ -182,14 +182,17 @@ class Virtual(Package):
                     continue
                 if verman.version_satisfies( self._config["VM"], vm ):
                     self._vms.append(vm)
-                    if self.min_vm_target:
+                    if self.min_target:
                         if cmp(vm.version(), self.min_target) < 0:
                             self.min_target = vm.version()
+                    else:
+                        self.min_target = vm.version()
+                    if self.min_vm_target:
                         if cmp(vm.version(), self.min_vm_target) < 0:
                             self.min_vm_target = vm.version()
                     else:
-                        self.min_target = vm.version()
                         self.min_vm_target = vm.version()
+
         #Set loaded to true, so function can determine what is going on
         self.loaded = True
 
