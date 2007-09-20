@@ -86,12 +86,9 @@ class Virtual(Package):
                 self.load()
                 return self.min_target, self.needs_jdk
         
-        if var == "CLASSPATH":
-            if self.use_active_package():
-                self.active_package.classpath()
-            else:
-                if self._config["VM_CLASSPATH"]:
-                    return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
+        if( var == "CLASSPATH" ):
+            return self.classpath()
+        
         return ""
 
     def deps(self):
