@@ -429,16 +429,18 @@ class EnvironmentManager:
         for virtual in virtuals.split():
             virtualKey = virtual.replace("java-virtuals/","")
             if self.get_virtuals().has_key(virtualKey):
-                good_vm = self.get_virtuals()[virtualKey]._config["VM"]
-                #sys.stderr.write ("A good VM would be " + good_vm +"\n")
-                if (not versionManager.version_satisfies(good_vm, virtualMachine)):
-                    try:
-                        package = self.get_virtuals()[virtualKey].get_active_package()
-                        if (not verman.version_satisfies(package._config["VM"], virtualMachine)):
-                            return False
-                            # Should check if the current VM is OK for this package I guess
-                    except Exception:
-                        return False
+                if self.get_virtuals()[virtualKey]._config.has_key("VM"):
+                	good_vm = self.get_virtuals()[virtualKey]._config["VM"]
+                	#ELVANOR
+	                #sys.stderr.write ("A good VM would be " + good_vm +"\n")
+	                if ((not good_vm) or (not versionManager.version_satisfies(good_vm, virtualMachine))):
+	                    try:
+	                        package = self.get_virtuals()[virtualKey].get_active_package()
+	                        if (not verman.version_satisfies(package._config["VM"], virtualMachine)):
+	                            return False
+	                            # Should check if the current VM is OK for this package I guess
+	                    except Exception:
+	                        return False
             else:
                 # This means the virtual has *not* been merged yet
                 return False
