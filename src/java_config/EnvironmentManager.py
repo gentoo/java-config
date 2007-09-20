@@ -32,6 +32,7 @@ class EnvironmentManager:
     system_config_path="/etc/java-config-2/"
 
     def __init__(self):
+        self.load_active_vm()
         pass
 
     def __call__(self):
