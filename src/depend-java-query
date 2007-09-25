@@ -42,16 +42,16 @@ def is_sufficient(option, opt, value, parser):
         sys.exit(1)
 
 def get_vm(option, opt, value, parser):
-    #try:
+    try:
         if parser.values.need_virtual is not None:
            vm = verman.get_vm(value, parser.values.need_virtual)
         else:
            vm = verman.get_vm(value)
 
         printer._print(vm)
-    #except Exception, ex:
-    #   printer._printError(str(ex))
-    #   sys.exit(1)
+    except Exception, ex:
+       printer._printError(str(ex))
+       sys.exit(1)
 
 def get_lowest(option, opt, value, parse):
     try:
