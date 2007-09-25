@@ -72,6 +72,8 @@ class Virtual(Package):
         Returns this package's classpath
         """
         if not self.use_active_package():
+            if not self._config["VM_CLASSPATH"]:
+                return ""
             return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
         return self.get_active_package().classpath()
 
@@ -114,6 +116,12 @@ class Virtual(Package):
         if not self.use_active_package():
             return self._manager.get_active_vm().provides()
         return self.get_active_package().provides()
+
+    def needs_vm(self):
+        """
+        Return whether this Virtual requires a Virtual Machine.
+        """
+        return not self.use_active_package()
 
     def get_active_package(self):
         if not self.loaded:
