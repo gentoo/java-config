@@ -175,7 +175,7 @@ class Virtual(Package):
         # Load possible vms.  These are vm's that are installed.
         vms = self._manager.get_virtual_machines()
 
-        if self._config.has_key("VM"):
+        if self._config.has_key("VM") and self._config["VM"]:
             import VersionManager
             verman = VersionManager.VersionManager()
 
