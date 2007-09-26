@@ -428,23 +428,19 @@ class EnvironmentManager:
     def have_provider(self, virtuals, virtualMachine, versionManager):
         for virtual in virtuals.split():
             virtualKey = virtual.replace("java-virtuals/","")
-            if self.get_virtuals().has_key(virtualKey):
-                if self.get_virtuals()[virtualKey]._config.has_key("VM"):
-                	good_vm = self.get_virtuals()[virtualKey]._config["VM"]
-                	#ELVANOR
-	                #sys.stderr.write ("A good VM would be " + good_vm +"\n")
-	                if ((not good_vm) or (not versionManager.version_satisfies(good_vm, virtualMachine))):
-	                    try:
-	                        package = self.get_virtuals()[virtualKey].get_active_package()
-	                        if (not verman.version_satisfies(package._config["VM"], virtualMachine)):
-	                            return False
-	                            # Should check if the current VM is OK for this package I guess
-	                    except Exception:
-	                        return False
-            else:
-                # This means the virtual has *not* been merged yet
-                return False
-        return True
+            if self.get_virtual(virtualKey):
+                if self.get_virtual(virtualKey).get_active_package():
+                    # Virtual has active package
+                    # We don't need to care about the vm.
+                    return True
+                else:
+                    if self.get_virtual(virtualKey)._config.has_key("VM"):
+                        good_vm = self.get_virtuals()[virtualKey]._config["VM"]
+                        if( good_vm and versionManager.version_satisfies(good_vm, virtualMachine) ):
+                            return True
+        # Unable to find a suitable provider. Something must have gone wrong
+        # Either no Virtual or dependencies of virtual are missing.
+        return False
     
 # Singleton hack 
 EnvironmentManager = EnvironmentManager()

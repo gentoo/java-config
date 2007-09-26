@@ -124,12 +124,17 @@ class Virtual(Package):
         return not self.use_active_package()
 
     def get_active_package(self):
+        """
+        Return the active package package for the virtual.
+        """
         if not self.loaded:
             self.load()
         return self.active_package
 
     def use_active_package(self):
-        #Check whether load function has been called.
+        """
+        Return whether a package is to be used by the Virtual.
+        """
         if not self.loaded:
             self.load()
 
@@ -138,7 +143,6 @@ class Virtual(Package):
 
         # If no vm's then use active_package
         if not self._vms and self.active_package:
-            #return self.active_package
             return True
 
         if self._vms:
@@ -146,7 +150,7 @@ class Virtual(Package):
             verman = VersionManager.VersionManager()
             vm = self._manager.get_active_vm()
             if verman.version_satisfies( self._config["VM"], vm ):
-                # This is an acceptable so return false
+                # This is acceptable so return false
                 return False
             else:
                 if not self.active_package:
