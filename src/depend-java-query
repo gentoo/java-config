@@ -31,10 +31,10 @@ def nocolor(option, opt, value, parser):
 def is_sufficient(option, opt, value, parser):
     try:
         if verman.version_satisfies(value,manager.get_active_vm()):
-            printer._print("Active vm satifies the depend string")
+            printer._print("Active vm satisfies the depend string")
             sys.exit(0)
         else:
-            printer._print("Active vm does NOT satify the depend string")
+            printer._print("Active vm does NOT satisfy the depend string")
             sys.exit(1)
 
     except RuntimeError, (ex):

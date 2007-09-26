@@ -426,16 +426,20 @@ class EnvironmentManager:
             stream.close()
 
     def have_provider(self, virtuals, virtualMachine, versionManager):
-        for virtual in virtuals.split():
-            virtualKey = virtual.replace("java-virtuals/","")
+        for virtualKey in virtuals.split():
+            #virtualKey = virtual.replace("java-virtuals/","")
+
             if self.get_virtual(virtualKey):
+                #sys.stderr.write ("The virtual " + virtualKey + " has been found.\n")
                 if self.get_virtual(virtualKey).get_active_package():
                     # Virtual has active package
                     # We don't need to care about the vm.
                     return True
                 else:
                     if self.get_virtual(virtualKey)._config.has_key("VM"):
-                        good_vm = self.get_virtuals()[virtualKey]._config["VM"]
+                        good_vm = self.get_virtual(virtualKey)._config["VM"]
+                        #ELVANOR
+                        #sys.stderr.write ("A good VM would be " + good_vm +"\n")                        
                         if( good_vm and versionManager.version_satisfies(good_vm, virtualMachine) ):
                             return True
         # Unable to find a suitable provider. Something must have gone wrong

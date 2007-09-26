@@ -28,7 +28,10 @@ class Virtual(Package):
 
         if self._file:
             self._config = EnvFileParser(file).get_config()
-            temp_packages = self._config["PROVIDERS"].split(' ')
+            if self._config.has_key("PROVIDERS"):
+            	temp_packages = self._config["PROVIDERS"].split(' ')
+            else:
+            	temp_packages = []
         else:
             self._config = {}
             temp_packages = []
