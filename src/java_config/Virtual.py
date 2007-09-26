@@ -164,6 +164,7 @@ class Virtual(Package):
                     print available
                 else:
                     return True
+        return False
 
     def load(self):
         # Active package is the first available package
