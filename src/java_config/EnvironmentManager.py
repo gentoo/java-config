@@ -6,6 +6,7 @@
 
 from OutputFormatter import *
 from Package import *
+from Virtual import *
 from VM import *
 from Errors import *
 
@@ -19,14 +20,19 @@ class EnvironmentManager:
     virtual_machines = None
     packages = None
     virtuals = None
+    virtuals_pref = None
     active = None
 
     # Location of the vm ev files
     vms_path = '/usr/share/java-config-2/vm'
     # Location of the package env files to load
     pkg_path = '/usr/share/*/package.env'
+    virtual_path = '/usr/share/java-config-2/virtuals/*'
+
+    system_config_path="/etc/java-config-2/"
 
     def __init__(self):
+        self.load_active_vm()
         pass
 
     def __call__(self):
@@ -65,30 +71,18 @@ class EnvironmentManager:
             pkg = Package(basename(dirname(package)), package)
             self.packages[pkg.name()] = pkg
 
-            for virt in pkg.provides():
-                if self.virtuals.has_key(virt):
-                    self.virtuals[virt].append(pkg)
-                else:
-                    self.virtuals[virt] = [pkg]
+        for virtual in iter(glob(self.virtual_path)):
+            virt = Virtual(basename(virtual), self, virtual)
+            self.packages[virt.name()] = virt
+            self.virtuals[virt.name()] = virt
 
-        virtual_prefs = {}
-        try:
-            vprefs = EnvFileParser("/etc/java-config-2/virtuals")
-            virtual_prefs = vprefs.get_config()
-        except:
-            pass
+    def get_virtuals_pref(self):
+        if self.virtuals_pref is None:
+            self.load_virtuals_pref()
+        return self.virtuals_pref
 
-        for virt, providers in self.virtuals.iteritems():
-            if virtual_prefs.has_key(virt):
-                pref = virtual_prefs[virt]
-                for pkg in providers:
-                    if pkg.name() == pref:
-                        self.packages[virt] = pkg
-            else:
-                self.packages[virt] = providers[0]
-
-        for virt in self.get_active_vm().get_provides():
-            self.packages[virt] = Package("Provided by the active vm")
+    def load_virtuals_pref(self):
+        self.virtuals_pref = EnvFileParser("/etc/java-config-2/virtuals")
 
     def load_active_vm(self):
         vm_name = os.getenv("GENTOO_VM")
@@ -150,16 +144,25 @@ class EnvironmentManager:
             self.load_packages()
         return self.virtuals
 
+    def get_virtual(self, virtname):
+        all_virt = self.get_virtuals()
+        if all_virt.has_key(virtname):
+            return all_virt[virtname]
+        else:
+            return None
+
     def query_packages(self, packages, query):
         results = []
         all_pkg = self.get_packages()
+            
         for package in packages[:]:
+            #ELVANOR
+            #sys.stderr.write("Querying package: " + package + "\n")            
             if all_pkg.has_key(package):
                 packages.remove(package)
                 value = all_pkg[package].query(query)
                 if value:
                     results.append(value)
-
         return results
 
     def get_vm(self, machine):
@@ -422,13 +425,27 @@ class EnvironmentManager:
             stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
             stream.close()
 
-    def have_provider(self, virtuals):
-        for virtual in virtuals.split():
-            if not self.get_virtuals().has_key(virtual):
-                return False
+    def have_provider(self, virtuals, virtualMachine, versionManager):
+        for virtualKey in virtuals.split():
+            #virtualKey = virtual.replace("java-virtuals/","")
 
-        return True
-
+            if self.get_virtual(virtualKey):
+                #sys.stderr.write ("The virtual " + virtualKey + " has been found.\n")
+                if self.get_virtual(virtualKey).get_active_package():
+                    # Virtual has active package
+                    # We don't need to care about the vm.
+                    return True
+                else:
+                    if self.get_virtual(virtualKey)._config.has_key("VM"):
+                        good_vm = self.get_virtual(virtualKey)._config["VM"]
+                        #ELVANOR
+                        #sys.stderr.write ("A good VM would be " + good_vm +"\n")                        
+                        if( good_vm and versionManager.version_satisfies(good_vm, virtualMachine) ):
+                            return True
+        # Unable to find a suitable provider. Something must have gone wrong
+        # Either no Virtual or dependencies of virtual are missing.
+        return False
+    
 # Singleton hack 
 EnvironmentManager = EnvironmentManager()
 

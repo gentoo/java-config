@@ -22,10 +22,11 @@ import os.path
 # Ignore blockers: portage doesn't support them in a way that is usefull for us
 class VersionManager:
     """
-    Used to parse dependency stringsa, and find the best/prefered vm to use.
+    Used to parse dependency strings, and find the best/prefered vm to use.
     """
     #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
     atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
+    virtuals_parser = re.compile(r"([<>=]+)?java-virtuals/(.*?)\s")    
     pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
     _prefs = None
 
@@ -63,8 +64,11 @@ class VersionManager:
         except KeyError:
             pass
 
-        matches = self.atom_parser.findall(atoms)
+            # Should check if there are virtuals there
 
+        matches = self.atom_parser.findall(atoms)
+        virtuals_matches = self.virtuals_parser.findall(atoms)
+        
         if len(matches) >  0:
             for match in matches:
                 matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
@@ -73,6 +77,41 @@ class VersionManager:
         matched_atoms.reverse()
 
         return matched_atoms
+        
+    def parse_depend_virtuals(self, atoms):
+        """Filter the dependency string for useful information"""
+        matched_atoms = []
+
+        import os
+        # gjl does not use use flags
+        try:
+            use = os.environ["USE"]
+
+            # Local import to avoid initializing portage elsewhere
+            from portage_dep import use_reduce,paren_reduce
+            from portage import flatten
+
+            # Normalize white space for Portage
+            atoms = " ".join(atoms.split())
+
+            # Remove conditional depends that are not turned on
+            atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
+        except KeyError:
+            pass
+
+            # Should check if there are virtuals there
+
+        virtuals_matches = self.virtuals_parser.findall(atoms)
+
+        #sys.stderr.write("Size of virtuals: " + str(len(virtuals_matches)) + "\n")        
+
+        matched_virtuals = ""
+
+        for match in virtuals_matches:
+            matched_virtuals += " " + match[1]
+            #sys.stderr.write(match[1] + "\n")
+
+        return matched_virtuals        
 
     def matches(self, version_a, version_b, operator):
         val = self.version_cmp(version_a, version_b)
@@ -121,9 +160,14 @@ class VersionManager:
 
     def get_vm(self, atoms, need_virtual = None):
         matched_atoms = self.parse_depend(atoms)
+        matched_virtuals = self.parse_depend_virtuals(atoms)        
 
         if len(matched_atoms) == 0:
             return None
+        if len(matched_virtuals) == 0:
+            need_virtual = None
+        else:
+            need_virtual = matched_virtuals
 
         prefs = self.get_prefs()
 
@@ -132,29 +176,42 @@ class VersionManager:
         for atom in matched_atoms: 
             for pref in prefs:
                 if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
-                    for vm in pref[1]:               # Loop over the prefered once, and check if they are valid
-                        gvm = self.find_vm(vm, atom) 
+                    for vmProviderString in pref[1]: # Loop over the prefered once, and check if they are valid
+                        gvm = self.find_vm(vmProviderString, atom) 
                         if gvm:
-                            if need_virtual:         # Package we are finding a vm for needs a virtual
+                            if need_virtual: # Package we are finding a vm for needs a virtual
+                                #ELVANOR
+                                #sys.stderr.write("Checking if VM: " + gvm.name() + " provides " + str(need_virtual) + "\n")
                                 if gvm.provides(need_virtual): # we provide the virtual ourself good!
+                                    # Old way of doing, we no longer bother with PROVIDES
                                     return gvm
                                 else:
-                                    if EnvironmentManager().have_provider(need_virtual): # We have a package available that provides it, will use that
+                                    # New, correct way of searching for virtuals
+                                    if EnvironmentManager().have_provider(need_virtual, gvm, self): # We have a package available that provides it, will use that
                                         return gvm
                             else:
                                 return gvm          # use it!
-
+        
         # no match in preferences, find anything we have
+        # Support for virtuals too here
         for atom in matched_atoms:
-            vm = self.find_vm("", atom)
-            if vm:
-                return vm
+            gvm = self.find_vm("", atom)
+            if gvm:
+                if need_virtual:         # Package we are finding a vm for needs a virtual
+                    if gvm.provides(need_virtual): # we provide the virtual ourself good!
+                        return gvm
+                    else:
+                        if EnvironmentManager().have_provider(need_virtual, gvm, self):
+                            return gvm
+                else:
+                    return gvm
 
         # nothing found
         raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
 
-    def find_vm(self, vm, atom):
-        vm_list = EnvironmentManager().find_vm(vm)
+
+    def find_vm(self, vmProviderString, atom):
+        vm_list = EnvironmentManager().find_vm(vmProviderString)
         vm_list.sort()
         vm_list.reverse()
         for vm in vm_list:
@@ -162,6 +219,7 @@ class VersionManager:
                 if self.matches(vm.version(), atom['version'], atom['equality']):
                     return vm
         return None
+       
 
     def version_cmp(self, version1, version2):
         #Parly stolen from portage.py
