@@ -2,4 +2,4 @@
 java-config support files
 '''
 
-__version__ = '2.0.33'
+__version__ = '2.1.0'

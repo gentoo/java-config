@@ -31,7 +31,7 @@ from glob import glob
 setup (
 	cmdclass={'install_scripts': my_install_scripts},
 	name = 'java-config',
-	version = '2.0.33',
+	version = '2.1.0',
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
