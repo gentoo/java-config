@@ -82,7 +82,7 @@ class EnvironmentManager:
         return self.virtuals_pref
 
     def load_virtuals_pref(self):
-        self.virtuals_pref = EnvFileParser("/etc/java-config-2/virtuals")
+        self.virtuals_pref = EnvFileParser(system_config_path + "virtuals")
 
     def load_active_vm(self):
         vm_name = os.getenv("GENTOO_VM")
@@ -155,9 +155,7 @@ class EnvironmentManager:
         results = []
         all_pkg = self.get_packages()
             
-        for package in packages[:]:
-            #ELVANOR
-            #sys.stderr.write("Querying package: " + package + "\n")            
+        for package in packages[:]:            
             if all_pkg.has_key(package):
                 packages.remove(package)
                 value = all_pkg[package].query(query)
@@ -427,19 +425,15 @@ class EnvironmentManager:
 
     def have_provider(self, virtuals, virtualMachine, versionManager):
         for virtualKey in virtuals.split():
-            #virtualKey = virtual.replace("java-virtuals/","")
 
             if self.get_virtual(virtualKey):
-                #sys.stderr.write ("The virtual " + virtualKey + " has been found.\n")
                 if self.get_virtual(virtualKey).get_active_package():
                     # Virtual has active package
                     # We don't need to care about the vm.
                     return True
                 else:
                     if self.get_virtual(virtualKey)._config.has_key("VM"):
-                        good_vm = self.get_virtual(virtualKey)._config["VM"]
-                        #ELVANOR
-                        #sys.stderr.write ("A good VM would be " + good_vm +"\n")                        
+                        good_vm = self.get_virtual(virtualKey)._config["VM"]                        
                         if( good_vm and versionManager.version_satisfies(good_vm, virtualMachine) ):
                             return True
         # Unable to find a suitable provider. Something must have gone wrong

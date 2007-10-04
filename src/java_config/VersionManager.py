@@ -24,7 +24,6 @@ class VersionManager:
     """
     Used to parse dependency strings, and find the best/prefered vm to use.
     """
-    #atom_parser = re.compile(r"([~!<>=]*)virtual/(jre|jdk)-([0-9\.]+)")
     atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
     virtuals_parser = re.compile(r"([<>=]+)?java-virtuals/(.*?)\s")    
     pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
@@ -103,15 +102,12 @@ class VersionManager:
 
         virtuals_matches = self.virtuals_parser.findall(atoms)
 
-        #sys.stderr.write("Size of virtuals: " + str(len(virtuals_matches)) + "\n")        
-
         matched_virtuals = ""
 
         for match in virtuals_matches:
             matched_virtuals += " " + match[1]
-            #sys.stderr.write(match[1] + "\n")
 
-        return matched_virtuals        
+        return matched_virtuals
 
     def matches(self, version_a, version_b, operator):
         val = self.version_cmp(version_a, version_b)
@@ -180,8 +176,6 @@ class VersionManager:
                         gvm = self.find_vm(vmProviderString, atom) 
                         if gvm:
                             if need_virtual: # Package we are finding a vm for needs a virtual
-                                #ELVANOR
-                                #sys.stderr.write("Checking if VM: " + gvm.name() + " provides " + str(need_virtual) + "\n")
                                 if gvm.provides(need_virtual): # we provide the virtual ourself good!
                                     # Old way of doing, we no longer bother with PROVIDES
                                     return gvm
