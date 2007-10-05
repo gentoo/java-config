@@ -82,7 +82,7 @@ class EnvironmentManager:
         return self.virtuals_pref
 
     def load_virtuals_pref(self):
-        self.virtuals_pref = EnvFileParser(system_config_path + "virtuals")
+        self.virtuals_pref = EnvFileParser(self.system_config_path + "virtuals")
 
     def load_active_vm(self):
         vm_name = os.getenv("GENTOO_VM")
