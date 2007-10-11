@@ -5,13 +5,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-import sys
-sys.path = ['/usr/share/java-config-2/pym']+sys.path
-
-from java_config import __version__
-from java_config.OutputFormatter import OutputFormatter
-from java_config.EnvironmentManager import EnvironmentManager
-from java_config.Errors import *
+from java_config_2 import __version__
+from java_config_2.OutputFormatter import OutputFormatter
+from java_config_2.EnvironmentManager import EnvironmentManager
+from java_config_2.Errors import *
 
 import os
 import sys
