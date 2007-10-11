@@ -64,7 +64,8 @@ class Virtual(Package):
 
     def description(self):
         if not self.use_active_package():
-            return self._name + ", Using: " + self._manager.get_active_vm().name()
+            if self._manager.get_active_vm():
+                return self._name + ", Using: " + self._manager.get_active_vm().name()
         return self.get_active_package().description()
 
     def get_packages(self):
@@ -77,7 +78,8 @@ class Virtual(Package):
         if not self.use_active_package():
             if not self._config.has_key("VM_CLASSPATH"):
                 return ""
-            return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
+            if self._manager.get_active_vm():
+                return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
         return self.get_active_package().classpath()
 
     def query(self, var):
@@ -117,7 +119,8 @@ class Virtual(Package):
         Return the virtuals this package provides
         """
         if not self.use_active_package():
-            return self._manager.get_active_vm().provides()
+            if self._get_active_vm():
+                return self._manager.get_active_vm().provides()
         return self.get_active_package().provides()
 
     def needs_vm(self):
@@ -152,7 +155,7 @@ class Virtual(Package):
             import VersionManager
             verman = VersionManager.VersionManager()
             vm = self._manager.get_active_vm()
-            if verman.version_satisfies( self._config["VM"], vm ):
+            if vm and verman.version_satisfies( self._config["VM"], vm ):
                 # This is acceptable so return false
                 return False
             else:
