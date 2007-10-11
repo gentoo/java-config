@@ -80,7 +80,7 @@ class Virtual(Package):
                 return ""
             if self._manager.get_active_vm():
                 return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
-            raise Exception("Unable to determine classpath. Please re-emerge java-virtuals/" + self.name + " or select a system/user vm that supports this virtual.")
+            raise Exception("Unable to determine classpath. Please re-emerge java-virtuals/" + self.name() + " or select a system/user vm that supports this virtual.")
         return self.get_active_package().classpath()
 
     def query(self, var):
