@@ -99,7 +99,7 @@ class EnvironmentManager:
                 if vm:
                     self.active = vm
                     return vm
-        return None
+        raise InvalidVMError
 
     def set_active_vm(self, vm):
         self.active = vm
