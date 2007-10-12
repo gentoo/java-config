@@ -42,8 +42,8 @@ setup (
 	maintainer = 'Gentoo Java Team',
 	maintainer_email = 'java@gentoo.org',
 	url = 'http://www.gentoo.org',
-	#packages = ['java_config'],
-	#package_dir = { 'java_config' : 'src/java_config' },
+	packages = ['java_config_2'],
+	package_dir = { 'java_config_2' : 'src/java_config_2' },
 	scripts = ['src/java-config-2','src/depend-java-query','src/run-java-tool', 'src/gjl'],
 	data_files = [
 		('share/java-config-2/pym/java_config/', glob('src/java_config/*')),
