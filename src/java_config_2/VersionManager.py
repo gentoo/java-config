@@ -11,8 +11,8 @@ import re
 from string import upper
 
 import VM, Errors 
-from java_config.FileParser import *
-from java_config.EnvironmentManager import *
+from java_config_2.FileParser import *
+from java_config_2.EnvironmentManager import *
 import os, glob, re
 import os.path
 
