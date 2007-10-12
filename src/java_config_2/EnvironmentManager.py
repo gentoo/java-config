@@ -34,6 +34,8 @@ class EnvironmentManager:
     def __init__(self):
         try:
             self.load_active_vm()
+        except InvalidVMError:
+            pass
         finally:
             pass
 
