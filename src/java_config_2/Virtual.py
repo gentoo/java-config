@@ -32,7 +32,7 @@ class Virtual(Package):
             self._config = EnvFileParser(file).get_config()
             if self._config.has_key("PROVIDERS"):
                 self.providing_packages = self._config["PROVIDERS"].replace(" ", ", ")
-            	temp_packages = self._config["PROVIDERS"].split(' ')
+                temp_packages = self._config["PROVIDERS"].split(' ')
             else:
             	temp_packages = []
             if self._config.has_key("VM"):
@@ -85,7 +85,7 @@ class Virtual(Package):
                 return ""
             if self._manager.get_active_vm():
                 return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
-            raise(, self._name, self._providing_vms, self._providing_packages )
+            raise ProviderUnavailableError( self._name, self._providing_vms, self._providing_packages )
         return self.get_active_package().classpath()
 
     def query(self, var):

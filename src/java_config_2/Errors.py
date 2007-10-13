@@ -26,9 +26,9 @@ class ProviderUnavailableError(Exception):
     No provider is available for the specified Virtual.
     """
 
-    __init__( self, virtual, vms, packages ):
+    def __init__( self, virtual, vms, packages ):
         self.virtual = virtual
-	self.vms = vms
+        self.vms = vms
         self.packages = packages
 
 class MissingOptionalsError(Exception):
