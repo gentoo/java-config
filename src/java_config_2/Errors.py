@@ -27,9 +27,18 @@ class ProviderUnavailableError(Exception):
     """
 
     def __init__( self, virtual, vms, packages ):
-        self.virtual = virtual
-        self.vms = vms
-        self.packages = packages
+        self._virtual = virtual
+        self._vms = vms
+        self._packages = packages
+
+    def packages(self):
+        return self._packages
+
+    def virtual(self):
+        return self._virtual
+
+    def vms(self):
+        return self._vms
 
 class MissingOptionalsError(Exception):
     """

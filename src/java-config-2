@@ -341,8 +341,9 @@ if __name__ == '__main__':
         except InvalidVMError:
             fatalError("The active vm could not be found")
         except ProviderUnavailableError, e:
-            fatalError("No providers are available, please ensure you have one of the following;\n" +
-                "VM's: " + e.vms + "\n" +
-                "Packages's: " + e.packages)
+            message = "No providers are available, please ensure you have one of the following;\n"	
+            message += "VM's: " + e.vms() + "\n"
+            message += "Packages's: " + e.packages() + "\n"
+            fatalError(message)
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
