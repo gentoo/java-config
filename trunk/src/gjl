@@ -1,0 +1,211 @@
+#!/usr/bin/python -E
+# -*- coding: UTF-8 -*-
+
+# Copyright 2004-2005 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+from java_config_2 import __version__
+from java_config_2.OutputFormatter import *
+from java_config_2.EnvironmentManager import *
+from java_config_2.VersionManager import *
+
+from commands import getoutput
+from string import join
+from sets import Set
+from optparse import OptionParser, make_option, OptionValueError
+import os
+from os.path import basename
+import sys
+
+# Needs some cleanup!
+# Someone please?
+
+def get_needed_packages(package):
+    unresolved = Set()
+    unresolved.add(package)
+
+    resolved = Set()
+
+    while len(unresolved) > 0:
+        pkg = unresolved.pop()
+        resolved.add(pkg)
+        # dep is in the form of (jar, pkg)
+        for dep in manager.get_pkg_deps(pkg):
+            dep_pkg = dep[-1]
+            p = manager.get_package(dep_pkg)
+            if p is None:
+                if ',' in dep_pkg:
+                    msg = """
+Package %s has a broken DEPEND entry in package.env. Please reinstall it.
+If this does not fix it, please report this to http://bugs.gentoo.org
+"""
+                    msg = msg % pkg
+                else:
+                    msg = """
+Package %s not found in the system. This package is listed as a
+dependency of %s. Please run emerge -1Da %s and if it does not bring in the
+needed dependency, report this to http://bugs.gentoo.org.
+"""
+                    msg = msg % (dep_pkg,pkg,pkg)
+                abort(msg)
+
+            if p not in resolved:
+                unresolved.add(p)
+
+    return resolved
+
+def get_needed_target(pkg):
+    highest_target = None
+    needs_jdk = False
+    for pkg in get_needed_packages(pkg):
+        pkg_needs_jdk = False
+        x = pkg.query("TARGET")
+        try:
+            target, pkg_needs_jdk = x
+        except (ValueError, TypeError):
+            target = x
+
+        needs_jdk |= pkg_needs_jdk
+        if highest_target:
+            if target > highest_target:
+                highest_target = target
+        else:
+            highest_target = target
+
+    return highest_target, needs_jdk
+
+
+def get_pkg_args(package):
+    missing_deps = Set()
+
+    classpath = manager.build_dep_path([package.name()], "CLASSPATH", missing_deps)
+    library = manager.build_dep_path([package.name()], "LIBRARY_PATH", missing_deps)
+
+    if len(missing_deps) > 0:
+        for dep in missing_deps:
+            printer._printError("Dependency package %s was not found!" % dep)
+
+    return ':'.join(classpath), ':'.join(library)
+
+def abort(msg):
+    printer._printError(msg)
+    sys.exit(1)
+
+
+# Options:
+def get_vm(pkg):
+    target, needs_jdk = get_needed_target(pkg)
+    if target:
+        if needs_jdk:
+            needed = ">=virtual/jdk-%s" % ( target ) # Need to dehardcode that for Virtuals...
+        else:
+            needed = ">=virtual/jre-%s" % ( target ) # Need to dehardcode that for Virtuals...
+        if verman.version_satisfies(needed, manager.get_active_vm()):
+            return None
+        else:
+            return verman.get_vm(needed)
+    else:
+        return verman.get_vm(pkg.query("VM"))
+
+def get_args(pkg):
+    args=""
+
+    classpath, library = get_pkg_args(pkg)
+    if classpath:
+        envcp = os.getenv('CLASSPATH')
+
+        if envcp:
+            classpath = ':'.join((envcp, classpath))
+
+        args += ' -classpath %s' % (classpath)
+
+    envlp = os.getenv('LD_LIBRARY_PATH')
+    envjlp = os.getenv('JAVA_LIBRARY_PATH')
+
+    newlibrary = '/lib:/usr/lib'
+    if library:
+        newlibrary = ':'.join((library, newlibrary))
+    if envjlp:
+        newlibrary = ':'.join((newlibrary, envjlp))
+    if envlp:
+        newlibrary = ':'.join((newlibrary, envlp))
+
+    args += ' -Djava.library.path="%s"' % (newlibrary)
+
+    if args:
+        return args
+    else:
+        return None
+
+def get_env(package):
+    env = manager.build_dep_env_vars([package.name()], Set())
+    return env
+
+def get_jar(pkg, gjar):
+    jars = pkg.classpath()
+    if jars:
+        for jar in jars.split(':'):
+            if gjar == basename(jar):
+                return jar
+            if normpath(gjar) == normpath(jar):
+                return gjar
+    return None
+
+def normpath(mypath):
+    newpath = os.path.normpath(mypath)
+    if newpath.startswith('//'):
+        return newpath[1:]
+    return newpath
+
+if __name__ == '__main__':
+    usage =  "%prog [options]\n\n"
+    usage += "Java Utility Version " + str(__version__) + "\n"
+    usage += "Copyright 2004-2005 Gentoo Foundation\n"
+    usage += "Distributed under the terms of the GNU General Public License v2\n"
+    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
+
+    options_list = [
+                     make_option ("-p", "--package",  action="store", type="string", dest="package", help="The package"),
+                     make_option ("-v", "--get-vm",   action="store_true", dest="get_vm"),
+                     make_option ("-a", "--get-args", action="store_true", dest="get_args"),
+                     make_option ("-j", "--get-jar", action="store", type="string", dest="jar")
+                   ]
+
+    parser = OptionParser(usage, options_list)
+    (options, args) = parser.parse_args()
+
+    global printer, manager, verman
+    printer = OutputFormatter(True, True)
+    manager = EnvironmentManager()
+    verman = VersionManager()
+
+    if not options.package:
+        abort("Too dumb todo anything without -p")
+
+    pkg = manager.get_package(options.package)
+    if not pkg:
+        abort("Invalid package: %s" % ( options.package ) )
+
+    if options.get_vm:
+        vm = get_vm(pkg)
+        if vm:
+            manager.set_active_vm(vm)
+            print 'gjl_vm="%s"' % ( vm )
+
+    if options.get_args:
+        args = get_args(pkg)
+        if args:
+            print 'gjl_args="%s";' % ( args )
+        env = get_env(pkg)
+        for k, v in env.iteritems():
+            print 'export %s="%s";' % ( k, v )
+
+    if options.jar:
+        jar = get_jar(pkg, options.jar)
+        if jar:
+            print 'gjl_starte="-jar %s"' % ( jar )
+        else:
+            abort("Couldn't find %s" % ( options.jar ) )
+
+# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

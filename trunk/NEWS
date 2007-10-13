@@ -1,0 +1,28 @@
+For full ChangeLog generated from svn commit logs see ChangeLog.
+
+Changes in 2.0.33:
+  * ENV_VARS support for package.env so that for example swt can
+    export MOZILLA_FIVE_HOME to using packages
+  * Make java-config not dependent on the files in the Portage tree
+    by importing them to our svn and installing them using distutils
+  * Make gjl add JAVA_LIBRARY_PATH and LD_LIBRARY_PATH variables to
+    java.library.path property
+  * Make profile.d scripts export MANPATH so that man java works when
+    running a system without generation 1
+
+Changes in 2.0.32:
+  * Fixed jrockit-jdk-bin in jdk-defaults-ia64.conf
+  * Prefer sun-jdk over blackdown-jdk in amd64 and x86 defaults
+  * Add keytool to wrappers
+  * improve gjl error handling when deps are not installed
+  * include this file in the release
+
+Changes in 2.0.31:
+  * Added support for conditional DEPEND atoms
+    http://bugs.gentoo.org/show_bug.cgi?id=156228
+  * java-config now always respects --nocolor
+    http://bugs.gentoo.org/show_bug.cgi?id=154493
+  * gjl can now be run with only a jar if the jar
+    does not have dependencies
+  * prefer sun-jdk over ibm-jdk-bin on x86 and amd64
+  * Added jdk-defaults-x86-fbsd.conf

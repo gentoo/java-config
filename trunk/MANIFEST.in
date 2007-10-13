@@ -1,0 +1,4 @@
+recursive-include man/ *
+recursive-include config/ *
+recursive-include src *
+include ChangeLog NEWS TODO
