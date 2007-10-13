@@ -18,6 +18,8 @@ class Virtual(Package):
         self._manager = manager
 
         # Store possible installed packages and vms in arrays
+        self.providing_packages = None
+        self.providing_vms = None
         self._packages = []
         self._vms = []
         self.active_package = None
@@ -29,9 +31,12 @@ class Virtual(Package):
         if self._file:
             self._config = EnvFileParser(file).get_config()
             if self._config.has_key("PROVIDERS"):
+                self.providing_packages = self._config["PROVIDERS"].replace(" ", ", ")
             	temp_packages = self._config["PROVIDERS"].split(' ')
             else:
             	temp_packages = []
+            if self._config.has_key("VM"):
+                self.providing_vms = self._config["VM"].replace(" ", ", ")
         else:
             self._config = {}
             temp_packages = []
@@ -80,7 +85,7 @@ class Virtual(Package):
                 return ""
             if self._manager.get_active_vm():
                 return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
-            raise Exception("Unable to determine classpath. Please re-emerge java-virtuals/" + self.name() + " or select a system/user vm that supports this virtual.")
+            raise(, self._name, self._providing_vms, self._providing_packages )
         return self.get_active_package().classpath()
 
     def query(self, var):
@@ -146,7 +151,7 @@ class Virtual(Package):
             self.load()
 
         if not self._vms and not self.active_package:
-            raise Exception("Couldn't find suitable package or vm to provide: " + self._name)
+            raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages ) 
 
         # If no vm's then use active_package
         if not self._vms and self.active_package:
@@ -164,8 +169,7 @@ class Virtual(Package):
                     available = ""
                     for vm in self._vms:
                         available = vm.name() + "\n"
-                    print "Please use one of the following vm's"
-                    print available
+                    raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
                 else:
                     return True
         return False

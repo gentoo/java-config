@@ -21,6 +21,16 @@ class InvalidVMError(Exception):
     Specified Virtual Machine does not exist or is invalid
     """
 
+class ProviderUnavailableError(Exception):
+    """
+    No provider is available for the specified Virtual.
+    """
+
+    __init__( self, virtual, vms, packages ):
+        self.virtual = virtual
+	self.vms = vms
+        self.packages = packages
+
 class MissingOptionalsError(Exception):
     """
     Some optional utilities are missing from a valid VM
