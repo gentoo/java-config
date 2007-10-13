@@ -18,8 +18,8 @@ class Virtual(Package):
         self._manager = manager
 
         # Store possible installed packages and vms in arrays
-        self.providing_packages = None
-        self.providing_vms = None
+        self.providing_packages = ""
+        self.providing_vms = ""
         self._packages = []
         self._vms = []
         self.active_package = None
