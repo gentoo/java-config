@@ -342,7 +342,7 @@ if __name__ == '__main__':
             fatalError("The active vm could not be found")
         except ProviderUnavailableError, e:
             message = "No providers are available, please ensure you have one of the following;\n"	
-            message += "VM's: " + e.vms() + "\n"
+            message += "VM's: " + e.vms() + " (Must be active the active vm)\n"
             message += "Packages's: " + e.packages() + "\n"
             fatalError(message)
 
