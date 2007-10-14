@@ -36,8 +36,7 @@ class EnvironmentManager:
             self.load_active_vm()
         except InvalidVMError:
             pass
-        finally:
-            pass
+        pass
 
     def __call__(self):
         return self
