@@ -180,6 +180,7 @@ class Virtual(Package):
             # Improvement: we could put the VM in the list of providers
             if self._manager.get_package(package) is not None:
                 self.active_package = self._manager.get_package(package)
+		break
         # Set the minimum target version to the active package's target.
         if self.active_package:
             self.min_target = self.active_package.query("TARGET")
