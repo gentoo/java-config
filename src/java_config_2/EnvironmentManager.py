@@ -15,10 +15,9 @@ from glob import glob
 from sets import Set
 import os, re, sys
 
-class EnvironmentManager:
+class EnvironmentManager(object):
     """This is the central class, which manages all information from the 'environment'"""
     virtual_machines = None
-    packages = None
     virtuals = None
     virtuals_pref = None
     active = None
@@ -32,11 +31,8 @@ class EnvironmentManager:
     system_config_path="/etc/java-config-2/"
 
     def __init__(self):
-        try:
-            self.load_active_vm()
-        except InvalidVMError:
-            pass
-        pass
+        self.all_packages_loaded = False
+        self.packages = {}
 
     def __call__(self):
         return self
@@ -67,12 +63,22 @@ class EnvironmentManager:
                 self.virtual_machines[count] = vm
                 count += 1
 
+    def load_package(self, name):
+        try:
+            pkg = Package(name, '/usr/share/' + name + '/package.env')
+            self.packages[name] = pkg
+            return pkg
+        except InvalidConfigError:
+            raise UnexistingPackageError(name)
+
     def load_packages(self):
-        self.packages = {}
-        self.virtuals = {}
         for package in iter(glob(self.pkg_path)):
-            pkg = Package(basename(dirname(package)), package)
-            self.packages[pkg.name()] = pkg
+            name = basename(dirname(package))
+            if name in self.packages:
+                continue
+            self.packages[name] = Package(name, package)
+
+        self.all_packages_loaded = True
 
         for virtual in iter(glob(self.virtual_path)):
             virt = Virtual(basename(virtual), self, virtual)
@@ -125,11 +131,11 @@ class EnvironmentManager:
         return found
 
     def get_package(self, pkgname):
-        all_pkg = self.get_packages()
-        if all_pkg.has_key(pkgname):
-            return all_pkg[pkgname]
-        else:
-            return  None
+        try:
+            return self.packages[pkgname]
+        except KeyError:
+            if not self.all_packages_loaded:
+                return self.load_package(pkgname)
 
     def get_packages(self):
         """
@@ -137,7 +143,7 @@ class EnvironmentManager:
         For java-config-3 we probably want to change this to return
         the list of packages directly.
         """
-        if self.packages is None:
+        if not self.all_packages_loaded:
             self.load_packages()
         return self.packages
 
@@ -155,14 +161,16 @@ class EnvironmentManager:
 
     def query_packages(self, packages, query):
         results = []
-        all_pkg = self.get_packages()
             
-        for package in packages[:]:            
-            if all_pkg.has_key(package):
-                packages.remove(package)
-                value = all_pkg[package].query(query)
+        for package in packages:
+            pkg = self.get_package(package)
+            if pkg:
+                value = pkg.query(query)
                 if value:
                     results.append(value)
+            else:
+                raise UnexistingPackageError(package)
+
         return results
 
     def get_vm(self, machine):

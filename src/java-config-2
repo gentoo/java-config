@@ -71,26 +71,25 @@ def java_version(option, opt, value, parser):
         fatalError("The java executable was not found in the Java path")
 
 def query_pkg_path(option, opt, value, parser, query):
-    packages = value.split(',')
-    path = Set()
-    missing_deps = Set()
-    if not parser.values.with_deps:
-        path = manager.build_path(packages, query)
-    else:
-        path = manager.build_dep_path(packages, query, missing_deps)
-
-    printer._print(':'.join(path))
-
     error = False
+    try:
+        packages = value.split(',')
+        path = Set()
+        missing_deps = Set()
+        if not parser.values.with_deps:
+            path = manager.build_path(packages, query)
+        else:
+            path = manager.build_dep_path(packages, query, missing_deps)
 
-    if len(packages) > 0:
-        for package in packages:
-            printer._printError("Package %s was not found!" % package)
-        error = True
+        printer._print(':'.join(path))
 
-    if len(missing_deps) > 0:
-        for dep in missing_deps:
-            printer._printError("Dependency package %s was not found!" % dep)
+        if len(missing_deps) > 0:
+            for dep in missing_deps:
+                printer._printError("Dependency package %s was not found!" % dep)
+            error = True
+
+    except UnexistingPackageError, e:
+        printer._printError("Package %s was not found!" % e.package)
         error = True
 
     if error:

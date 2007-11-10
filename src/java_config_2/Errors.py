@@ -50,4 +50,11 @@ class PermissionError(Exception):
     The permission on the file are wrong or you are not a privileged user
     """
 
+class UnexistingPackageError(Exception):
+    """
+    Thrown when a function is called to do something on a package that does not exist
+    """
+    def __init__(self, package):
+        self.package = package
+
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
