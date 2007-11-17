@@ -57,6 +57,17 @@ def get_lowest(option, opt, value, parse):
         printer._printError(str(ex))
         sys.exit(1)
 
+def parse_depend_string(option, opt, value, parse):
+    try:
+        results = verman.parse_depend(value)
+        output = ""
+        for result in results:
+            output += " " + result['equality'] + "virtual/" + result['type'] + "-" + result['version']
+        printer._print(output.strip())
+    except:
+        printer._printError(str(ex))
+        sys.ext(1)
+
 if __name__ == '__main__':
     global printer, manager, verman
     printer = OutputFormatter(True, True)
@@ -73,9 +84,10 @@ if __name__ == '__main__':
                     make_option ("-V", "--version",     action="callback", callback=version,       help="Print version information"),
                     make_option ("-n", "--nocolor",     action="callback", callback=nocolor,       help="Disable color output"),
                     make_option ("-s", "--is-sufficient",  action="callback", callback=is_sufficient, help="Check a depend string and see if current-vm is sufficiant",                     type="string", dest="dependstr"),
-                    make_option ("-v", "--get-vm",       action="callback", callback=get_vm,        help="Return the best vm for this dep string",                                         type="string", dest="dependstr"),
+                    make_option ("-v", "--get-vm",       action="callback", callback=get_vm,        help="Return the best vm for this dep string",                                          type="string", dest="dependstr"),
                     make_option ("-l", "--get-lowest",   action="callback", callback=get_lowest,    help="Return the lowest version in the depend, to be used with -target/-source fex.",   type="string", dest="dependstr"),
-                    make_option ("-p", "--need-virtual",   action="store",  help="When searching for a vm, make sure this virtual can be provided for.",             type="string", dest="need_virtual")
+                    make_option ("-p", "--need-virtual",   action="store",  help="When searching for a vm, make sure this virtual can be provided for.",                                    type="string", dest="need_virtual"),
+                    make_option ("-P", "--parse-depend", action="callback", callback=parse_depend_string, help="",                                                                           type="string", dest="dependstr" )
                    ]
 
     parser = OptionParser(usage, options_list)

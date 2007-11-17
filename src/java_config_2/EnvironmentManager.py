@@ -26,7 +26,7 @@ class EnvironmentManager(object):
     vms_path = '/usr/share/java-config-2/vm'
     # Location of the package env files to load
     pkg_path = '/usr/share/*/package.env'
-    virtual_path = '/usr/share/java-config-2/virtuals/*'
+    virtual_path = '/usr/share/java-config-2/virtuals/'
 
     system_config_path="/etc/java-config-2/"
 
@@ -69,7 +69,13 @@ class EnvironmentManager(object):
             self.packages[name] = pkg
             return pkg
         except InvalidConfigError:
-            raise UnexistingPackageError(name)
+            try:
+                #Try load Virtual instead of Package.
+                pkg = Virtual( name, self, self.virtual_path + name )
+                self.packages[name] = pkg
+                return pkg
+            except InvalidConfigError:
+                raise UnexistingPackageError(name)
 
     def load_packages(self):
         for package in iter(glob(self.pkg_path)):
@@ -80,7 +86,7 @@ class EnvironmentManager(object):
 
         self.all_packages_loaded = True
 
-        for virtual in iter(glob(self.virtual_path)):
+        for virtual in iter(glob(self.virtual_path + '*')):
             virt = Virtual(basename(virtual), self, virtual)
             self.packages[virt.name()] = virt
             self.virtuals[virt.name()] = virt
@@ -435,19 +441,18 @@ class EnvironmentManager(object):
 
     def have_provider(self, virtuals, virtualMachine, versionManager):
         for virtualKey in virtuals.split():
-
             if self.get_virtual(virtualKey):
-                if self.get_virtual(virtualKey).get_active_package():
-                    # Virtual has active package
-                    # We don't need to care about the vm.
+                try:
+                    self.get_virtual(virtualKey).classpath()
                     return True
-                else:
-                    if self.get_virtual(virtualKey)._config.has_key("VM"):
-                        good_vm = self.get_virtual(virtualKey)._config["VM"]                        
-                        if( good_vm and versionManager.version_satisfies(good_vm, virtualMachine) ):
-                            return True
-        # Unable to find a suitable provider. Something must have gone wrong
-        # Either no Virtual or dependencies of virtual are missing.
+                except AttributeError:
+                    if self.get_virtual(virtualKey).get_available_vms().count(virtualMachine.name()) > 0:
+                        return True
+                    #if self.get_virtual(virtualKey)._config.has_key("VM"):
+                    #    good_vm = self.get_virtual(virtualKey)._config["VM"] 
+                    #    if( good_vm and versionManager.version_satisfies(good_vm, virtualMachine) ):
+                    #        return True
+        
         return False
     
 # Singleton hack 

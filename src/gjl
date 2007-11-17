@@ -16,10 +16,13 @@ from sets import Set
 from optparse import OptionParser, make_option, OptionValueError
 import os
 from os.path import basename
-import sys
+import sys, re
 
 # Needs some cleanup!
 # Someone please?
+
+#atom_parser = re.compile(r".*([<>=]+)virtual/(jre|jdk)-([0-9\.*]+).*")
+atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
 
 def get_needed_packages(package):
     unresolved = Set()
@@ -55,6 +58,7 @@ needed dependency, report this to http://bugs.gentoo.org.
 
     return resolved
 
+#Depreciated.
 def get_needed_target(pkg):
     highest_target = None
     needs_jdk = False
@@ -75,6 +79,18 @@ def get_needed_target(pkg):
 
     return highest_target, needs_jdk
 
+def get_needed_target2(pkg):
+    highest_target = None
+    needs_jdk = Set()
+    for pkg in get_needed_packages(pkg):
+        target = pkg.target()
+        if highest_target < target:
+            highest_target = target
+        if isinstance( pkg, Virtual ):
+            for vm in pkg.get_vms():
+                needs_jdk.add(vm)
+    
+    return highest_target, needs_jdk
 
 def get_pkg_args(package):
     missing_deps = Set()
@@ -92,21 +108,116 @@ def abort(msg):
     printer._printError(msg)
     sys.exit(1)
 
+# Support function for get_vm2
+# Unused at present
+def get_needed_vms(pkg):
+    virtuals = Set()
+    vms = Set()
+    for pkg in get_needed_packages(pkg):
+        try:
+            x = pkg.query("VM")
+            if atom_parser.match( x ):
+                matches = atom_parser.findall( x )
+                pkg_virtuals = Set()
+                if len(matches) > 1:
+                    add_virtual_str_to_set( pkg_virtuals, matches )
+                    virtuals.add( pkg_virtuals )
+                else:
+                    add_virtual_str_to_set(virtuals, matches)
+            else:
+                #split first.
+                matches = x.split(' ')
+                for match in matches:
+                    vms.add( match )
+        except EnvironmentUndefinedError:
+            #Something bad has happened here
+            break
+    return virtuals, vms
+
+# Support function for get_vm2
+def add_virtual_str_to_set( s, arr ):
+    for a in arr:
+        s.add(a[0] + 'virtual/' + a[1] + '-' + a[2])
+
+
+## ----------------------------------
+## This is a new style get_vm function.  Instead of using a packages
+## TARGET env var it uses there VM var.
+## Unused at present
+def get_vm2(pkg):
+    targets, vms = get_needed_vms(pkg)
+    if len(vms) == 0:
+        search_vms = manager.get_virtual_machines()
+    else:
+        search_vms = vms
+    
+    if len( targets ) == 0:
+        if manager.get_active_vm().name() in vms:
+            return None
+        else:
+            for x in vms:
+                if manager.get_vm(x):
+                    return manager.get_vm(x)
+
+    for target in targets:
+        print target
+        print manager.get_active_vm()
+        if not target_matches( target, manager.get_active_vm()):
+            break
+        return None
+
+    for vm in search_vms:
+        try:
+            for target in targets:
+                if not target_matches( target, vm ):
+                    raise Exception("Not valid vm")
+            avm = manager.get_vm(vm)
+            if avm:
+                return avm
+        except:
+            #Handle this better
+            continue
+    return None
+
+def target_matches( target, vm ):
+    if isinstance( target, str ):
+        return verman.version_satisfies( target, vm )
+    else:
+        return target_matches_any( target, vm)
+        
+def target_matches_any( targets, vm ):
+    accept = False
+    for target in targets:
+        accept |= verman.version_statisfies( target, vm )
+    return accept
 
 # Options:
 def get_vm(pkg):
-    target, needs_jdk = get_needed_target(pkg)
-    if target:
-        if needs_jdk:
-            needed = ">=virtual/jdk-%s" % ( target ) # Need to dehardcode that for Virtuals...
-        else:
-            needed = ">=virtual/jre-%s" % ( target ) # Need to dehardcode that for Virtuals...
-        if verman.version_satisfies(needed, manager.get_active_vm()):
+    target, needs_jdk = get_needed_target2(pkg)
+
+    if len( needs_jdk ):
+        if manager.get_active_vm().name() in needs_jdk:
             return None
-        else:
-            return verman.get_vm(needed)
+        for x in vms:
+            vm = manager.get_vm(x)
+            if vm and ( vm.version() > target ):
+                return vm
     else:
-        return verman.get_vm(pkg.query("VM"))
+        needed = ">=virtual/jre-%s" % ( target )
+        if verman.version_satisfies( needed, manager.get_active_vm()):
+            return None
+        return verman.get_vm(needed)
+    #if target:
+    #    if needs_jdk:
+    #        needed = ">=virtual/jdk-%s" % ( target ) # Need to dehardcode that for Virtuals...
+    #    else:
+    #        needed = ">=virtual/jre-%s" % ( target ) # Need to dehardcode that for Virtuals...
+    #    if verman.version_satisfies(needed, manager.get_active_vm()):
+    #        return None
+    #    else:
+    #        return verman.get_vm(needed)
+    #else:
+    #    return verman.get_vm(pkg.query("VM"))
 
 def get_args(pkg):
     args=""

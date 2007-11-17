@@ -42,6 +42,9 @@ class Package:
         else:
             return None
 
+    def target(self):
+        return self.query("TARGET")
+    
     def query(self, var):
         """
         Return the value of the requested var form the env file
@@ -63,7 +66,7 @@ class Package:
         """
         return self.__get_deps("OPTIONAL_DEPEND")
 
-    def provides(self):
+    def get_provides(self):
         """
         Return the virtuals this package provides
         """
