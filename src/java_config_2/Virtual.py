@@ -193,17 +193,17 @@ class Virtual(Package):
         if not self.loaded:
             self.load()
 
-        if not self._vms and not self.active_package:
+        if not len(self._vms) and not self.active_package:
             raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages ) 
 
         # If no vm's then use active_package
-        if not self._vms and self.active_package:
+        if not len(self._vms) and self.active_package:
             return self.active_package
 
-        if self._vms:
+        if len(self._vms):
             vm = self._manager.get_active_vm()
             try:
-                if self._vms.index(vm.name()):
+                if self._vms.count(vm.name()):
                     # This is acceptable so return false
                     return vm
             except ValueError:
@@ -224,11 +224,11 @@ class Virtual(Package):
             except:
                 continue
 
-        if self._config.has_key("VM") and self._config["VM"]:
-            for vm in self._vms:
-                if self._manager.get_vm(vm):
-                    avm = self._manager.get_vm(vm)
-                    self.avaliable_vms.append( avm )
+        #if self._config.has_key("VM") and self._config["VM"]:
+        #    for vm in self._vms:
+        #        if self._manager.get_vm(vm):
+        #            avm = self._manager.get_vm(vm)
+        #            self.avaliable_vms.append( avm )
                     #if self.min_target:
                     #    if cmp(avm.version(), self.min_target) < 0:
                     #        self.min_target = avm.version()
