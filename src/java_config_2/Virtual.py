@@ -143,18 +143,6 @@ class Virtual(Package):
         #except EnvironmentUndefinedError:
         except:
             return self._config["VM"]
-        #TODO evaluate this!
-        #if (var == "TARGET"):
-        #    if self.loaded:
-        #        return self.min_target, self.needs_jdk
-        #    else:
-        #        self.load()
-        #        return self.min_target, self.needs_jdk
-        # 
-        #if( var == "CLASSPATH" ):
-        #    return self.classpath()
-        #
-        return ""
 
     def deps(self):
         """
@@ -179,12 +167,6 @@ class Virtual(Package):
         Return the virtuals this package provides
         """
         return self.get_provider().get_provides()
-
-    #def needs_vm(self):
-    #    """
-    #    Return whether this Virtual requires a Virtual Machine.
-    #    """
-    #    return not self.use_active_package()
 
     def get_provider(self):
         """
@@ -216,6 +198,11 @@ class Virtual(Package):
 
     def load(self):
         # Active package is the first available package
+        # We load on first use of this Virtual to delay
+        # using manager.get_package().
+        # This was because manager loaded all packages
+        # has been updated to only load packages on demand so
+        # this might be redundant.
         for package in self._packages:
             try:
                 self.active_package = self._manager.get_package(package)
@@ -223,17 +210,6 @@ class Virtual(Package):
                 break
             except:
                 continue
-
-        #if self._config.has_key("VM") and self._config["VM"]:
-        #    for vm in self._vms:
-        #        if self._manager.get_vm(vm):
-        #            avm = self._manager.get_vm(vm)
-        #            self.avaliable_vms.append( avm )
-                    #if self.min_target:
-                    #    if cmp(avm.version(), self.min_target) < 0:
-                    #        self.min_target = avm.version()
-                    #else:
-                    #    self.min_target = avm.version()
         #Set loaded to true, so functions can determine what is going on
         self.loaded = True
 

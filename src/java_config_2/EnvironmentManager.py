@@ -287,10 +287,11 @@ class EnvironmentManager(object):
         """
         deps = pkg.deps();
         for opt_dep in pkg.opt_deps():
-            p = self.get_package(opt_dep[-1])
-            if p:
+            try:
+                self.get_package(opt_dep[-1])
                 deps.append(opt_dep)
-
+            except UnexistingPackageError:
+                continue
         return deps
 
     def add_dep_classpath(self, pkg, dep, classpath): 
