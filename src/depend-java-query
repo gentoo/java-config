@@ -41,10 +41,9 @@ def is_sufficient(option, opt, value, parser):
 def get_vm(option, opt, value, parser):
     try:
         if parser.values.need_virtual is not None:
-           vm = verman.get_vm(value, parser.values.need_virtual)
+            vm = verman.get_vm(value, parser.values.need_virtual)
         else:
-           vm = verman.get_vm(value)
-
+            vm = verman.get_vm(value)
         printer._print(vm)
     except Exception, ex:
        printer._printError(str(ex))

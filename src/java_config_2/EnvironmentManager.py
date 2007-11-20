@@ -33,6 +33,7 @@ class EnvironmentManager(object):
     def __init__(self):
         self.all_packages_loaded = False
         self.packages = {}
+	self.virtuals = {}
 
     def __call__(self):
         return self
@@ -63,6 +64,7 @@ class EnvironmentManager(object):
                 self.virtual_machines[count] = vm
                 count += 1
 
+
     def load_package(self, name):
         try:
             pkg = Package(name, '/usr/share/' + name + '/package.env')
@@ -73,6 +75,7 @@ class EnvironmentManager(object):
                 #Try load Virtual instead of Package.
                 pkg = Virtual( name, self, self.virtual_path + name )
                 self.packages[name] = pkg
+                self.virtuals[name] = pkg
                 return pkg
             except InvalidConfigError:
                 raise UnexistingPackageError(name)
@@ -159,11 +162,7 @@ class EnvironmentManager(object):
         return self.virtuals
 
     def get_virtual(self, virtname):
-        all_virt = self.get_virtuals()
-        if all_virt.has_key(virtname):
-            return all_virt[virtname]
-        else:
-            return None
+        self.get_package(virtname)
 
     def query_packages(self, packages, query):
         results = []
@@ -442,12 +441,12 @@ class EnvironmentManager(object):
 
     def have_provider(self, virtuals, virtualMachine, versionManager):
         for virtualKey in virtuals.split():
-            if self.get_virtual(virtualKey):
+            if self.get_package(virtualKey):
                 try:
-                    self.get_virtual(virtualKey).classpath()
+                    self.get_package(virtualKey).classpath()
                     return True
                 except AttributeError:
-                    if self.get_virtual(virtualKey).get_available_vms().count(virtualMachine.name()) > 0:
+                    if self.get_package(virtualKey).get_available_vms().count(virtualMachine.name()) > 0:
                         return True
                     #if self.get_virtual(virtualKey)._config.has_key("VM"):
                     #    good_vm = self.get_virtual(virtualKey)._config["VM"] 
