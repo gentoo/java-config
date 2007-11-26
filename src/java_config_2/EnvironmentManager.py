@@ -33,7 +33,7 @@ class EnvironmentManager(object):
     def __init__(self):
         self.all_packages_loaded = False
         self.packages = {}
-	self.virtuals = {}
+        self.virtuals = {}
 
     def __call__(self):
         return self

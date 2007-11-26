@@ -57,20 +57,16 @@ class Virtual(Package):
     def load_providers(self, temp_packages, vms):
         # Now load system pref.  Really should support
         # List of packages instead of single package.
-        
-
-        #ignore preferences until Ive got this working
-
-        #all_prefs = self._manager.get_virtuals_pref().get_config()
-        #if all_prefs.has_key(self.name()):
-        #    if all_prefs[self.name()] in temp_packages:
-        #        self._packages.append(all_prefs[self.name()])
-        #else:
-        #    if all_prefs.has_key('PREFER_UPSTREAM'):
-        #        for package in temp_packages:
-        #            if re.compile(all_prefs['PREFER_UPSTREAM'] + '*').match(package):
-        #                self._packages.append(package)
-        #                break
+        all_prefs = self._manager.get_virtuals_pref().get_config()
+        if all_prefs.has_key(self.name()):
+            if all_prefs[self.name()] in temp_packages:
+                self._packages.append(all_prefs[self.name()])
+        else:
+            if all_prefs.has_key('PREFER_UPSTREAM'):
+                for package in temp_packages:
+                    if re.compile(all_prefs['PREFER_UPSTREAM'] + '*').match(package):
+                        self._packages.append(package)
+                        break
 
         for element in temp_packages:
             if not element in self._packages:
