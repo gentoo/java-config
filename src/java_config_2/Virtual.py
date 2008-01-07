@@ -37,11 +37,13 @@ class Virtual(Package):
 
         if self._file:
             self._config = EnvFileParser(file).get_config()
+
             if self._config.has_key("PROVIDERS"):
                 self.providing_packages = self._config["PROVIDERS"].replace(" ", ", ")
                 temp_packages = self._config["PROVIDERS"].split(' ')
             else:
-            	temp_packages = []
+                temp_packages = []
+
             if self._config.has_key("VM"):
                 self.providing_vms = self._config["VM"].replace(" ", ", ")
                 load_vms = self._config["VM"].split(' ')
@@ -209,4 +211,4 @@ class Virtual(Package):
         #Set loaded to true, so functions can determine what is going on
         self.loaded = True
 
-#vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
+# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap :
