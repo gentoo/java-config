@@ -162,7 +162,7 @@ class EnvironmentManager(object):
         return self.virtuals
 
     def get_virtual(self, virtname):
-        self.get_package(virtname)
+        return self.get_package(virtname)
 
     def query_packages(self, packages, query):
         results = []
