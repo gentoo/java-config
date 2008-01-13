@@ -40,6 +40,10 @@ class ProviderUnavailableError(Exception):
     def vms(self):
         return self._vms
 
+    def __str__(self):
+        return """No provider is available for """ + self._virtual + """
+        Please check your environment."""
+
 class MissingOptionalsError(Exception):
     """
     Some optional utilities are missing from a valid VM
@@ -56,5 +60,8 @@ class UnexistingPackageError(Exception):
     """
     def __init__(self, package):
         self.package = package
+
+    def __str__(self):
+        return "Package %s was not found!" % self.package
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

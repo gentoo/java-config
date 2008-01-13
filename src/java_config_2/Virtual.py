@@ -77,8 +77,8 @@ class Virtual(Package):
         for vm in vms:
             if self._manager.get_vm(vm):
                 self._vms.append(vm)
-        #if not self._packages and not self._vms:
-        raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
+        if not self._packages and not self._vms:
+            raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
 
     def file(self):
         # Investigate if anything uses this
