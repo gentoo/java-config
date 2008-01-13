@@ -59,7 +59,7 @@ class VersionManager:
 
         return matched_atoms
         
-    def filter_depend( self, atoms)
+    def filter_depend( self, atoms ):
         """Filter the dependency string for useful information"""
         new_atoms=""
 
