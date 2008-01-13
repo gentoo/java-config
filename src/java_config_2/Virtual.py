@@ -77,6 +77,8 @@ class Virtual(Package):
         for vm in vms:
             if self._manager.get_vm(vm):
                 self._vms.append(vm)
+        #if not self._packages and not self._vms:
+        raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
 
     def file(self):
         # Investigate if anything uses this
@@ -123,7 +125,7 @@ class Virtual(Package):
                 if self._manager.get_active_vm():
                     return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
                 else:
-                    raise ProviderUnavailableError( self._name, self_providing_vms, self._providing_packages )
+                    raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
             return ""
 
     def query(self, var):

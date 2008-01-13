@@ -25,7 +25,8 @@ class VersionManager:
     Used to parse dependency strings, and find the best/prefered vm to use.
     """
     atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
-    virtuals_parser = re.compile(r"([<>=]+)?java-virtuals/(.*?)\s")    
+    #virtuals_parser = re.compile(r"([<>=]+)?java-virtuals/(.*?)")
+    virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/(.+)[\-:]([0-9\.*]+)")
     pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
     _prefs = None
 
@@ -44,27 +45,8 @@ class VersionManager:
 
     def parse_depend(self, atoms):
         """Filter the dependency string for useful information"""
-        matched_atoms = []
-
-        import os
-        # gjl does not use use flags
-        try:
-            use = os.environ["USE"]
-
-            # Local import to avoid initializing portage elsewhere
-            from portage_dep import use_reduce,paren_reduce
-            from portage import flatten
-
-            # Normalize white space for Portage
-            atoms = " ".join(atoms.split())
-
-            # Remove conditional depends that are not turned on
-            atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
-        except KeyError:
-            pass
-
-            # Should check if there are virtuals there
-
+        
+        atoms = self.filter_depend(atoms)
         matches = self.atom_parser.findall(atoms)
         virtuals_matches = self.virtuals_parser.findall(atoms)
         
@@ -77,9 +59,9 @@ class VersionManager:
 
         return matched_atoms
         
-    def parse_depend_virtuals(self, atoms):
+    def filter_depend( self, atoms)
         """Filter the dependency string for useful information"""
-        matched_atoms = []
+        new_atoms=""
 
         import os
         # gjl does not use use flags
@@ -94,18 +76,19 @@ class VersionManager:
             atoms = " ".join(atoms.split())
 
             # Remove conditional depends that are not turned on
-            atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
+            new_atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
         except KeyError:
             pass
+        return new_atoms
 
-            # Should check if there are virtuals there
-
+    def parse_depend_virtuals(self, atoms):
+        """Filter the dependency string for useful information"""
+        atoms=self.filter_atoms(atoms)
         virtuals_matches = self.virtuals_parser.findall(atoms)
-
         matched_virtuals = ""
 
         for match in virtuals_matches:
-            matched_virtuals += " " + match[1]
+            matched_virtuals += " " + match[1] + "-" + match[2]
 
         return matched_virtuals
 
@@ -157,7 +140,7 @@ class VersionManager:
     def get_vm(self, atoms, need_virtual = None):
         matched_atoms = self.parse_depend(atoms)
         matched_virtuals = self.parse_depend_virtuals(atoms)        
-
+        print "matched_virtuals=" + matched_virtuals
         if len(matched_atoms) == 0:
             return None
         if len(matched_virtuals) == 0:
