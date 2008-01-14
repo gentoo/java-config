@@ -142,7 +142,7 @@ class VersionManager:
     def get_vm(self, atoms, need_virtual = None):
         matched_atoms = self.parse_depend(atoms)
         matched_virtuals = self.parse_depend_virtuals(atoms)        
-        #print "matched_virtuals=" + matched_virtuals
+        print "matched_virtuals=" + matched_virtuals
         if len(matched_atoms) == 0:
             return None
         if len(matched_virtuals) == 0:

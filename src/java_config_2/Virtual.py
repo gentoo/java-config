@@ -98,7 +98,7 @@ class Virtual(Package):
         return self._vms
 
     def get_available_vms(self):
-        return self.available_vms
+        return self._vms
 
     def target(self):
         """
@@ -107,11 +107,11 @@ class Virtual(Package):
         if self.min_target:
             return self.min_target
         #Big Big Hack
-        return "1.4"
-        #try:
-        #    return self.get_provider().query("TARGET")
-        #except EnvironmentUndefinedError:
-        #    return self.get_provider().query("PROVIDES_VERSION")
+        #return "1.4"
+        try:
+            return self.get_provider().query("TARGET")
+        except EnvironmentUndefinedError:
+            return self.get_provider().query("PROVIDES_VERSION")
             
 
     def classpath(self):
@@ -126,7 +126,9 @@ class Virtual(Package):
                     return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
                 else:
                     raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
-            return ""
+            else:
+                raise
+                #return ""
 
     def query(self, var):
         """
@@ -138,11 +140,11 @@ class Virtual(Package):
             return self.classpath()
         if var == "TARGET":
             return self.min_target
-        try:
-            return self.get_provider().query(var)
+        #try:
+        return self.get_provider().query(var)
         #except EnvironmentUndefinedError:
-        except:
-            return self._config["VM"]
+        #except:
+        #    return self._config["VM"]
 
     def deps(self):
         """

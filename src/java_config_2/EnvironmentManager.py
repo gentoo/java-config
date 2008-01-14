@@ -67,6 +67,7 @@ class EnvironmentManager(object):
 
     def load_package(self, name):
         try:
+            name = name.replace(':', '-')
             pkg = Package(name, '/usr/share/' + name + '/package.env')
             self.packages[name] = pkg
             return pkg
