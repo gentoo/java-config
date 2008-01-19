@@ -119,16 +119,15 @@ class Virtual(Package):
         Returns this package's classpath
         """
         try:
-            return self.get_provider().classpath()
-        except AttributeError:
-            if self._config.has_key("VM_CLASSPATH"):
-                if self._manager.get_active_vm():
+            classpath=self.get_provider().classpath()
+            return classpath
+        except:
+            active_vm = self._manager.get_active_vm()
+            if active_vm and self.get_available_vms().count(active_vm.name()) > 1:
+                if self._config.has_key("VM_CLASSPATH"):
                     return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
-                else:
-                    raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
             else:
-                raise
-                #return ""
+                raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
 
     def query(self, var):
         """
