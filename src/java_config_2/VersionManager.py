@@ -150,7 +150,6 @@ class VersionManager:
             need_virtual = matched_virtuals
 
         prefs = self.get_prefs()
-
         # first try to find vm based on preferences
         low = self.get_lowest(atoms) # Lowest vm version we can use
         for atom in matched_atoms: 

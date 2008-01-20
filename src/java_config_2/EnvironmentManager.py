@@ -446,10 +446,13 @@ class EnvironmentManager(object):
             if self.get_package(virtualKey):
                 try:
                     self.get_package(virtualKey).get_provider().classpath()
+                    result= (result and True)
                     continue
                 except AttributeError:
                     if not self.get_package(virtualKey).get_available_vms().count(virtualMachine.name()) > 0:
                         result = False
+                    else:
+                        result=result & True
         return result
     
 # Singleton hack 
