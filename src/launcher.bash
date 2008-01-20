@@ -57,19 +57,13 @@ fi
 # Run it
 # --------
 
-# Rebuild arg list so it doesnt get messed up
-for arg in "${@}"; do
-	gjl_cmd_arg="${gjl_cmd_arg} \"${arg}\""
-done
-gjl_cmd="exec java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} ${gjl_cmd_arg}"
-
 if [[ -n ${gjl_pwd} ]]; then
 	cd ${gjl_pwd}
 fi
 
 if [[ -n ${GJL_DEBUG} ]]; then
 	echo "Using: ${GENTOO_VM}" >&2
-	echo "Running: ${gjl_cmd}" >&2
+	echo "Running: exec ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} ${@}" >&2
 fi
 
-eval ${gjl_cmd}
+exec java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} "${@}"
