@@ -106,8 +106,6 @@ class Virtual(Package):
         """
         if self.min_target:
             return self.min_target
-        #Big Big Hack
-        #return "1.4"
         try:
             return self.get_provider().query("TARGET")
         except EnvironmentUndefinedError:
@@ -123,7 +121,7 @@ class Virtual(Package):
             return classpath
         except:
             active_vm = self._manager.get_active_vm()
-            if active_vm and not self.get_available_vms().count(active_vm.name()) > 1:
+            if active_vm and self.get_available_vms().count(active_vm.name()):
                 if self._config.has_key("VM_CLASSPATH"):
                     return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
             else:
@@ -139,11 +137,7 @@ class Virtual(Package):
             return self.classpath()
         if var == "TARGET":
             return self.min_target
-        #try:
         return self.get_provider().query(var)
-        #except EnvironmentUndefinedError:
-        #except:
-        #    return self._config["VM"]
 
     def deps(self):
         """
@@ -187,7 +181,6 @@ class Virtual(Package):
             vm = self._manager.get_active_vm()
             try:
                 if self._vms.count(vm.name()):
-                    # This is acceptable so return false
                     return vm
             except ValueError:
                 if not self.active_package:

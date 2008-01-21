@@ -442,17 +442,22 @@ class EnvironmentManager(object):
 
     def have_provider(self, virtuals, virtualMachine, versionManager):
         result=True
-        for virtualKey in virtuals.split():
-            if self.get_package(virtualKey):
-                try:
-                    self.get_package(virtualKey).get_provider().classpath()
-                    result= (result and True)
-                    continue
-                except AttributeError:
-                    if not self.get_package(virtualKey).get_available_vms().count(virtualMachine.name()) > 0:
-                        result = False
-                    else:
-                        result=result & True
+        storeVM = self.get_active_vm()
+        self.set_active_vm(virtualMachine)
+        try:
+            for virtualKey in virtuals.split():
+                if self.get_package(virtualKey):
+                    try:
+                        self.get_package(virtualKey).get_provider().classpath()
+                        result= (result and True)
+                        continue
+                    except AttributeError:
+                        if not self.get_package(virtualKey).get_available_vms().count(virtualMachine.name()) > 0:
+                            result = False
+                        else:
+                            result=result and True
+        finally:
+            self.set_active_vm(storeVM)
         return result
     
 # Singleton hack 
