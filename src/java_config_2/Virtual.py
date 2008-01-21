@@ -123,7 +123,7 @@ class Virtual(Package):
             return classpath
         except:
             active_vm = self._manager.get_active_vm()
-            if active_vm and self.get_available_vms().count(active_vm.name()) > 1:
+            if active_vm and not self.get_available_vms().count(active_vm.name()) > 1:
                 if self._config.has_key("VM_CLASSPATH"):
                     return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
             else:

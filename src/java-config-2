@@ -339,10 +339,10 @@ if __name__ == '__main__':
             (options, args) = parser.parse_args(args=args)
         except InvalidVMError:
             fatalError("The active vm could not be found")
-        except ProviderUnavailableError, e:
-            message = "No providers are available, please ensure you have one of the following VM's or Package's;\n"	
-            message += "VM's (Your active vm must be one of these: " + e.vms() + "\n"
-            message += "Packages's: " + e.packages() + "\n"
-            fatalError(message)
+        #except ProviderUnavailableError, e:
+        #    message = "No providers are available, please ensure you have one of the following VM's or Package's;\n"	
+        #    message += "VM's (Your active vm must be one of these: " + e.vms() + "\n"
+        #    message += "Packages's: " + e.packages() + "\n"
+        #    fatalError(message)
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
