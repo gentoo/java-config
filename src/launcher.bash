@@ -63,7 +63,7 @@ fi
 
 if [[ -n ${GJL_DEBUG} ]]; then
 	echo "Using: ${GENTOO_VM}" >&2
-	echo "Running: exec ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} ${@}" >&2
+	echo "Running: exec java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} ${@}" >&2
 fi
 
 exec java ${gjl_args} ${gjl_java_args} ${gjl_starte} ${gjl_pkg_args} "${@}"
