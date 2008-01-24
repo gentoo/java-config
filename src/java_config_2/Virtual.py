@@ -137,6 +137,12 @@ class Virtual(Package):
             return self.classpath()
         if var == "TARGET":
             return self.min_target
+        if var == "LIBRARY_PATH":
+            try:
+                path = self.get_provider().query(var)
+                return path
+            except EnvironmentUndefinedError:
+                return ""
         return self.get_provider().query(var)
 
     def deps(self):
