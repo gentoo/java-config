@@ -7,7 +7,7 @@ fi
 svn up
 svn2cl --authors=AUTHORS
 sed -i "s/version =.*/version = \'${version}\',/" setup.py
-sed -i "s/__version__ =.*/__version__ = \'${version}\'/" src/java_config/__init__.py
+sed -i "s/__version__ =.*/__version__ = \'${version}\'/" src/java_config_2/__init__.py
 python setup.py sdist --force-manifest --formats=bztar
 
 cp -v dist/java-config-${version}.tar.bz2 $(portageq envvar DISTDIR)
