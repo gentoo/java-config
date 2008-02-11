@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from distutils.command.install_scripts import install_scripts
+from distutils import log
+import os
 
 class my_install_scripts(install_scripts):
 	"""Specialized data file install to handle our symlinks"""
@@ -19,7 +21,10 @@ class my_install_scripts(install_scripts):
 		install_scripts.run(self)
 		for tool in self.symlink_tools:
 			s = self.install_dir + '/' + tool
-			self.copy_file('run-java-tool',s,link='sym')
+			log.info("symbolically linking %s -> %s" % ('run-java-tool',s))
+			if not self.dry_run:
+				#copy_file is not able to handle relative symlinks with --root
+				os.symlink('run-java-tool',s)
 
 from distutils.core import setup
 from glob import glob
