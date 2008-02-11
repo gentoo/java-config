@@ -19,7 +19,7 @@ class my_install_scripts(install_scripts):
 		install_scripts.run(self)
 		for tool in self.symlink_tools:
 			s = self.install_dir + '/' + tool
-			self.copy_file(s, 'run-java-tool', link='sym')
+			self.copy_file('run-java-tool',s,link='sym')
 
 from distutils.core import setup
 from glob import glob
