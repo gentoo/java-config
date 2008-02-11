@@ -16,14 +16,10 @@ class my_install_scripts(install_scripts):
 		self.ensure_string_list('symlink_tools')
 		
 	def run(self):
-		from os import symlink
-		from distutils.util import change_root
-		from distutils import log
 		install_scripts.run(self)
 		for tool in self.symlink_tools:
 			s = self.install_dir + '/' + tool
-			log.info("Creating symlink %s -> run-java-tool" % s)
-			symlink('run-java-tool', s)
+			self.copy_file(s, 'run-java-tool', link='sym')
 
 from distutils.core import setup
 from glob import glob
@@ -47,7 +43,9 @@ setup (
 	scripts = ['src/java-config-2','src/depend-java-query','src/run-java-tool', 'src/gjl'],
 	data_files = [
 		('share/java-config-2/pym/java_config/', glob('src/java_config/*')),
-		('share/man/man1', ['man/java-config-2.1']),
+		('share/applications/', ['data/javaws.desktop']),
+		('share/icons/hicolor/48x48/mimetypes/', ['data/application-x-java-jnlp-file.png']),
+		('share/pixmaps/', ['data/java-icon48.png']),
 		('share/java-config-2/launcher', ['src/launcher.bash']),
 		('share/eselect/modules', glob('src/eselect/*.eselect')),
 		('/etc/java-config-2/', ['config/virtuals']),
