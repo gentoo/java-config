@@ -85,12 +85,13 @@ do_list() {
 ### set action ###
 
 describe_set() {
-	echo "Set a new system-vm"
+	echo "Set a new system or user vm"
 }
 
 do_set() {
+	local usage="Usage [user|system] [vm]"
 	if [[ ${#} != 2 ]]; then
-		die -q "Usage [user|system] [vm]"
+		die -q ${usage}
 		
 	elif [[ ${1} == "system" ]]; then
 		if [[ -w $(dirname ${VM_SYSTEM}) ]]; then
@@ -104,6 +105,8 @@ do_set() {
 		else
 			die -q "Sorry, you cannot set a user vm as root. Set the system vm instead"
 		fi
+	else
+		die -q ${usage}
 	fi
 }
 
