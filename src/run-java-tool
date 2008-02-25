@@ -38,6 +38,10 @@ else
 		else
 			echo "* ${tool} is not available for ${vm_handle} on $(uname -m)" >&2
 			echo "* IMPORTANT: some Java tools are not available on some VMs on some architectures" >&2
+			if (( ${EUID} != 0 )) && [[ "${DISPLAY}" ]] && type -p notify-send > /dev/null; then
+				notify-send -i java-icon48 "Gentoo Java Launcher" "${tool} is not available for ${vm_handle}
+<a href=\"http://www.gentoo.org/doc/en/java.xml\">Gentoo Java User Guide</a>"
+			fi
 		fi
 	fi
 	exit 1
