@@ -87,11 +87,19 @@ class VM:
         return []
 
     def provides(self, virtuals):
+        if self.config.has_key('PROVIDES'):
+            vp = self.config['PROVIDES'].split(' ')
+        else:
+            return False
+
+        found = 0
+        
         for virtual in virtuals:
-            if self.config.has_key('PROVIDES'):
-                vp = self.config['PROVIDES'].split(' ')
-                if virtual not in vp:
-                    return False
-        return True
+            if virtual in vp:
+                found += 1
+            else:
+                return False
+
+        return found == len(virtuals)
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
