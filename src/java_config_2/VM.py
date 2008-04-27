@@ -42,8 +42,7 @@ class VM:
         return self.file
 
     def name(self):
-        # TODO: MAKE THIS MODULAR!a (compnerd)
-        return self.file.split("/usr/share/java-config-2/vm/")[-1]
+        return os.path.basename(self.file)
 
     def is_jre(self):
         return self.is_type("JRE")
