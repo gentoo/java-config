@@ -1,2 +1,2 @@
 #!/bin/sh
-PYTHONPATH="." python test/*
+PYTHONPATH="." python run-test-suite.py
