@@ -1,0 +1,2 @@
+PROVIDERS="sun-jaf gnu-jaf:1"
+VM="sun-jdk-1.6 ibm-jdk-1.6"

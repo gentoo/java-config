@@ -3,9 +3,10 @@ from java_config_2.VM import VM
 import os
 
 class TestVM(unittest.TestCase):
+	path = os.path.join(os.path.dirname(__file__), 'vm_configs')
+
 	def load_vm(self, vm):
-		dir = os.path.dirname(__file__)
-		config = os.path.join(dir,'vm_configs',vm)
+		config = os.path.join(self.path,vm)
 		return VM(config)
 
 	def setUp(self):
