@@ -1,5 +1,8 @@
 For full ChangeLog generated from svn commit logs see ChangeLog.
 
+Changes in 2.1.6:
+ * Fixes for virtuals that have vms as providers. Needed for for example jaf.
+ 
 Changes in 2.1.5:
  * Add jnlp file assocations http://bugs.gentoo.org/show_bug.cgi?id=35024
  * Fix eselect bug http://bugs.gentoo.org/show_bug.cgi?id=211454
