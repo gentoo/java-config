@@ -92,7 +92,7 @@ class VersionManager:
         for match in virtuals_matches:
             matched_virtuals += " " + match[1].replace(':', '-')
 
-        return matched_virtuals
+        return matched_virtuals[1:]
 
     def matches(self, version_a, version_b, operator):
         val = self.version_cmp(version_a, version_b)
