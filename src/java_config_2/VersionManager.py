@@ -156,8 +156,7 @@ class VersionManager:
             for pref in prefs:
                 if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
                     for vmProviderString in pref[1]: # Loop over the prefered once, and check if they are valid
-                        gvm = self.find_vm(vmProviderString, atom) 
-                        if gvm:
+                        for gvm in self.find_vm(vmProviderString, atom):
                             if need_virtual: # Package we are finding a vm for needs a virtual
                                 if gvm.provides(need_virtual): # we provide the virtual ourself good!
                                     # Old way of doing, we no longer bother with PROVIDES
@@ -168,12 +167,11 @@ class VersionManager:
                                         return gvm
                             else:
                                 return gvm          # use it!
-        
+       
         # no match in preferences, find anything we have
         # Support for virtuals too here
         for atom in matched_atoms:
-            gvm = self.find_vm("", atom)
-            if gvm:
+            for gvm in self.find_vm("", atom):
                 if need_virtual:         # Package we are finding a vm for needs a virtual
                     if gvm.provides(need_virtual): # we provide the virtual ourself good!
                         return gvm
@@ -194,9 +192,7 @@ class VersionManager:
         for vm in vm_list:
             if vm.is_type(atom['type']):
                 if self.matches(vm.version(), atom['version'], atom['equality']):
-                    return vm
-        return None
-       
+                    yield vm
 
     def version_cmp(self, version1, version2):
         #Parly stolen from portage.py
