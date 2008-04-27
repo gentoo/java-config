@@ -1,2 +1,2 @@
-__all__ = [ 'provides' ]
-import provides
+__all__ = [ 'VM' ]
+import VM
