@@ -71,7 +71,10 @@ class VersionManager:
             use = os.environ["USE"]
 
             # Local import to avoid initializing portage elsewhere
-            from portage.dep import use_reduce,paren_reduce
+            try:
+                from portage.dep import use_reduce,paren_reduce
+            except ImportError:
+                from portage_dep import use_reduce,paren_reduce
             from portage import flatten
 
             # Normalize white space for Portage
