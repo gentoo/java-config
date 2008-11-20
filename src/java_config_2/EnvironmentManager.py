@@ -12,7 +12,6 @@ from Errors import *
 
 from os.path import basename, dirname
 from glob import glob
-from sets import Set
 import os, re, sys
 
 class EnvironmentManager(object):
@@ -271,7 +270,7 @@ class EnvironmentManager(object):
                     path.add(p)
 
     def build_path(self, pkgs, query):
-        path = Set()
+        path = set()
         for lpath in self.query_packages(pkgs, query):
             self.add_path_elements(lpath, path)
 
@@ -305,10 +304,10 @@ class EnvironmentManager(object):
                         classpath.add(cp)
 
     def build_dep_path(self, pkgs, query, missing_deps):
-        path = Set()
+        path = set()
 
-        unresolved = Set()
-        resolved = Set()
+        unresolved = set()
+        resolved = set()
 
         for p in pkgs[:]:
             pkg = self.get_package(p)
@@ -360,8 +359,8 @@ class EnvironmentManager(object):
         """
         env = {}
 
-        unresolved = Set()
-        resolved = Set()
+        unresolved = set()
+        resolved = set()
 
         for p in pkgs:
             pkg = self.get_package(p)

@@ -16,8 +16,6 @@ from commands import getoutput
 
 from optparse import OptionParser, make_option
 
-from sets import Set
-
 def version(option, opt, value, parser):
     printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
     raise SystemExit()
@@ -74,8 +72,8 @@ def query_pkg_path(option, opt, value, parser, query):
     error = False
     try:
         packages = value.split(',')
-        path = Set()
-        missing_deps = Set()
+        path = set()
+        missing_deps = set()
         if not parser.values.with_deps:
             path = manager.build_path(packages, query)
         else:

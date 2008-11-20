@@ -12,7 +12,6 @@ from java_config_2.VersionManager import *
 
 from commands import getoutput
 from string import join
-from sets import Set
 from optparse import OptionParser, make_option, OptionValueError
 import os
 from os.path import basename
@@ -25,10 +24,10 @@ import sys, re
 atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
 
 def get_needed_packages(package):
-    unresolved = Set()
+    unresolved = set()
     unresolved.add(package)
 
-    resolved = Set()
+    resolved = set()
 
     while len(unresolved) > 0:
         pkg = unresolved.pop()
@@ -81,7 +80,7 @@ def get_needed_target(pkg):
 
 def get_needed_target2(pkg):
     highest_target = None
-    needs_jdk = Set()
+    needs_jdk = set()
     for pkg in get_needed_packages(pkg):
         target = pkg.target()
         if highest_target < target:
@@ -93,7 +92,7 @@ def get_needed_target2(pkg):
     return highest_target, needs_jdk
 
 def get_pkg_args(package):
-    missing_deps = Set()
+    missing_deps = set()
 
     classpath = manager.build_dep_path([package.name()], "CLASSPATH", missing_deps)
     library = manager.build_dep_path([package.name()], "LIBRARY_PATH", missing_deps)
@@ -111,14 +110,14 @@ def abort(msg):
 # Support function for get_vm2
 # Unused at present
 def get_needed_vms(pkg):
-    virtuals = Set()
-    vms = Set()
+    virtuals = set()
+    vms = set()
     for pkg in get_needed_packages(pkg):
         try:
             x = pkg.query("VM")
             if atom_parser.match( x ):
                 matches = atom_parser.findall( x )
-                pkg_virtuals = Set()
+                pkg_virtuals = set()
                 if len(matches) > 1:
                     add_virtual_str_to_set( pkg_virtuals, matches )
                     virtuals.add( pkg_virtuals )
@@ -194,13 +193,12 @@ def target_matches_any( targets, vm ):
 # Options:
 def get_vm(pkg):
     target, needs_jdk = get_needed_target2(pkg)
-
     if len( needs_jdk ):
         if manager.get_active_vm().name() in needs_jdk:
             return None
-        for x in vms:
+        for x in needs_jdk:
             vm = manager.get_vm(x)
-            if vm and ( vm.version() > target ):
+            if vm:
                 return vm
     else:
         needed = ">=virtual/jre-%s" % ( target )
@@ -250,7 +248,7 @@ def get_args(pkg):
         return None
 
 def get_env(package):
-    env = manager.build_dep_env_vars([package.name()], Set())
+    env = manager.build_dep_env_vars([package.name()], set())
     return env
 
 def get_jar(pkg, gjar):
