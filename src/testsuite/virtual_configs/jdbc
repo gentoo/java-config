@@ -1,0 +1,3 @@
+VM="sun-jdk-1.6 ibm-jdk-1.6"
+PROVIDERS="jdbc-postgresql jdbc-oracle-bin jdbc-mysql"
+MULTI_PROVIDER="true"
