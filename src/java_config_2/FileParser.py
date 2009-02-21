@@ -4,7 +4,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from Errors import *
+from java_config_2.Errors import InvalidConfigError, PermissionError
 import os
 
 

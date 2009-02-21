@@ -84,6 +84,7 @@ class VersionManager:
             atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
         except KeyError:
             pass
+        print atoms
         return atoms
 
     def parse_depend_virtuals(self, atoms):

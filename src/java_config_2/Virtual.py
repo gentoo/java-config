@@ -4,8 +4,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from FileParser import *
-from Package import *
+from java_config_2.FileParser import *
+from java_config_2.Errors import EnvironmentUndefinedError
+from java_config_2.Package import *
 import re, sys
         
 class Virtual(Package):
@@ -18,8 +19,8 @@ class Virtual(Package):
         self._manager = manager
 
         # Store possible installed packages and vms in arrays
-        self.providing_packages = ""
-        self.providing_vms = ""
+        #self.providing_packages = ""
+        #self.providing_vms = ""
 
         # Arrays of packages/vms as strings, used to delay
         # using of real objects until EnvironmentManager
@@ -30,16 +31,14 @@ class Virtual(Package):
         self.active_package = None
         self.avaliable_vms = []
         
-        #self.needs_jdk = False
         self.min_target = None
-        #self.min_vm_target = None
         self.loaded = False
 
         if self._file:
             self._config = EnvFileParser(file).get_config()
 
             if self._config.has_key("PROVIDERS"):
-                self.providing_packages = self._config["PROVIDERS"].replace(" ", ", ")
+                #self.providing_packages = self._config["PROVIDERS"].replace(" ", ", ")
                 temp_packages = self._config["PROVIDERS"].split(' ')
             else:
                 temp_packages = []
@@ -78,7 +77,7 @@ class Virtual(Package):
             if self._manager.get_vm(vm):
                 self._vms.append(vm)
         if not self._packages and not self._vms:
-            raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
+            raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') )
 
     def file(self):
         # Investigate if anything uses this
@@ -93,6 +92,11 @@ class Virtual(Package):
 
     def get_packages(self):
         return self._packages
+
+    def use_all_available(self):
+        if self._config.has_key('MULTI_PROVIDER'):
+            return 'true' == self._config['MULTI_PROVIDER'].lower()
+        return False
 
     def get_vms(self):
         return self._vms
@@ -116,18 +120,43 @@ class Virtual(Package):
         """
         Returns this package's classpath
         """
+        if not self.use_all_available():
+            try:
+                return self.get_provider().classpath()
+            except:
+                active_vm = self._manager.get_active_vm()
+                if active_vm and self.get_available_vms().count(active_vm.name()):
+                    if self._config.has_key("VM_CLASSPATH"):
+                        return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
+                    #TODO figure out what is meant to happen here
+                else:
+                    raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') )
+        else:
+            cp = self.query_all_providers('CLASSPATH')
+            if self._config.has_key("VM_CLASSPATH"):
+                cp += ':' + self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
+            return cp
+                
+
+    def library_path(self):
         try:
-            classpath=self.get_provider().virtual_classpath()
-            if None == classpath:
-                classpath=self.get_provider().classpath()
-            return classpath
-        except:
-            active_vm = self._manager.get_active_vm()
-            if active_vm and self.get_available_vms().count(active_vm.name()):
-                if self._config.has_key("VM_CLASSPATH"):
-                    return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
+            if self.use_all_available():
+                return self.query_all_providers('LIBRARY_PATH')
             else:
-                raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
+                return self.get_provider().query('LIBRARY_PATH')
+        except EnvironmentUndefinedError:
+            return ""
+
+    def query_all_providers(self, var):
+        paths = []
+        for pkg in self._packages:
+            try:
+                opkg = self._manager.get_package(pkg)
+                paths.append(opkg.query(var))
+            except:
+                continue
+        return ":".join(paths).replace('::', ':').strip(':')
+
 
     def query(self, var):
         """
@@ -140,11 +169,8 @@ class Virtual(Package):
         if var == "TARGET":
             return self.min_target
         if var == "LIBRARY_PATH":
-            try:
-                path = self.get_provider().query(var)
-                return path
-            except EnvironmentUndefinedError:
-                return ""
+            return self.library_path()
+
         return self.get_provider().query(var)
 
     def deps(self):
@@ -179,7 +205,7 @@ class Virtual(Package):
             self.load()
 
         if not len(self._vms) and not self.active_package:
-            raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages ) 
+            raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') ) 
 
         # If no vm's then use active_package
         if not len(self._vms) and self.active_package:
@@ -195,7 +221,7 @@ class Virtual(Package):
                     available = ""
                     for vm in self._vms:
                         available = vm + "\n"
-                        raise ProviderUnavailableError( self._name, self.providing_vms, self.providing_packages )
+                        raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') )
         return self.active_package
 
     def load(self):

@@ -42,14 +42,14 @@ class Package:
         else:
             return None
 
-    def virtual_classpath(self):
-        """
-        Returns this package's virtual classpath
-        """
-        if self._config.has_key("VIRTUAL_CLASSPATH"):
-            return self._config["VIRTUAL_CLASSPATH"]
-        else:
-            return None
+    #def virtual_classpath(self):
+    #    """
+    #    Returns this package's virtual classpath
+    #    """
+    #    if self._config.has_key("VIRTUAL_CLASSPATH"):
+    #        return self._config["VIRTUAL_CLASSPATH"]
+    #    else:
+    #        return None
 
     def target(self):
         return self.query("TARGET")

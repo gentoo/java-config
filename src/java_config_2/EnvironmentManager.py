@@ -24,7 +24,7 @@ class EnvironmentManager(object):
     # Location of the vm ev files
     vms_path = '/usr/share/java-config-2/vm'
     # Location of the package env files to load
-    pkg_path = '/usr/share/*/package.env'
+    pkg_path = '/usr/share/%s/package.env'
     virtual_path = '/usr/share/java-config-2/virtuals/'
 
     system_config_path="/etc/java-config-2/"
@@ -67,7 +67,7 @@ class EnvironmentManager(object):
     def load_package(self, name):
         try:
             name = name.replace(':', '-')
-            pkg = Package(name, '/usr/share/' + name + '/package.env')
+            pkg = Package(name, self.pkg_path % name )
             self.packages[name] = pkg
             return pkg
         except InvalidConfigError:
@@ -81,7 +81,7 @@ class EnvironmentManager(object):
                 raise UnexistingPackageError(name)
 
     def load_packages(self):
-        for package in iter(glob(self.pkg_path)):
+        for package in iter(glob(self.pkg_path) % "*" ):
             name = basename(dirname(package))
             if name in self.packages:
                 continue
@@ -117,7 +117,7 @@ class EnvironmentManager(object):
                 if vm:
                     self.active = vm
                     return vm
-        raise InvalidVMError
+        raise InvalidVMError("Unable to determine valid vm. Please see http://www.gentoo.org/doc/en/java.xml#doc_chap4")
 
     def set_active_vm(self, vm):
         self.active = vm
@@ -285,6 +285,17 @@ class EnvironmentManager(object):
         Filters out optional deps that are not present.
         """
         deps = pkg.deps();
+
+        #if hasattr(pkg, 'get_packages') and pkg.use_all_available():
+        #    vps = pkg.get_packages()
+        #    for vp in vps:
+        #        try:
+        #            vp_pkg = self.get_package(vp)
+        #            deps.append([vp])
+        #            deps.append( self.get_pkg_deps(vp) )
+        #            print deps
+        #        except UnexistingPackageError:
+        #            continue
         for opt_dep in pkg.opt_deps():
             try:
                 self.get_package(opt_dep[-1])
@@ -442,6 +453,7 @@ class EnvironmentManager(object):
     def have_provider(self, virtuals, virtualMachine, versionManager):
         result=True
         storeVM = self.get_active_vm()
+        print virtualMachine
         self.set_active_vm(virtualMachine)
         try:
             for virtualKey in virtuals.split():
