@@ -5,7 +5,7 @@
 # $Header: $
 
 from java_config_2.FileParser import *
-from java_config_2.Errors import EnvironmentUndefinedError
+from java_config_2.Errors import EnvironmentUndefinedError, ProviderUnavailableError
 from java_config_2.Package import *
 import re, sys
         
@@ -17,10 +17,6 @@ class Virtual(Package):
         self._file = file
         self._name = name
         self._manager = manager
-
-        # Store possible installed packages and vms in arrays
-        #self.providing_packages = ""
-        #self.providing_vms = ""
 
         # Arrays of packages/vms as strings, used to delay
         # using of real objects until EnvironmentManager
@@ -38,7 +34,6 @@ class Virtual(Package):
             self._config = EnvFileParser(file).get_config()
 
             if self._config.has_key("PROVIDERS"):
-                #self.providing_packages = self._config["PROVIDERS"].replace(" ", ", ")
                 temp_packages = self._config["PROVIDERS"].split(' ')
             else:
                 temp_packages = []
@@ -77,7 +72,7 @@ class Virtual(Package):
             if self._manager.get_vm(vm):
                 self._vms.append(vm)
         if not self._packages and not self._vms:
-            raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') )
+            raise ProviderUnavailableError( self._name, ' '.join(self._vms), ' '.join(self._packages) )
 
     def file(self):
         # Investigate if anything uses this
@@ -130,9 +125,12 @@ class Virtual(Package):
                         return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
                     #TODO figure out what is meant to happen here
                 else:
-                    raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') )
+                    raise ProviderUnavailableError( self._name, ' '.join(self._vms), ' '.join(self._packages) )
         else:
             cp = self.query_all_providers('CLASSPATH')
+            if not self._manager.get_active_vm().name() in self._vms:
+                raise ProviderUnavailableError( self._name, ' '.join(self._vms), ' '.join(self._packages) )
+            
             if self._config.has_key("VM_CLASSPATH"):
                 cp += ':' + self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
             return cp
@@ -205,7 +203,7 @@ class Virtual(Package):
             self.load()
 
         if not len(self._vms) and not self.active_package:
-            raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') ) 
+            raise ProviderUnavailableError( self._name, ' '.join(self._vms), ' '.join(self._packages) ) 
 
         # If no vm's then use active_package
         if not len(self._vms) and self.active_package:
@@ -221,7 +219,7 @@ class Virtual(Package):
                     available = ""
                     for vm in self._vms:
                         available = vm + "\n"
-                        raise ProviderUnavailableError( self._name, self.providing_vms, self._packages.join(' ') )
+                        raise ProviderUnavailableError( self._name, ' '.join(self._vms), ' '.join(self._packages) )
         return self.active_package
 
     def load(self):

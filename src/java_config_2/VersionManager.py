@@ -49,7 +49,6 @@ class VersionManager:
        
         matched_atoms = []
         atoms = self.filter_depend(atoms)
-        #print atoms
         matches = self.atom_parser.findall(atoms)
         virtuals_matches = self.virtuals_parser.findall(atoms)
         
@@ -84,7 +83,6 @@ class VersionManager:
             atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
         except KeyError:
             pass
-        print atoms
         return atoms
 
     def parse_depend_virtuals(self, atoms):
