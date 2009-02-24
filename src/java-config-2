@@ -321,9 +321,9 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 2: 
         parser.print_help()
-    else:       
+    else:
         try:
-            # Makes sure that --nocolor is always the first argument 
+            # Makes sure that --nocolor is always the first argument
             # because otherwise callbacks before it will output
             # colored output
             args = sys.argv[1:]
@@ -338,7 +338,7 @@ if __name__ == '__main__':
         except InvalidVMError:
             fatalError("The active vm could not be found")
         except ProviderUnavailableError, e:
-            message = "No providers are available, please ensure you have one of the following VM's or Package's;\n"	
+            message = "No providers are available, please ensure you have one of the following VM's or Package's;\n"
             message += "VM's (Your active vm must be one of these): " + e.vms() + "\n"
             message += "Packages's: " + e.packages() + "\n"
             fatalError(message)
