@@ -24,7 +24,7 @@ class VersionManager:
     """
     Used to parse dependency strings, and find the best/prefered vm to use.
     """
-    atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
+    atom_parser = re.compile(r"([<>=]*)virtual/(jre|jdk)[-:]([0-9\.*]+)")
     #virtuals_parser = re.compile(r"([<>=]+)?java-virtuals/(.*?)")
     #virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/(.+)[\-:]([0-9\.*]+)")
     virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/([\w\-\.:]+)")
@@ -98,14 +98,15 @@ class VersionManager:
 
     def matches(self, version_a, version_b, operator):
         val = self.version_cmp(version_a, version_b)
-
-        if operator == '=':    return val == 0
-        elif operator == '>=': return val >= 0
+        
+        #now assuming that if no operator we are
+        #doing an '=' comparision. Used to handle cases like virtual/jdk:1.5
+        if operator == '>=': return val >= 0
         elif operator == '<=': return val <= 0
         elif operator == '>':  return val > 0
         elif operator == '<':  return val < 0
-        else:                  return False
-        
+        else:                  return val == 0
+                
     def version_satisfies(self, atoms, vm):
         version = vm.version()
         matched_atoms = self.parse_depend(atoms)
