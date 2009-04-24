@@ -25,8 +25,6 @@ class VersionManager:
     Used to parse dependency strings, and find the best/prefered vm to use.
     """
     atom_parser = re.compile(r"([<>=]*)virtual/(jre|jdk)[-:]([0-9\.*]+)")
-    #virtuals_parser = re.compile(r"([<>=]+)?java-virtuals/(.*?)")
-    #virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/(.+)[\-:]([0-9\.*]+)")
     virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/([\w\-\.:]+)")
     pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
     _prefs = None
@@ -50,7 +48,6 @@ class VersionManager:
         matched_atoms = []
         atoms = self.filter_depend(atoms)
         matches = self.atom_parser.findall(atoms)
-        virtuals_matches = self.virtuals_parser.findall(atoms)
         
         if len(matches) >  0:
             for match in matches:
@@ -92,7 +89,7 @@ class VersionManager:
         matched_virtuals = ""
 
         for match in virtuals_matches:
-            matched_virtuals += " " + match[1].replace(':', '-')
+            matched_virtuals += " " + match[1].replace(':0', '').replace(':', '-')
 
         return matched_virtuals[1:]
 

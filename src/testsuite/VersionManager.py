@@ -19,6 +19,9 @@ class TestVersionManager(unittest.TestCase):
 		vm = self.verman.get_vm(">=virtual/jdk-1.5* java-virtuals/jaf")
 		self.assertEqual(vm.name(), 'sun-jdk-1.6')
 
+		vm = self.verman.get_vm(">=virtual/jdk-1.5* java-virtuals/jaf:0")
+		self.assertEqual(vm.name(), 'sun-jdk-1.6')
+
 		vm = self.verman.get_vm("virtual/jdk:1.5")
 		self.assertEqual(vm.name(), 'ibm-jdk-bin-1.5')
 
@@ -54,11 +57,7 @@ class TestVersionManager(unittest.TestCase):
 		os.environ["USE"] = ""
 		self.assertFalse(self.verman.version_satisfies('java6? ( =virtual/jdk-1.6) !java6? ( =virtual/jdk-1.5 )', vm))
 
-	def test_parse_depend(self):
-		"""
-		
-		"""
-
+	#def test_parse_depend(self):
 
 	#def test_get_prefs(self):
 
