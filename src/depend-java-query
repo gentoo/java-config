@@ -44,7 +44,6 @@ def get_vm(option, opt, value, parser):
             vm = verman.get_vm(value, parser.values.need_virtual)
         else:
             vm = verman.get_vm(value)
-            printer._print(vm)
     except Exception, ex:
         printer._printError(str(ex))
         sys.exit(1)
