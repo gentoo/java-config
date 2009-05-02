@@ -453,7 +453,6 @@ class EnvironmentManager(object):
     def have_provider(self, virtuals, virtualMachine, versionManager):
         result=True
         storeVM = self.get_active_vm()
-        print virtualMachine
         self.set_active_vm(virtualMachine)
         try:
             for virtualKey in virtuals.split():
