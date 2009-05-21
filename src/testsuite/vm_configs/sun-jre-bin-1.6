@@ -1,0 +1,19 @@
+# Copyright 1999-2005 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/dev-java/sun-jre-bin/files/sun-jre-bin-1.6.env,v 1.2 2007/06/02 16:23:14 betelgeuse Exp $
+
+VERSION="Sun JRE 1.6.0.13"
+JAVA_HOME=/opt/sun-jre-bin-1.6.0.13
+JRE_HOME=/opt/sun-jre-bin-1.6.0.13
+PATH="${JAVA_HOME}/bin:${JAVA_HOME}/javaws"
+ROOTPATH="${JAVA_HOME}/bin:${JAVA_HOME}/javaws"
+LDPATH="${JAVA_HOME}/lib/amd64/:${JAVA_HOME}/lib/amd64/native_threads/:${JAVA_HOME}/lib/amd64/xawt/:${JAVA_HOME}/lib/amd64/server/"
+MANPATH="/opt/sun-jre-bin-1.6.0.13/man"
+PROVIDES_TYPE="JRE"
+PROVIDES_VERSION="1.6"
+# Taken from sun.boot.class.path property
+BOOTCLASSPATH="${JAVA_HOME}/jre/lib/resources.jar:${JAVA_HOME}/jre/lib/rt.jar:${JAVA_HOME}/jre/lib/jsse.jar:${JAVA_HOME}/jre/lib/jce.jar:${JAVA_HOME}/jre/lib/charsets.jar"
+GENERATION="2"
+ENV_VARS="JAVA_HOME JRE_HOME PATH ROOTPATH LDPATH MANPATH"
+VMHANDLE="sun-jre-bin-1.6"
+PROVIDES="jdbc-stdext jdbc-rowset"

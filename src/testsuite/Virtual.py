@@ -13,9 +13,17 @@ class TestVirtual(unittest.TestCase):
 
 	def setUp(self):
 		self.jaf = load_virtual('jaf')
+		self.jmx = load_virtual('jmx')
+		self.jmx2 = load_virtual('jmx2')
 
 	def test_get_vms(self):
 		self.assertEqual(self.jaf.get_vms(), ['sun-jdk-1.6'])
+	
+	def test_load_vms(self):
+		self.assertEqual( self.jmx._vms, ['ibm-jdk-bin-1.5', 'sun-jdk-1.6' , \
+			'sun-jdk-1.7', 'sun-jre-bin-1.6'] )
+		self.assertEqual( self.jmx2._vms, ['ibm-jdk-bin-1.5', 'sun-jdk-1.6' , \
+			'sun-jdk-1.7', 'sun-jre-bin-1.6'] )
 
 class TestMultiProviderVirtual(unittest.TestCase):
 

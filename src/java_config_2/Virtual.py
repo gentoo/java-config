@@ -7,6 +7,7 @@
 from java_config_2.FileParser import *
 from java_config_2.Errors import EnvironmentUndefinedError, ProviderUnavailableError
 from java_config_2.Package import *
+from java_config_2.VersionManager import VersionManager
 import re, sys
         
 class Virtual(Package):
@@ -63,6 +64,12 @@ class Virtual(Package):
         for element in temp_packages:
             if not element in self._packages:
                 self._packages.append(element)
+
+        verman = VersionManager()
+        vmachines = self._manager.get_virtual_machines()
+        for vm in vmachines:
+            if verman.version_satisfies(" ".join(vms), vmachines[vm]):
+                self._vms.append(vmachines[vm].name())
 
         for vm in vms:
             if self._manager.get_vm(vm):
