@@ -12,7 +12,6 @@ from string import upper
 
 import VM, Errors 
 from java_config_2.FileParser import *
-from java_config_2.EnvironmentManager import *
 import os, glob, re
 import os.path
 
@@ -140,6 +139,8 @@ class VersionManager:
 
 
     def get_vm(self, atoms, need_virtual = None):
+        from java_config_2.EnvironmentManager import EnvironmentManager
+
         matched_atoms = self.parse_depend(atoms)
         matched_virtuals = self.parse_depend_virtuals(atoms)        
         if len(matched_atoms) == 0:
@@ -186,6 +187,7 @@ class VersionManager:
 
 
     def find_vm(self, vmProviderString, atom):
+        from java_config_2.EnvironmentManager import EnvironmentManager
         vm_list = EnvironmentManager().find_vm(vmProviderString)
         vm_list.sort()
         vm_list.reverse()
