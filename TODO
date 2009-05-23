@@ -3,6 +3,15 @@ For 2.1:
   - handling virtuals
     http://overlays.gentoo.org/proj/java/wiki/Virtuals
 
+For 2.1.8
+  - Bug# 259280
+
+For 2.1.9
+ [08:16] <Caster> the idea is marking 1.4 VM's as build only so you won't be able to select them as system/user vm
+ [08:16] <Caster> which I think should also mean that running 'GENTOO_VM=blackdown-jdk-1.4.2 java' will fail
+ [08:17] <ali_bush> oh ok
+ [08:17] <Caster> but then java-pkg-*2.eclass should set some override variable that will let this work again, in order to build with them
+
 For 3.0:
   - Make EnvironmentManager's get_packages function return
     a list packages instead of a dictionary. For lookup by name
