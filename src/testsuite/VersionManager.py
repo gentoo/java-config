@@ -25,6 +25,12 @@ class TestVersionManager(unittest.TestCase):
 		vm = self.verman.get_vm("virtual/jdk:1.5")
 		self.assertEqual(vm.name(), 'ibm-jdk-bin-1.5')
 
+		self.assertRaises(Exception, self.verman.get_vm, 'virtual/jdk:1.4')
+		self.assertRaises(Exception, self.verman.get_vm, '=virtual/jdk-1.4*', False)
+
+		vm = self.verman.get_vm('virtual/jdk:1.4', True)
+		self.assertTrue(vm.name(), 'blackdown-jdk-1.4.2')
+
 	def test_filter_depend_vanilla(self):
 		os.environ["USE"] = ""
 		self.assertEquals(self.verman.filter_depend(self.example_dep_vanilla), self.example_dep_vanilla)

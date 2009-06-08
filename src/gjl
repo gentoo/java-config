@@ -155,12 +155,10 @@ def get_vm2(pkg):
             return None
         else:
             for x in vms:
-                if manager.get_vm(x):
+                if manager.get_vm(x) and not manager.get_vm(x).is_build_only():
                     return manager.get_vm(x)
 
     for target in targets:
-        print target
-        print manager.get_active_vm()
         if not target_matches( target, manager.get_active_vm()):
             break
         return None
@@ -171,7 +169,7 @@ def get_vm2(pkg):
                 if not target_matches( target, vm ):
                     raise Exception("Not valid vm")
             avm = manager.get_vm(vm)
-            if avm:
+            if avm and not avm.is_build_only():
                 return avm
         except:
             #Handle this better
@@ -193,16 +191,18 @@ def target_matches_any( targets, vm ):
 # Options:
 def get_vm(pkg):
     target, needs_jdk = get_needed_target2(pkg)
+    active_vm = manager.get_active_vm()
     if len( needs_jdk ):
-        if manager.get_active_vm().name() in needs_jdk:
+        if active_vm.name() in needs_jdk:
             return None
         for x in needs_jdk:
             vm = manager.get_vm(x)
-            if vm:
+            if vm and not vm.is_build_only():
                 return vm
     else:
         needed = ">=virtual/jre-%s" % ( target )
-        if verman.version_satisfies( needed, manager.get_active_vm()):
+        if verman.version_satisfies( needed, active_vm) \
+                and not active_vm.is_build_only():
             return None
         return verman.get_vm(needed)
     #if target:

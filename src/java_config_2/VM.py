@@ -44,6 +44,13 @@ class VM:
     def name(self):
         return os.path.basename(self.file)
 
+    def is_build_only(self):
+        try:
+            if upper(self.query('BUILD_ONLY')) == 'TRUE':
+                return True
+        except:
+            return False
+
     def is_jre(self):
         return self.is_type("JRE")
 

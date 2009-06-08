@@ -138,16 +138,15 @@ class VersionManager:
             raise Exception("Couldn't find a VM dep")
 
 
-    def get_vm(self, atoms, need_virtual = None):
+    def get_vm(self, atoms, allow_build_only = False):
         from java_config_2.EnvironmentManager import EnvironmentManager
 
         matched_atoms = self.parse_depend(atoms)
-        matched_virtuals = self.parse_depend_virtuals(atoms)        
+        matched_virtuals = self.parse_depend_virtuals(atoms)
+        need_virtual = None
         if len(matched_atoms) == 0:
             return None
-        if len(matched_virtuals) == 0:
-            need_virtual = None
-        else:
+        if not len(matched_virtuals) == 0:
             need_virtual = matched_virtuals
 
         prefs = self.get_prefs()
@@ -157,28 +156,21 @@ class VersionManager:
             for pref in prefs:
                 if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
                     for vmProviderString in pref[1]: # Loop over the prefered once, and check if they are valid
-                        for gvm in self.find_vm(vmProviderString, atom):
+                        for gvm in self.find_vm(vmProviderString, atom, allow_build_only):
                             if need_virtual: # Package we are finding a vm for needs a virtual
-                                if gvm.provides(need_virtual): # we provide the virtual ourself good!
-                                    # Old way of doing, we no longer bother with PROVIDES
+                                # New, correct way of searching for virtuals
+                                if EnvironmentManager().have_provider(need_virtual, gvm, self): # We have a package available that provides it, will use that
                                     return gvm
-                                else:
-                                    # New, correct way of searching for virtuals
-                                    if EnvironmentManager().have_provider(need_virtual, gvm, self): # We have a package available that provides it, will use that
-                                        return gvm
                             else:
                                 return gvm          # use it!
        
         # no match in preferences, find anything we have
         # Support for virtuals too here
         for atom in matched_atoms:
-            for gvm in self.find_vm("", atom):
+            for gvm in self.find_vm("", atom, allow_build_only):
                 if need_virtual:         # Package we are finding a vm for needs a virtual
-                    if gvm.provides(need_virtual): # we provide the virtual ourself good!
+                    if EnvironmentManager().have_provider(need_virtual, gvm, self):
                         return gvm
-                    else:
-                        if EnvironmentManager().have_provider(need_virtual, gvm, self):
-                            return gvm
                 else:
                     return gvm
 
@@ -186,12 +178,14 @@ class VersionManager:
         raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
 
 
-    def find_vm(self, vmProviderString, atom):
+    def find_vm(self, vmProviderString, atom, allow_build_only = True):
         from java_config_2.EnvironmentManager import EnvironmentManager
         vm_list = EnvironmentManager().find_vm(vmProviderString)
         vm_list.sort()
         vm_list.reverse()
         for vm in vm_list:
+            if not allow_build_only and vm.is_build_only():
+                continue
             if vm.is_type(atom['type']):
                 if self.matches(vm.version(), atom['version'], atom['equality']):
                     yield vm

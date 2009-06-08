@@ -142,10 +142,11 @@ def list_available_vms(option, opt, value, parser):
 
     printer._print('%HThe following VMs are available for generation-2:%$')
     for i, vm in vm_list.iteritems():
-        if vm is active:
-            printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
-        else:
-            printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
+        if not vm.is_build_only():
+            if vm is active:
+                printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
+            else:
+                printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
 
 def print_environment(option, opt, value, parser):
     vm = manager.get_vm(value) 
@@ -164,6 +165,9 @@ def set_system_vm(option, opt, value, parser):
             try:
                 manager.set_system_vm(vm)
                 printer._print("Now using %s as your generation-2 system JVM" % (vm) )
+                if vm.is_build_only():
+                    printer._printWarning("%s is marked as a build-only JVM. Using this vm is not recommended. " % (vm))
+                    printer._printWarning("Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information.")
             except PermissionError:
                 fatalError("You do not have enough permissions to set the system VM!")
             except EnvironmentUndefinedError:
@@ -185,6 +189,9 @@ def set_user_vm(option, opt, value, parser):
             try:
                 manager.set_user_vm(vm)
                 printer._print("Now using %s as your user JVM" % (vm))
+                if vm.is_build_only():
+                    printer._printWarning("%s is marked as a build-only JVM. Using this vm is not recommended. " % (vm))
+                    printer._printWarning("Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information.")
             except PermissionError:
                 fatalError("You do not have enough permissions to set the VM!")
             except InvalidConfigError, e:
