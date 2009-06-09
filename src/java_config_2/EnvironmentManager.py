@@ -81,7 +81,7 @@ class EnvironmentManager(object):
                 raise UnexistingPackageError(name)
 
     def load_packages(self):
-        for package in iter(glob(self.pkg_path) % "*" ):
+        for package in iter(glob(self.pkg_path % "*" )):
             name = basename(dirname(package))
             if name in self.packages:
                 continue
