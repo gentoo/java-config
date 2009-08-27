@@ -1,3 +1,26 @@
+2009-08-26 04:29  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java-config-2: Improved message to be displayed to user
+	  running java-config -L
+
+2009-06-09 06:43  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py,
+	  src/testsuite/EnvironmentManager.py: Fixed bug #273284
+
+2009-06-08 09:51  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/depend-java-query, src/gjl, src/java-config-2,
+	  src/java_config_2/VM.py, src/java_config_2/VersionManager.py,
+	  src/testsuite/VM.py, src/testsuite/VersionManager.py,
+	  src/testsuite/vm_configs/blackdown-jdk-1.4.2: Add support for
+	  build only vm's and remove support for old style virtual support.
+
+2009-05-23 08:13  Alistair Bush <ali_bush@gentoo.org>
+
+	* ChangeLog, TODO, setup.py, src/java_config_2/__init__.py: Updated
+	  version
+
 2009-05-21 08:11  Alistair Bush <ali_bush@gentoo.org>
 
 	* src/java_config_2/Virtual.py, src/testsuite/Virtual.py,
