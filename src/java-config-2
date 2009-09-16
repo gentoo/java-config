@@ -143,12 +143,15 @@ def list_available_vms(option, opt, value, parser):
     printer._print('%HThe following VMs are available for generation-2:%$')
     for i, vm in vm_list.iteritems():
         if vm is active:
-            printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
+            if not vm.is_build_only():
+                printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
+            else:
+                printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$') + '%r (Build Only)%$')
         else:
             if not vm.is_build_only():
                 printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
             else:
-                printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()) + '%r (Build Only)')
+                printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()) + '%r (Build Only)%$')
 
     printer._print('')
     printer._print('%r' + 'VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL.')
