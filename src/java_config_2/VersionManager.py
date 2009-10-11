@@ -57,7 +57,7 @@ class VersionManager:
                 matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
 
         if len(matched_atoms) == 0 and pkg_name and highest_pkg_target:
-            raise Exception("Couldn't find a suitable VM due to dependency %s having a required target of %s" % pkg_name, highest_pkg_target)
+            raise Exception("Couldn't find a suitable VM due to dependency %s having a required target of %s" % (pkg_name, highest_pkg_target))
 
         matched_atoms.sort()
         matched_atoms.reverse()
@@ -305,12 +305,14 @@ def get_needed_packages(*packages):
             p = manager.get_package(dep_pkg)
             if p is None:
                 if ',' in dep_pkg:
+                    print "error"
                     msg = """
 Package %s has a broken DEPEND entry in package.env. Please reinstall it.
 If this does not fix it, please report this to http://bugs.gentoo.org
 """
                     msg = msg % pkg
                 else:
+                    print "error"
                     msg = """
 Package %s not found in the system. This package is listed as a
 dependency of %s. Please run emerge -1Da %s and if it does not bring in the
