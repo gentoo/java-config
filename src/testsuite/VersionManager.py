@@ -31,6 +31,8 @@ class TestVersionManager(unittest.TestCase):
 		vm = self.verman.get_vm('virtual/jdk:1.4', True)
 		self.assertTrue(vm.name(), 'blackdown-jdk-1.4.2')
 
+		self.assertRaises(Exception, self.verman.get_vm, 'virtual/jdk:1.4 dev-java/test-package:0')
+
 	def test_filter_depend_vanilla(self):
 		os.environ["USE"] = ""
 		self.assertEquals(self.verman.filter_depend(self.example_dep_vanilla), self.example_dep_vanilla)
@@ -71,7 +73,21 @@ class TestVersionManager(unittest.TestCase):
 
 	#def test_get_lowest_atom(self):
 
-	#def test_get_lowest(self):
+	def test_get_lowest(self):
+		target = self.verman.get_lowest(">=virtual/jdk-1.4")
+		self.assertEquals(target, '1.4')
+		
+		target = self.verman.get_lowest(self.example_dep_vanilla)
+		self.assertEquals(target, '1.5')
+
+		target = self.verman.get_lowest(self.example_dep_or)
+		self.assertEquals(target, '1.4')
+		
+	def test_get_lowest_with_package_dep(self):
+		# 1.4 dep but ant-cores5 has a 1.8 target.
+		self.assertRaises(Exception, self.verman.get_lowest, 'virtual/jdk:1.4 dev-java/test-package:0')
+		# 1.4 but has a 1.5 target package.
+		self.assertRaises(Exception, self.verman.get_lowest, '>=virtual/jdk-1.4 dev-java/ant-cores5:0')
 
 	#def test_find_vm(self):
 

@@ -9,7 +9,7 @@ class TestEnvironmentManager(unittest.TestCase):
 	def test_load_packages(self):
 		em.packages = {}
 		em.load_packages()
-		self.assertEquals(len(em.packages), 7)
+		self.assertEquals(len(em.packages), 9)
 
 	def test_get_package(self):
 		em.get_package('ant-cores')

@@ -25,6 +25,7 @@ class VersionManager:
     """
     atom_parser = re.compile(r"([<>=]*)virtual/(jre|jdk)[-:]([0-9\.*]+)")
     virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/([\w\-\.:]+)")
+    package_parser = re.compile(r"([\w\-]+)/([\w\-]+)(?:\:(\d+))?")
     pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
     _prefs = None
 
@@ -43,20 +44,40 @@ class VersionManager:
 
     def parse_depend(self, atoms):
         """Filter the dependency string for useful information"""
-       
+      
+        highest_pkg_target = self.get_target_from_pkg_deps(self.parse_depend_packages(atoms))
         matched_atoms = []
         atoms = self.filter_depend(atoms)
         matches = self.atom_parser.findall(atoms)
         
         if len(matches) >  0:
             for match in matches:
+                #if highest_pkg_target:
+                #    print self.version_cmp(match[2], highest_pkg_target)
+
+                if highest_pkg_target and self.version_cmp(match[2], highest_pkg_target) < 0:
+                    continue
                 matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
 
         matched_atoms.sort()
         matched_atoms.reverse()
 
         return matched_atoms
+
+    def parse_depend_packages(self, atoms):
+        """ Parse atoms for possible packages. This excludes virtual/[jdk|jre] but includes java-virtuals"""
+
+        matched_atoms = []
+        atoms = self.filter_depend(atoms)
+        matches = self.package_parser.findall(atoms)
+
+        if len(matches) > 0:
+            for match in matches:
+                if not (match[0] == 'virtual' and (match[1] == 'jdk-1' or match[1] == 'jre-1' or match[1] == 'jdk' or match[1] == 'jre' )):
+                        matched_atoms.append({'equality':'=', 'cat':match[0], 'pkg':match[1], 'slot':match[2]})
         
+        return matched_atoms
+
     def filter_depend( self, atoms ):
         """Filter the dependency string for useful information"""
 
@@ -137,6 +158,27 @@ class VersionManager:
         else:
             raise Exception("Couldn't find a VM dep")
 
+    def get_target_from_pkg_deps(self, matches):
+        """ Get the lowest virtual machine version from a packages dependencies.
+            Currently doesn't walk the tree, just looks at immediate children. """
+        from java_config_2.EnvironmentManager import EnvironmentManager
+        manager = EnvironmentManager()
+        highest = None
+
+        for match in matches:
+            pkg_name = match['pkg']
+            if match['slot'] and match['slot'] != '0':
+                pkg_name += '-' + match['slot']
+            try:
+                pkg = manager.get_package(pkg_name)
+                target = pkg.target()
+                if not highest:
+                    highest = target
+                if self.version_cmp(highest, target) < 0:
+                    highest = atom
+            except Exception, e:
+                pass
+        return highest
 
     def get_vm(self, atoms, allow_build_only = False):
         from java_config_2.EnvironmentManager import EnvironmentManager
@@ -144,14 +186,14 @@ class VersionManager:
         matched_atoms = self.parse_depend(atoms)
         matched_virtuals = self.parse_depend_virtuals(atoms)
         need_virtual = None
-        if len(matched_atoms) == 0:
-            return None
+        
         if not len(matched_virtuals) == 0:
             need_virtual = matched_virtuals
 
         prefs = self.get_prefs()
         # first try to find vm based on preferences
         low = self.get_lowest(atoms) # Lowest vm version we can use
+
         for atom in matched_atoms: 
             for pref in prefs:
                 if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
