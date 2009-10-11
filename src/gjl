@@ -23,40 +23,6 @@ import sys, re
 #atom_parser = re.compile(r".*([<>=]+)virtual/(jre|jdk)-([0-9\.*]+).*")
 atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
 
-def get_needed_packages(package):
-    unresolved = set()
-    unresolved.add(package)
-
-    resolved = set()
-
-    while len(unresolved) > 0:
-        pkg = unresolved.pop()
-        resolved.add(pkg)
-        # dep is in the form of (jar, pkg)
-        for dep in manager.get_pkg_deps(pkg):
-            dep_pkg = dep[-1]
-            p = manager.get_package(dep_pkg)
-            if p is None:
-                if ',' in dep_pkg:
-                    msg = """
-Package %s has a broken DEPEND entry in package.env. Please reinstall it.
-If this does not fix it, please report this to http://bugs.gentoo.org
-"""
-                    msg = msg % pkg
-                else:
-                    msg = """
-Package %s not found in the system. This package is listed as a
-dependency of %s. Please run emerge -1Da %s and if it does not bring in the
-needed dependency, report this to http://bugs.gentoo.org.
-"""
-                    msg = msg % (dep_pkg,pkg,pkg)
-                abort(msg)
-
-            if p not in resolved:
-                unresolved.add(p)
-
-    return resolved
-
 #Depreciated.
 def get_needed_target(pkg):
     highest_target = None
