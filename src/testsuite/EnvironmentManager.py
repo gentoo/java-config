@@ -4,15 +4,17 @@ import os
 from java_config_2.EnvironmentManager import EnvironmentManager as em
 
 class TestEnvironmentManager(unittest.TestCase):
-	path=""
+    path=""
 
-	def test_load_packages(self):
-		em.packages = {}
-		em.load_packages()
-		self.assertEquals(len(em.packages), 9)
+    def test_load_packages(self):
+        em.packages = {}
+        em.load_packages()
+        self.assertEquals(len(em.packages), 9)
 
-	def test_get_package(self):
-		em.get_package('ant-cores')
+    def test_get_package(self):
+        em.get_package('ant-cores')
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()
+
+# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

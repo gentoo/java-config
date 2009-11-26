@@ -12,6 +12,7 @@ VERSION=$(svn_date_to_version "${SVN_DATE}" )
 VM_BASE=/usr/lib/jvm/
 VM_SYSTEM="/etc/java-config-2/current-system-vm"
 VM_USER="${HOME}/.gentoo/java-config-2/current-user-vm"
+VM_CONFIG="/usr/share/java-config-2/vm"
 
 find_targets() {
 	local f
@@ -67,7 +68,13 @@ do_list() {
 		[[ -L ${VM_USER} ]] && user_name=$(sym_to_vm ${VM_USER})
 
 		for (( i = 0 ; i < ${#targets[@]} ; i = i + 1 )) ; do
+			local build_only=$(grep 'BUILD_ONLY' ${VM_CONFIG}/${targets[${i}]} | cut -c 13-16 )
 			local mark=""
+
+			if [[ "${build_only}" == "TRUE" || "{build_only}" == "true" ]]; then
+				mark="$(highlight_warning 'Build Only')"
+			fi
+
 			if [[ ${targets[${i}]} == ${system_name} ]]; then
 				mark="${mark} $(highlight 'system-vm')"
 			fi
@@ -80,6 +87,10 @@ do_list() {
 	else
 		write_kv_list_entry "(none found)" ""
 	fi
+	echo
+	write_warning_msg "VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL."
+	write_warning_msg "Gentoo recommends not setting these VMs as either your System or User VM."
+	write_warning_msg "Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information."
 }
 
 ### set action ###

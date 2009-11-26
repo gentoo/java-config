@@ -45,19 +45,19 @@ class VersionManager:
     def parse_depend(self, atoms):
         """Filter the dependency string for useful information"""
       
-        pkg_name, highest_pkg_target = self.get_target_from_pkg_deps(self.parse_depend_packages(atoms))
+        #pkg_name, highest_pkg_target = self.get_target_from_pkg_deps(self.parse_depend_packages(atoms))
         matched_atoms = []
         atoms = self.filter_depend(atoms)
         matches = self.atom_parser.findall(atoms)
        
         if len(matches) >  0:
             for match in matches:
-                if highest_pkg_target and self.version_cmp(match[2], highest_pkg_target) < 0:
-                    continue
+                #if highest_pkg_target and self.version_cmp(match[2], highest_pkg_target) < 0:
+                #    continue
                 matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
 
-        if len(matched_atoms) == 0 and pkg_name and highest_pkg_target:
-            raise Exception("Couldn't find a suitable VM due to dependency %s having a required target of %s" % (pkg_name, highest_pkg_target))
+        #if len(matched_atoms) == 0 and pkg_name and highest_pkg_target:
+        #    raise Exception("Couldn't find a suitable VM due to dependency %s having a required target of %s" % (pkg_name, highest_pkg_target))
 
         matched_atoms.sort()
         matched_atoms.reverse()
@@ -197,6 +197,8 @@ class VersionManager:
     def get_vm(self, atoms, allow_build_only = False):
         from java_config_2.EnvironmentManager import EnvironmentManager
 
+        pkg_name, highest_pkg_target = self.get_target_from_pkg_deps(self.parse_depend_packages(atoms))
+
         matched_atoms = self.parse_depend(atoms)
         matched_virtuals = self.parse_depend_virtuals(atoms)
         need_virtual = None
@@ -212,7 +214,7 @@ class VersionManager:
             for pref in prefs:
                 if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
                     for vmProviderString in pref[1]: # Loop over the prefered once, and check if they are valid
-                        for gvm in self.find_vm(vmProviderString, atom, allow_build_only):
+                        for gvm in self.find_vm(vmProviderString, atom, highest_pkg_target, allow_build_only):
                             if need_virtual: # Package we are finding a vm for needs a virtual
                                 # New, correct way of searching for virtuals
                                 if EnvironmentManager().have_provider(need_virtual, gvm, self): # We have a package available that provides it, will use that
@@ -223,23 +225,24 @@ class VersionManager:
         # no match in preferences, find anything we have
         # Support for virtuals too here
         for atom in matched_atoms:
-            for gvm in self.find_vm("", atom, allow_build_only):
+            for gvm in self.find_vm("", atom, highest_pkg_target, allow_build_only):
                 if need_virtual:         # Package we are finding a vm for needs a virtual
                     if EnvironmentManager().have_provider(need_virtual, gvm, self):
                         return gvm
                 else:
                     return gvm
-
         # nothing found
         raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
 
 
-    def find_vm(self, vmProviderString, atom, allow_build_only = True):
+    def find_vm(self, vmProviderString, atom, min_package_target, allow_build_only = True):
         from java_config_2.EnvironmentManager import EnvironmentManager
         vm_list = EnvironmentManager().find_vm(vmProviderString)
         vm_list.sort()
         vm_list.reverse()
         for vm in vm_list:
+            if min_package_target and self.version_cmp(vm.version(), min_package_target) < 0:
+                continue
             if not allow_build_only and vm.is_build_only():
                 continue
             if vm.is_type(atom['type']):
@@ -305,14 +308,12 @@ def get_needed_packages(*packages):
             p = manager.get_package(dep_pkg)
             if p is None:
                 if ',' in dep_pkg:
-                    print "error"
                     msg = """
 Package %s has a broken DEPEND entry in package.env. Please reinstall it.
 If this does not fix it, please report this to http://bugs.gentoo.org
 """
                     msg = msg % pkg
                 else:
-                    print "error"
                     msg = """
 Package %s not found in the system. This package is listed as a
 dependency of %s. Please run emerge -1Da %s and if it does not bring in the
