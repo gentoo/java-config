@@ -135,7 +135,10 @@ class EnvironmentManager(object):
     def find_vm(self, name):
         found = []
         for id, vm in self.get_virtual_machines().iteritems():
-            if vm.name().startswith(name):
+            # match either exact given string or the unversioned part - bug #288695
+            if vm.name() == name:
+                found.append(vm)
+            elif vm.name() == (name + "-" + vm.version()):
                 found.append(vm)
         return found
 
