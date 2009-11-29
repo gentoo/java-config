@@ -185,9 +185,8 @@ class VersionManager:
                 if not highest:
                     highest = target
                     pkg_name = pkg.name()
-                    continue
                 if self.version_cmp(highest, target) < 0:
-                    highest = atom
+                    highest = target
                     pkg_name = pkg.name()
             except:
                 pass
