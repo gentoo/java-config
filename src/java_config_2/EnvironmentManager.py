@@ -136,7 +136,9 @@ class EnvironmentManager(object):
         found = []
         for id, vm in self.get_virtual_machines().iteritems():
             # match either exact given string or the unversioned part - bug #288695
-            if vm.name() == name:
+            if not name or len(name) == 0:
+                found.append(vm)
+            elif vm.name() == name:
                 found.append(vm)
             elif vm.name() == (name + "-" + vm.version()):
                 found.append(vm)
