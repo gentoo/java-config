@@ -52,12 +52,7 @@ class VersionManager:
        
         if len(matches) >  0:
             for match in matches:
-                #if highest_pkg_target and self.version_cmp(match[2], highest_pkg_target) < 0:
-                #    continue
                 matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
-
-        #if len(matched_atoms) == 0 and pkg_name and highest_pkg_target:
-        #    raise Exception("Couldn't find a suitable VM due to dependency %s having a required target of %s" % (pkg_name, highest_pkg_target))
 
         matched_atoms.sort()
         matched_atoms.reverse()
@@ -231,7 +226,19 @@ class VersionManager:
                 else:
                     return gvm
         # nothing found
-        raise Exception("Couldn't find suitable VM. Possible invalid dependency string.")
+        error = "Couldn't find suitable VM. Possible invalid dependency string."
+        if pkg_name or need_virtual:
+            error += "\nDue to "
+        if pkg_name and highest_pkg_target:
+            error += pkg_name + " requiring a target of " + highest_pkg_target + " but the virtual machines constrained by "
+            for atom in matched_atoms:
+                error += atom['equality'] + "virtual/" + atom['type'] + "-" + atom['version'] + ' '
+            if need_virtual:
+                error += " and/or\n"
+        if need_virtual:
+            error += "this package requiring virtual(s) " + need_virtual
+        
+        raise Exception(error)
 
 
     def find_vm(self, vmProviderString, atom, min_package_target, allow_build_only = True):
