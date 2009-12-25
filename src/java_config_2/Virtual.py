@@ -36,10 +36,10 @@ class Virtual(Package):
         if self._file:
             self._config = EnvFileParser(file).get_config()
 
-            if self._config.has_key("PROVIDERS"):
+            if "PROVIDERS" in self._config:
                 self.providers = self._config["PROVIDERS"].split(' ')
 
-            if self._config.has_key("VM"):
+            if "VM" in self._config:
                 self.vm_providers = self._config["VM"].split(' ')
         else:
             self._config = {}
@@ -51,11 +51,11 @@ class Virtual(Package):
         # Now load system pref.  Really should support
         # List of packages instead of single package.
         all_prefs = self._manager.get_virtuals_pref().get_config()
-        if all_prefs.has_key(self.name()):
+        if self.name() in all_prefs:
             if all_prefs[self.name()] in temp_packages:
                 self._packages.append(all_prefs[self.name()])
         else:
-            if all_prefs.has_key('PREFER_UPSTREAM'):
+            if 'PREFER_UPSTREAM' in all_prefs:
                 for package in temp_packages:
                     if re.compile(all_prefs['PREFER_UPSTREAM'] + '*').match(package):
                         self._packages.append(package)
@@ -92,7 +92,7 @@ class Virtual(Package):
         return self._packages
 
     def use_all_available(self):
-        if self._config.has_key('MULTI_PROVIDER'):
+        if 'MULTI_PROVIDER' in self._config:
             return 'true' == self._config['MULTI_PROVIDER'].lower()
         return False
 
@@ -124,7 +124,7 @@ class Virtual(Package):
             except:
                 active_vm = self._manager.get_active_vm()
                 if active_vm and self.get_available_vms().count(active_vm.name()):
-                    if self._config.has_key("VM_CLASSPATH"):
+                    if "VM_CLASSPATH" in self._config:
                         return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
                     #TODO figure out what is meant to happen here
                 else:
@@ -134,7 +134,7 @@ class Virtual(Package):
             if not self._manager.get_active_vm().name() in self._vms:
                 raise ProviderUnavailableError( self._name, ' '.join(self.vm_providers), ' '.join(self.providers) )
             
-            if self._config.has_key("VM_CLASSPATH"):
+            if "VM_CLASSPATH" in self._config:
                 cp += ':' + self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
             return cp
                 

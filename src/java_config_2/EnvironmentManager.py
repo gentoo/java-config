@@ -364,7 +364,7 @@ class EnvironmentManager(object):
             for var in env_vars.split(' '):
                 val = pkg.query(var)
                 assert val
-                if (not env.has_key(var)):
+                if (var not in env):
                     env[var] = val
 
     def build_dep_env_vars(self, pkgs, missing_deps):

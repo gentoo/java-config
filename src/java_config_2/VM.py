@@ -20,7 +20,7 @@ class VM:
         self.config = EnvFileParser(file).get_config()
     
         for var in self.needed_vars:
-            if not self.config.has_key(var):
+            if var not in self.config:
                 raise InvalidVMError("Missing: %s" %var)
 
     def __cmp__(self, other):
@@ -33,7 +33,7 @@ class VM:
         return self.config
 
     def query(self, var):
-        if self.config.has_key(var):
+        if var in self.config:
             return self.config[var]
         else:
             raise EnvironmentUndefinedError
@@ -88,12 +88,12 @@ class VM:
         return None
 
     def get_provides(self):
-        if self.config.has_key('PROVIDES'):
+        if 'PROVIDES' in self.config:
             return self.config['PROVIDES'].split(' ')
         return []
 
     def provides(self, virtuals):
-        if self.config.has_key('PROVIDES'):
+        if 'PROVIDES' in self.config:
             vp = self.config['PROVIDES'].split(' ')
         else:
             return False

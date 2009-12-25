@@ -28,7 +28,7 @@ class Package:
         return self._file
 
     def description(self):
-        if self._config.has_key("DESCRIPTION"):
+        if "DESCRIPTION" in self._config:
             return self._config["DESCRIPTION"]
         else:
             return "No Description"
@@ -37,7 +37,7 @@ class Package:
         """
         Returns this package's classpath
         """
-        if self._config.has_key("CLASSPATH"):
+        if "CLASSPATH" in self._config:
             return self._config["CLASSPATH"]
         else:
             return None
@@ -49,7 +49,7 @@ class Package:
         """
         Return the value of the requested var form the env file
         """
-        if self._config.has_key(var):
+        if var in self._config:
             return self._config[var]
         else:
             return None

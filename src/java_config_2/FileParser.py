@@ -38,7 +38,7 @@ class FileParser:
                 while value.find('${') >= 0:
                     item = value[value.find('${')+2:value.find('}')]
 
-                    if self.config.has_key(item):
+                    if item in self.config:
                         val = self.config[item]
                     else:
                         val = ''

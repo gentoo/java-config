@@ -32,7 +32,7 @@ class OutputFormatter:
         self.consoleTitle = displayTitle
         self.autoIndent = autoIndent
 
-        if displayTitle and os.environ.has_key("TERM"):
+        if displayTitle and "TERM" in os.environ:
             if os.environ["TERM"] not in [ "xterm", "Eterm", "aterm", "rxvt" ]:
                 self.consoleTitle = False
 
@@ -43,7 +43,7 @@ class OutputFormatter:
         self.colorOutput = status
 
     def setDisplayTitleStatus(self, status):
-        if status and os.environ.has_key("TERM"):
+        if status and "TERM" in os.environ:
             if os.environ["TERM"] in [ "xterm", "Eterm", "aterm", "rxvt" ]:
                 self.consoleTitle = True
             else:
