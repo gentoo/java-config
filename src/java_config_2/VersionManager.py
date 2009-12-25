@@ -168,7 +168,7 @@ class VersionManager:
             try:
                 pkg = manager.get_package(pkg_name)
                 pkgs.append(pkg)
-            except Exception, e:
+            except:
                 pass
 
         deep_pkgs = get_needed_packages(*pkgs)

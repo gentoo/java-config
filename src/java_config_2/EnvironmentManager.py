@@ -55,7 +55,7 @@ class EnvironmentManager(object):
                     continue
                 except PermissionError:
                     continue
-                except InvalidVMError, ex:
+                except InvalidVMError as ex:
                     printer = OutputFormatter()
                     printer._printAlert("Invalid vm configuration file found: %s\nJava-config 2 requires some new variables, please update all your jdk/jre:  file\n(%s)" % ( conf, ex ))
                     continue
