@@ -266,20 +266,20 @@ if __name__ == '__main__':
         vm = get_vm(pkg)
         if vm:
             manager.set_active_vm(vm)
-            print 'gjl_vm="%s"' % ( vm )
+            print('gjl_vm="%s"' % ( vm ))
 
     if options.get_args:
         args = get_args(pkg)
         if args:
-            print 'gjl_args="%s";' % ( args )
+            print('gjl_args="%s";' % ( args ))
         env = get_env(pkg)
         for k, v in env.iteritems():
-            print 'export %s="%s";' % ( k, v )
+            print('export %s="%s";' % ( k, v ))
 
     if options.jar:
         jar = get_jar(pkg, options.jar)
         if jar:
-            print 'gjl_starte="-jar %s"' % ( jar )
+            print('gjl_starte="-jar %s"' % ( jar ))
         else:
             abort("Couldn't find %s" % ( options.jar ) )
 

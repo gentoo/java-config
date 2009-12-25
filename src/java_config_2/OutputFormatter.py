@@ -99,10 +99,10 @@ class OutputFormatter:
             return striped
 
     def write(self, message):
-        print self.__parseColor(message.strip())
+        print(self.__parseColor(message.strip()))
 
     def _print(self, message):
-        print self.__parseColor(message)
+        print(self.__parseColor(message))
 
     def _printError(self, message):
         message = "%H%R" + self.__indent("!!! ERROR: ", message) + "%$"
