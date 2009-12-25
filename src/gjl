@@ -273,7 +273,7 @@ if __name__ == '__main__':
         if args:
             print('gjl_args="%s";' % ( args ))
         env = get_env(pkg)
-        for k, v in env.iteritems():
+        for k, v in env.items():
             print('export %s="%s";' % ( k, v ))
 
     if options.jar:

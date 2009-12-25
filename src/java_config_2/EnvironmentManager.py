@@ -134,7 +134,7 @@ class EnvironmentManager(object):
 
     def find_vm(self, name):
         found = []
-        for id, vm in self.get_virtual_machines().iteritems():
+        for id, vm in self.get_virtual_machines().items():
             # match either exact given string or the unversioned part - bug #288695
             if not name or len(name) == 0:
                 found.append(vm)
@@ -221,7 +221,7 @@ class EnvironmentManager(object):
 
         try:
             ENV_VARS = vm.query('ENV_VARS')
-            for (item, value) in vm.get_config().iteritems():
+            for (item, value) in vm.get_config().items():
                 if item in ENV_VARS:
                     stream.write(render % (item, value))
         except IOError:
