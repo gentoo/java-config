@@ -15,6 +15,35 @@ import os, glob, re
 import os.path
 
 
+class _DepSpec(dict):
+    def __eq__(self, other):
+        assert type(self) == type(other)
+        return self == other
+
+    def __ne__(self, other):
+        assert type(self) == type(other)
+        return self != other
+
+    def __lt__(self, other):
+        assert type(self) == type(other)
+
+        if self['version'] != other['version']:
+            return self['version'] < other['version']
+        else:
+            if self['type'] != other['type']:
+                return self['type'] < other['type']
+            else:
+                return self['equality'] != other['equality']
+
+    def __gt__(self, other):
+        return not self.__lt__(other)
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+
 # Does not handle deps correctly
 # Does however do the right thing for the only types of deps we should see
 # Ignore blockers: portage doesn't support them in a way that is usefull for us
@@ -51,7 +80,7 @@ class VersionManager:
        
         if len(matches) >  0:
             for match in matches:
-                matched_atoms.append({'equality':match[0], 'type':match[1], 'version':match[2]})
+                matched_atoms.append(_DepSpec(equality=match[0], type=match[1], version=match[2]))
 
         matched_atoms.sort()
         matched_atoms.reverse()
