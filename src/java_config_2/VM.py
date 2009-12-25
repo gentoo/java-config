@@ -22,8 +22,23 @@ class VM:
             if var not in self.config:
                 raise InvalidVMError("Missing: %s" %var)
 
-    def __cmp__(self, other):
-        return cmp(self.version(), other.version())
+    def __eq__(self, other):
+        return self.version() == other.version()
+
+    def __ne__(self, other):
+        return self.version() != other.version()
+
+    def __lt__(self, other):
+        return self.version() < other.version()
+
+    def __gt__(self, other):
+        return self.version() > other.version()
+
+    def __le__(self, other):
+        return self.version() <= other.version()
+
+    def __ge__(self, other):
+        return self.version() >= other.version()
 
     def __str__(self):
         return self.name()
