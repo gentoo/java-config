@@ -14,7 +14,6 @@ from java_config_2.VersionManager import *
 import os
 import sys
 from commands import getoutput
-from string import join
 
 from optparse import OptionParser, make_option, OptionValueError
 

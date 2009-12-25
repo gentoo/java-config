@@ -8,7 +8,6 @@ import sys
 sys.path.append("/usr/lib/portage/pym")
 
 import re
-from string import upper
 
 import VM, Errors 
 from java_config_2.FileParser import *

@@ -8,7 +8,6 @@
 from FileParser import *
 from Errors import *
 import os
-from string import upper
 
 
 class VM:
@@ -46,7 +45,7 @@ class VM:
 
     def is_build_only(self):
         try:
-            if upper(self.query('BUILD_ONLY')) == 'TRUE':
+            if self.query('BUILD_ONLY').upper() == 'TRUE':
                 return True
         except:
             return False
@@ -58,7 +57,7 @@ class VM:
         return self.is_type("JDK")
 
     def is_type(self, type):
-        if upper(type) in [upper(t) for t in self.query('PROVIDES_TYPE').split(' ')]:
+        if type.upper() in [t.upper() for t in self.query('PROVIDES_TYPE').split(' ')]:
             return True
         else:
             return False
