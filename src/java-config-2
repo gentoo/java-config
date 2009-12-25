@@ -12,7 +12,12 @@ from java_config_2.Errors import *
 
 import os
 import sys
-from commands import getoutput
+try:
+    # Python 3.
+    from subprocess import getoutput
+except ImportError:
+    # Python 2.
+    from commands import getoutput
 
 from optparse import OptionParser, make_option
 

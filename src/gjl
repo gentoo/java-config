@@ -10,7 +10,6 @@ from java_config_2.OutputFormatter import *
 from java_config_2.EnvironmentManager import *
 from java_config_2.VersionManager import *
 
-from commands import getoutput
 from optparse import OptionParser, make_option, OptionValueError
 import os
 from os.path import basename
