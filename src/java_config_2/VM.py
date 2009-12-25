@@ -5,8 +5,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from FileParser import *
-from Errors import *
+from .FileParser import *
+from .Errors import *
 import os
 
 

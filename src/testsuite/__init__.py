@@ -1,9 +1,9 @@
 __all__ = [ 'VM', 'Virtual', 'Package', 'VersionManager', 'EnvironmentManager' ]
-import VM
-import Virtual
-import Package
-import VersionManager
-import EnvironmentManager
+from . import VM
+from . import Virtual
+from . import Package
+from . import VersionManager
+from . import EnvironmentManager
 from java_config_2.EnvironmentManager import EnvironmentManager as em
 em.vms_path = VM.TestVM.path
 em.pkg_path = Package.TestPackage.path

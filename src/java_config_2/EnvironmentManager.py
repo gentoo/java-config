@@ -4,11 +4,11 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from OutputFormatter import *
-from Package import *
-from Virtual import *
-from VM import *
-from Errors import *
+from .OutputFormatter import *
+from .Package import *
+from .Virtual import *
+from .VM import *
+from .Errors import *
 
 from os.path import basename, dirname
 from glob import glob

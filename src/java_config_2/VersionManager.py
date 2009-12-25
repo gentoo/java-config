@@ -9,7 +9,7 @@ sys.path.append("/usr/lib/portage/pym")
 
 import re
 
-import VM, Errors 
+from . import VM, Errors 
 from java_config_2.FileParser import *
 import os, glob, re
 import os.path
