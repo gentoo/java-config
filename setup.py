@@ -7,7 +7,7 @@ import os
 class my_install_scripts(install_scripts):
 	"""Specialized data file install to handle our symlinks"""
 	install_scripts.user_options.append(('symlink-tools=', None,
-		'List if files to symlink to run-java-tool in script directory'))
+		'List of files to symlink to run-java-tool in script directory'))
 
 	def initialize_options(self):
 		install_scripts.initialize_options(self)
@@ -21,10 +21,13 @@ class my_install_scripts(install_scripts):
 		install_scripts.run(self)
 		for tool in self.symlink_tools:
 			s = self.install_dir + '/' + tool
-			log.info("symbolically linking %s -> %s" % ('run-java-tool',s))
+			log.info("symbolically linking %s -> %s" % ('run-java-tool', s))
 			if not self.dry_run:
-				#copy_file is not able to handle relative symlinks with --root
-				os.symlink('run-java-tool',s)
+				# os.symlink fails to overwrite existing files
+				if os.path.exists(s):
+					os.remove(s)
+				# copy_file is not able to handle relative symlinks with --root
+				os.symlink('run-java-tool', s)
 
 from distutils.core import setup
 from glob import glob
