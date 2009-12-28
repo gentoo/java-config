@@ -36,7 +36,7 @@ class _DepSpec(dict):
                 return self['equality'] != other['equality']
 
     def __gt__(self, other):
-        return not self.__lt__(other)
+        return not self.__lt__(other) and not self.__eq__(other)
 
     def __le__(self, other):
         return self.__lt__(other) or self.__eq__(other)
