@@ -381,6 +381,8 @@ class EnvironmentManager(object):
         for p in pkgs:
             pkg = self.get_package(p)
             if pkg:
+                if hasattr(pkg, 'is_vm') and pkg.is_vm():
+                    continue
                 pkgs.remove(p)
                 unresolved.add(pkg)
 
@@ -395,6 +397,8 @@ class EnvironmentManager(object):
 
                 if p:
                     if p not in resolved:
+                        if hasattr(p, 'is_vm') and p.is_vm():
+                            continue
                         unresolved.add(p)
                 else:
                     missing_deps.add(dep[-1])
