@@ -145,6 +145,7 @@ def list_available_vms(option, opt, value, parser):
     except InvalidVMError:
         active = None
 
+    found_build_only = False
     printer._print('%HThe following VMs are available for generation-2:%$')
     for i, vm in vm_list.items():
         if vm is active:
@@ -152,16 +153,19 @@ def list_available_vms(option, opt, value, parser):
                 printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$'))
             else:
                 printer._print('%G' + '*)\t%s [%s]%s' % (vm.query('VERSION'), vm.name(), '%$') + '%r (Build Only)%$')
+                found_build_only = True
         else:
             if not vm.is_build_only():
                 printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()))
             else:
                 printer._print('%i)\t%s [%s]' % (i, vm.query('VERSION'), vm.name()) + '%r (Build Only)%$')
+                found_build_only = True
 
-    printer._print('')
-    printer._print('%r' + 'VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL.')
-    printer._print('%r' + 'Gentoo recommends not setting these VMs as either your System or User VM.')
-    printer._print('%r' + 'Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information')
+    if (found_build_only):
+        printer._print('')
+        printer._print('%r' + 'VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL.')
+        printer._print('%r' + 'Gentoo recommends not setting these VMs as either your System or User VM.')
+        printer._print('%r' + 'Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information')
 
 def print_environment(option, opt, value, parser):
     vm = manager.get_vm(value) 

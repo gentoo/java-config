@@ -61,6 +61,7 @@ describe_list() {
 do_list() {
 	targets=( $(find_targets) )
 	write_list_start "Available Java Virtual Machines:"
+	local found_build_only
 	if [[ -n ${targets[@]} ]] ; then
 		local i system_name user_name
 	
@@ -73,6 +74,7 @@ do_list() {
 
 			if [[ "${build_only}" == "TRUE" || "{build_only}" == "true" ]]; then
 				mark="$(highlight_warning 'Build Only')"
+				found_build_only="TRUE"
 			fi
 
 			if [[ ${targets[${i}]} == ${system_name} ]]; then
@@ -88,9 +90,11 @@ do_list() {
 		write_kv_list_entry "(none found)" ""
 	fi
 	echo
-	write_warning_msg "VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL."
-	write_warning_msg "Gentoo recommends not setting these VMs as either your System or User VM."
-	write_warning_msg "Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information."
+	if [[ "${found_build_only}" == "TRUE" ]]; then
+		write_warning_msg "VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL."
+		write_warning_msg "Gentoo recommends not setting these VMs as either your System or User VM."
+		write_warning_msg "Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information."
+	fi
 }
 
 ### set action ###
