@@ -260,6 +260,13 @@ class EnvironmentManager(object):
     def system_vm_link(self):
         return '/etc/java-config-2/current-system-vm'
 
+    def system_vm_name(self):
+        link = self.system_vm_link()
+        if os.path.islink(link):
+            return basename(os.readlink(link))
+        else:
+           return None
+
     def clean_classpath(self, targets):
         for target in targets:
             if os.path.isfile(target['file']):

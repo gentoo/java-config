@@ -54,20 +54,31 @@ class VersionManager:
     atom_parser = re.compile(r"([<>=]*)virtual/(jre|jdk)[-:]([0-9\.*]+)")
     virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/([\w\-\.:]+)")
     package_parser = re.compile(r"([\w\-]+)/([\w\-]+)(?:\:(\d+))?")
-    pref_files = ['/etc/java-config-2/build/jdk.conf', '/usr/share/java-config-2/config/jdk-defaults.conf']
+    user_pref_file = '/etc/java-config-2/build/jdk.conf'
+    default_pref_file = '/usr/share/java-config-2/config/jdk-defaults.conf'
     _prefs = None
 
     def __init__(self):
         pass
 
     def get_prefs(self):
+        from java_config_2.EnvironmentManager import EnvironmentManager
+        envman = EnvironmentManager()
+
         if self._prefs:
             return self._prefs
         else:
             self._prefs = []
-            for file in self.pref_files:
-                if os.path.exists(file):
-                    self._prefs += PrefsFileParser(file).get_config()
+            # first try the build preferences
+            if os.path.exists(self.user_pref_file):
+                self._prefs += PrefsFileParser(self.user_pref_file).get_config()
+            # then try system vm
+            sys_vm = envman.system_vm_name()
+            if sys_vm is not None:
+            	self._prefs.append(['*', [sys_vm]])
+            # then try the build defaults
+            if os.path.exists(self.default_pref_file):
+                self._prefs += PrefsFileParser(self.default_pref_file).get_config()
             return self._prefs
 
     def parse_depend(self, atoms):
