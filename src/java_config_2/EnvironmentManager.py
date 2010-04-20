@@ -67,10 +67,10 @@ class EnvironmentManager(object):
     def load_package(self, name):
         try:
             name = name.replace(':', '-')
-            pkg = Package(name, self.pkg_path % name )
+            pkg = Package(name, sorted (glob (self.pkg_path % name ), reverse=True)[0])
             self.packages[name] = pkg
             return pkg
-        except InvalidConfigError:
+        except (IndexError, InvalidConfigError):
             try:
                 #Try load Virtual instead of Package.
                 pkg = Virtual( name, self, self.virtual_path + name )
