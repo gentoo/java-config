@@ -9,10 +9,13 @@ class TestEnvironmentManager(unittest.TestCase):
     def test_load_packages(self):
         em.packages = {}
         em.load_packages()
-        self.assertEquals(len(em.packages), 9)
+        self.assertEquals(len(em.packages), 11)
 
     def test_get_package(self):
         em.get_package('ant-cores')
+
+    def test_build_dep_path(self):
+        self.assertTrue( len(em.build_dep_path(["jdbc"], "CLASSPATH", set())) > 2)
 
 if __name__ == '__main__':
     unittest.main()

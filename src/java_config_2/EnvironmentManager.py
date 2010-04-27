@@ -9,6 +9,7 @@ from .Package import *
 from .Virtual import *
 from .VM import *
 from .Errors import *
+from itertools import chain
 
 from os.path import basename, dirname
 from glob import glob
@@ -265,7 +266,7 @@ class EnvironmentManager(object):
         if os.path.islink(link):
             return basename(os.readlink(link))
         else:
-           return None
+            return None
 
     def clean_classpath(self, targets):
         for target in targets:
@@ -296,24 +297,25 @@ class EnvironmentManager(object):
         Returns list of package's deps and optional deps.
         Filters out optional deps that are not present.
         """
-        deps = pkg.deps();
-
-        #if hasattr(pkg, 'get_packages') and pkg.use_all_available():
-        #    vps = pkg.get_packages()
-        #    for vp in vps:
-        #        try:
-        #            vp_pkg = self.get_package(vp)
-        #            deps.append([vp])
-        #            deps.append( self.get_pkg_deps(vp) )
-        #            print deps
-        #        except UnexistingPackageError:
-        #            continue
-        for opt_dep in pkg.opt_deps():
-            try:
-                self.get_package(opt_dep[-1])
-                deps.append(opt_dep)
-            except UnexistingPackageError:
-                continue
+        deps = []
+        if hasattr(pkg, 'get_packages') and pkg.use_all_available():
+            vps = pkg.get_packages()
+            for vp in vps:
+                try:
+                    vp_pkg = self.get_package(vp)
+                    vp_deps = self.get_pkg_deps(vp_pkg)
+                    for dep in vp_deps:
+                        deps.append(dep)
+                except UnexistingPackageError:
+                    continue
+        else:
+            deps = pkg.deps();
+            for opt_dep in pkg.opt_deps():
+                try:
+                    self.get_package(opt_dep[-1])
+                    deps.append(opt_dep)
+                except UnexistingPackageError:
+                    continue
         return deps
 
     def add_dep_classpath(self, pkg, dep, classpath): 
@@ -343,11 +345,10 @@ class EnvironmentManager(object):
         while len(unresolved) > 0:
             pkg = unresolved.pop()
             resolved.add(pkg)
-
+            
             if query != "CLASSPATH":
                 lpath = pkg.query(query)
                 self.add_path_elements(lpath, path)
-
             for dep in self.get_pkg_deps(pkg):
                 p = self.get_package(dep[-1])
 

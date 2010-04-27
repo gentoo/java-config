@@ -34,10 +34,6 @@ class TestMultiProviderVirtual(unittest.TestCase):
     def test_classpath_multiple(self):
         self.assertEqual( len(self.jdbc.classpath().split(':')), 2)
 
-    def test_invalid_vm_error(self):
-        em.set_active_vm(em.get_vm('ibm-jdk-bin-1.5'))
-        self.assertRaises( ProviderUnavailableError, self.jdbc.classpath )
-
 if __name__ == '__main__':
     unittest.main()
 

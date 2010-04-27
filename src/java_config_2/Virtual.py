@@ -126,17 +126,17 @@ class Virtual(Package):
                 if active_vm and self.get_available_vms().count(active_vm.name()):
                     if "VM_CLASSPATH" in self._config:
                         return self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
-                    #TODO figure out what is meant to happen here
                 else:
                     raise ProviderUnavailableError( self._name, ' '.join(self.vm_providers), ' '.join(self.providers) )
         else:
             cp = self.query_all_providers('CLASSPATH')
-            if not self._manager.get_active_vm().name() in self._vms:
+            if self._vms and not self._manager.get_active_vm().name() in self._vms:
                 raise ProviderUnavailableError( self._name, ' '.join(self.vm_providers), ' '.join(self.providers) )
             
             if "VM_CLASSPATH" in self._config:
                 cp += ':' + self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
             return cp
+        return ""
                 
 
     def library_path(self):
