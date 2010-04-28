@@ -1,3 +1,130 @@
+2010-04-27 11:41  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py,
+	  src/java_config_2/Virtual.py,
+	  src/testsuite/EnvironmentManager.py, src/testsuite/Virtual.py,
+	  src/testsuite/packages/commons-logging,
+	  src/testsuite/packages/commons-logging/package.env,
+	  src/testsuite/packages/jdbc-mysql/package.env,
+	  src/testsuite/packages/log4j,
+	  src/testsuite/packages/log4j/package.env,
+	  src/testsuite/virtual_configs/jdbc: Fixed issue with
+	  multi_provider virtuals where deep dep resolution wasn't being
+	  performed. Fixed issue with requiring vm for virtuals as well.
+
+2010-04-20 20:41  Vlastimil Babka <caster@gentoo.org>
+
+	* config/jdk-defaults-hpux.conf, config/jdk-defaults-ppc-aix.conf,
+	  config/jdk-defaults-ppc-linux.conf,
+	  config/jdk-defaults-x64-freebsd.conf,
+	  config/jdk-defaults-x64-macos.conf,
+	  config/jdk-defaults-x86-freebsd.conf: Add jdk-defaults for
+	  several (prefix) arches per bug #300137.
+
+2010-04-20 20:30  Vlastimil Babka <caster@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py,
+	  src/java_config_2/VersionManager.py: Try system-vm as a build VM
+	  before falling back to jdk-defaults.conf - bug #315039.
+
+2010-04-20 19:34  Vlastimil Babka <caster@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py: Support for package name
+	  globbing, bug #315123.
+
+2010-04-13 21:21  Vlastimil Babka <caster@gentoo.org>
+
+	* src/eselect/java-vm.eselect, src/java-config-2: Print build-only
+	  warnings only when a build-only vm is present. Bug #302109.
+
+2010-03-06 04:06  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py: #297687. Skip env
+	  variables.
+
+2009-12-28 01:01  Vlastimil Babka <caster@gentoo.org>
+
+	* setup.py: setup.py fixes by Arfever - fixes repeated installs,
+	  typo and whitespace
+
+2009-12-28 00:53  Vlastimil Babka <caster@gentoo.org>
+
+	* src/java_config_2/VersionManager.py: VersionManager greater-than
+	  comparison fix by Arfever.
+
+2009-12-25 23:10  Alistair Bush <ali_bush@gentoo.org>
+
+	* AUTHORS: Add arfrever to authors.
+
+2009-12-25 23:07  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/testsuite/VM.py: Remove failif call as its depreciated.
+
+2009-12-25 23:06  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/VersionManager.py: Apply python3 patch 9 from
+	  Arfrever. Fixes unit tests with python 3. Thank you Arfrever
+
+2009-12-25 22:53  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/test-python3.sh: Add test runner script to test build with
+	  python3. Currently fails.
+
+2009-12-25 22:42  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/VM.py: Apply python3 patch 8 from Arfrever.
+	  Fixes a unit test
+
+2009-12-25 22:31  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/depend-java-query, src/gjl, src/java-config-2: Apply python3
+	  patch 7 from Arfrever. Trunk now broken until a few python3
+	  issues are solved.
+
+2009-12-25 22:29  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py,
+	  src/java_config_2/Package.py, src/java_config_2/VM.py,
+	  src/java_config_2/VersionManager.py, src/testsuite/__init__.py:
+	  Apply python3 patch 6 from Arfrever
+
+2009-12-25 22:28  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/depend-java-query, src/java-config-2,
+	  src/java_config_2/EnvironmentManager.py,
+	  src/java_config_2/VersionManager.py: Apply python3 patch 5 from
+	  Arfrever
+
+2009-12-25 22:27  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/depend-java-query, src/gjl, src/java_config_2/VM.py,
+	  src/java_config_2/VersionManager.py: Apply python3 patch 4 from
+	  Arfrever
+
+2009-12-25 22:26  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/gjl, src/java-config-2,
+	  src/java_config_2/EnvironmentManager.py: Apply python3 patch 3
+	  from Arfrever
+
+2009-12-25 22:26  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/gjl, src/java_config_2/OutputFormatter.py: Apply python3
+	  patch 2 from Arfrever
+
+2009-12-25 22:25  Alistair Bush <ali_bush@gentoo.org>
+
+	* src/java_config_2/EnvironmentManager.py,
+	  src/java_config_2/FileParser.py,
+	  src/java_config_2/OutputFormatter.py,
+	  src/java_config_2/Package.py, src/java_config_2/VM.py,
+	  src/java_config_2/Virtual.py: Apply python3 patch 1 from Arfrever
+
+2009-12-06 00:22  Alistair Bush <ali_bush@gentoo.org>
+
+	* ChangeLog, setup.py, src/java_config_2/__init__.py: Updated
+	  version.
+
 2009-12-03 11:17  Alistair Bush <ali_bush@gentoo.org>
 
 	* src/java_config_2/VersionManager.py: Improve error messaging when
