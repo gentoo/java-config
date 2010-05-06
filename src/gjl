@@ -23,7 +23,7 @@ atom_parser = re.compile(r"([<>=]+)virtual/(jre|jdk)-([0-9\.*]+)")
 
 #Depreciated.
 def get_needed_target(pkg):
-    highest_target = None
+    highest_target = ""
     needs_jdk = False
     for pkg in get_needed_packages(pkg):
         pkg_needs_jdk = False
@@ -43,7 +43,7 @@ def get_needed_target(pkg):
     return highest_target, needs_jdk
 
 def get_needed_target2(pkg):
-    highest_target = None
+    highest_target = ""
     needs_jdk = set()
     for pkg in get_needed_packages(pkg):
         target = pkg.target()
