@@ -63,7 +63,7 @@ class TestVersionManager(unittest.TestCase):
         os.environ["USE"] = "java6"
         self.assertTrue(self.verman.version_satisfies('java6? ( =virtual/jdk-1.6 )', vm))
         os.environ["USE"] = ""
-        self.assertFalse(self.verman.version_satisfies('java6? ( =virtual/jdk-1.6) !java6? ( =virtual/jdk-1.5 )', vm))
+        self.assertFalse(self.verman.version_satisfies('java6? ( =virtual/jdk-1.6 ) !java6? ( =virtual/jdk-1.5 )', vm))
 
     #def test_parse_depend(self):
 
