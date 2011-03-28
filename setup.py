@@ -52,7 +52,6 @@ setup (
 	data_files = [
 		('share/java-config-2/pym/java_config/', glob('src/java_config/*')),
 		('share/applications/', ['data/javaws.desktop']),
-		('share/mimelnk/application/', ['data/x-java-jnlp-file.desktop']),
 		('share/icons/hicolor/48x48/mimetypes/', ['data/application-x-java-jnlp-file.png']),
 		('share/pixmaps/', ['data/java-icon48.png']),
 		('share/java-config-2/launcher', ['src/launcher.bash']),

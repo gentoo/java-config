@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=MimeType
-MimeType=application/x-java-jnlp-file
-Icon=application-x-java-jnlp-file
-Patterns=*.jnlp;
-DefaultApp=javaws
-Comment=Java Web Start Application
