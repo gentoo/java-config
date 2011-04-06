@@ -110,6 +110,8 @@ def query_pkg(option, opt, value, parser):
                 printer._printError('Package %s does not define %s in it\'s package.env.' % (package.name(), query))
         except UnexistingPackageError as e:
             printer._printError("Package %s was not found!" % e.package)
+        except PermissionError as e:
+            printer._printError("You do not have enough permissions to read the package's package.env")
             error = True
     else:
         printer._printError("No query parameter was specified, unable to retrieve package.env value.")
