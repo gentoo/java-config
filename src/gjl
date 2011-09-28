@@ -272,7 +272,10 @@ if __name__ == '__main__':
             print('gjl_args="%s";' % ( args ))
         env = get_env(pkg)
         for k, v in env.items():
-            print('export %s="%s";' % ( k, v ))
+            if 'PATH' in k:
+                print('export %s="%s:${%s}";' % ( k, v, k )).strip(':')
+            else:
+                print('export %s="%s";' % ( k, v ))
 
     if options.jar:
         jar = get_jar(pkg, options.jar)
