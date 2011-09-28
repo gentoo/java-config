@@ -273,7 +273,7 @@ if __name__ == '__main__':
         env = get_env(pkg)
         for k, v in env.items():
             if 'PATH' in k:
-                print('export %s="%s:${%s}";' % ( k, v, k )).strip(':')
+                print('export %s="%s:${%s}"; %s=${%s%%:};' % ( k, v, k, k, k )).strip(':')
             else:
                 print('export %s="%s";' % ( k, v ))
 
