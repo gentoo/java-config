@@ -279,11 +279,11 @@ class EnvironmentManager(object):
     def add_path_elements(self, elements, path):
         if elements:
             for p in elements.split(':'):
-                if p != '':
-                    path.add(p)
+                if p != '' and p not in path:
+                    path.append(p)
 
     def build_path(self, pkgs, query):
-        path = set()
+        path = []
         for lpath in self.query_packages(pkgs, query):
             self.add_path_elements(lpath, path)
 
@@ -325,11 +325,11 @@ class EnvironmentManager(object):
                 self.add_path_elements(pkg_cp, classpath)
             else:
                 for cp in pkg_cp.split(':'):
-                    if basename(cp) == dep[0]:
-                        classpath.add(cp)
+                    if basename(cp) == dep[0] and cp not in classpath:
+                        classpath.append(cp)
 
     def build_dep_path(self, pkgs, query, missing_deps):
-        path = set()
+        path = []
 
         unresolved = set()
         resolved = set()
@@ -447,7 +447,8 @@ class EnvironmentManager(object):
             oldClasspath = None
             for target in targets:
                 for cp in self.get_old_classpath(target).split(':'):
-                    classpath.add(cp)
+                    if cp not in classpath:
+                        classpath.append(cp)
 
             self.clean_classpath(targets)
 
