@@ -9,7 +9,7 @@ MAINTAINER="java@gentoo.org"
 SVN_DATE='$Date: $'
 VERSION=$(svn_date_to_version "${SVN_DATE}" )
 
-VM_BASE=/usr/lib/jvm/
+VM_BASE=/usr/lib/jvm
 VM_SYSTEM="/etc/java-config-2/current-system-vm"
 VM_USER="${HOME}/.gentoo/java-config-2/current-user-vm"
 VM_CONFIG="/usr/share/java-config-2/vm"
