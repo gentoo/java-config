@@ -70,10 +70,15 @@ class Virtual(Package):
         for vm in vmachines:
             if verman.version_satisfies(" ".join(vms), vmachines[vm]):
                 self._vms.append(vmachines[vm].name())
-
+		
         for vm in vms:
             if self._manager.get_vm(vm):
                 self._vms.append(vm)
+                if not self.min_target:
+                    self.min_target = self._manager.get_vm(vm).version()
+                if verman.version_cmp(self.min_target, self._manager.get_vm(vm).version()) > 0:
+                    self.min_target = self._manager.get_vm(vm).version()
+        
         if not self._packages and not self._vms:
             raise ProviderUnavailableError( self._name, ' '.join(self.vm_providers), ' '.join(self.providers) )
 
