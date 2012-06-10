@@ -35,18 +35,18 @@ class TestVersionManager(unittest.TestCase):
 
     def test_filter_depend_vanilla(self):
         os.environ["USE"] = ""
-        self.assertEquals(self.verman.filter_depend(self.example_dep_vanilla), self.example_dep_vanilla)
+        self.assertEqual(self.verman.filter_depend(self.example_dep_vanilla), self.example_dep_vanilla)
 
     def test_filter_depend_or(self):
         # Oh you only realise how ugly things are once you write unittests.
         os.environ["USE"] = ""
         rmatch = "|| =virtual/jdk-1.5 =virtual/jdk-1.4 dev-java/ant-core java-virtuals/jaf"
-        self.assertEquals(self.verman.filter_depend(self.example_dep_or), rmatch)
+        self.assertEqual(self.verman.filter_depend(self.example_dep_or), rmatch)
     
     def test_filter_depend_use(self):
         os.environ["USE"] = "java"
         rmatch = ">=virtual/jdk-1.5* dev-java/ant-core java-virtuals/jaf"
-        self.assertEquals(self.verman.filter_depend(self.example_dep_use), rmatch)
+        self.assertEqual(self.verman.filter_depend(self.example_dep_use), rmatch)
 
     def test_version_satisfies(self):
         vm = em.get_vm('sun-jdk-1.6')
@@ -75,13 +75,13 @@ class TestVersionManager(unittest.TestCase):
 
     def test_get_lowest(self):
         target = self.verman.get_lowest(">=virtual/jdk-1.4")
-        self.assertEquals(target, '1.4')
+        self.assertEqual(target, '1.4')
         
         target = self.verman.get_lowest(self.example_dep_vanilla)
-        self.assertEquals(target, '1.5')
+        self.assertEqual(target, '1.5')
 
         target = self.verman.get_lowest(self.example_dep_or)
-        self.assertEquals(target, '1.4')
+        self.assertEqual(target, '1.4')
         
     def test_get_lowest_with_package_dep(self):
         pass
@@ -95,7 +95,7 @@ class TestVersionManager(unittest.TestCase):
     #def test_matches(self):
 
     def test_version_cmp(self):
-        self.assertEquals(self.verman.version_cmp('1.5.2', '1.5.2'), 0)
+        self.assertEqual(self.verman.version_cmp('1.5.2', '1.5.2'), 0)
         self.assertTrue(self.verman.version_cmp('1.5', '1.5.1') < 0)
         self.assertTrue(self.verman.version_cmp('1.5.1', '1.5') > 0)
 
