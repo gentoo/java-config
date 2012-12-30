@@ -1,5 +1,7 @@
 For full ChangeLog generated from svn commit logs see ChangeLog.
 
+ * eselect modules are split-out into separate package eselect-java.
+
 Changes in 2.1.6:
  * Fixes for virtuals that have vms as providers. Needed for for example jaf.
  
