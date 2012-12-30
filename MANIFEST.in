@@ -1,5 +1,5 @@
 recursive-include man *
 recursive-include config *
 recursive-include src *
-recursive-include data *
+recursive-include tests *
 include ChangeLog NEWS TODO
