@@ -1,7 +1,7 @@
 #!/usr/bin/python -E
 # -*- coding: UTF-8 -*-
 
-# Copyright 2004-2006 Gentoo Foundation
+# Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -19,7 +19,7 @@ except ImportError:
     # Python 2.
     from commands import getoutput
 
-from optparse import OptionParser, make_option
+from optparse import OptionParser, OptionGroup
 
 def version(option, opt, value, parser):
     printer._print("%H%BJava Configuration Utility %GVersion " + str(__version__))
@@ -322,48 +322,139 @@ if __name__ == '__main__':
 
     usage =  "java-config [options]\n\n"
     usage += "Java Configuration Utility Version " + str(__version__) + "\n"
-    usage += "Copyright 2004-2005 Gentoo Foundation\n"
+    usage += "Copyright 2004-2013 Gentoo Foundation\n"
     usage += "Distributed under the terms of the GNU General Public License v2\n"
     usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
 
-    options_list = [
-                     make_option ("-V", "--version",                action="callback", callback=version,                help="Print version information"),
-                     make_option ("-n", "--nocolor",                action="callback", callback=nocolor,                help="Disable color output"),
-                     make_option (""  , "--select-vm",              action="callback", callback=select_vm,              help="Use this vm instead of the active vm when returning information",                     type="string", dest="vm"),
-                     make_option ("-J", "--java",                   action="callback", callback=java,                   help="Print the location of the java executable"),
-                     make_option ("-c", "--javac",                  action="callback", callback=javac,                  help="Print the location of the javac executable"),
-                     make_option ("-j", "--jar",                    action="callback", callback=jar,                    help="Print the location of the jar executable"),
-                     make_option ("-t", "--tools",                  action="callback", callback=tools,                  help="Print the path to tools.jar"),
-                     make_option ("-f", "--show-active-vm",         action="callback", callback=show_active_vm,         help="Print the active Virtual Machine"),
-                     make_option ("-v", "--java-version",           action="callback", callback=java_version,           help="Print version information for the active VM"),
-                     make_option ("-g", "--get-env",                action="callback", callback=get_env,                help="Print an environment variable from the active VM",                                    type="string", dest="var"),
-                     make_option ("-P", "--print",                  action="callback", callback=print_environment,      help="Print the environment for the specified VM",                                          type="string", dest="vm"),
-                     make_option ("-e", "--exec_cmd",               action="callback", callback=exec_cmd,               help="Execute something which is in JAVA_HOME",                                             type="string", dest="command"),
-                     make_option ("-L", "--list-available-vms",     action="callback", callback=list_available_vms,     help="List available Java Virtual Machines"),
-                     make_option ("-S", "--set-system-vm",          action="callback", callback=set_system_vm,          help="Set the default Java VM for the system",                                              type="string", dest="vm"),
-                     make_option ("-s", "--set-user-vm",            action="callback", callback=set_user_vm,            help="Set the default Java VM for the user",                                                type="string", dest="vm"),
-                     make_option ("-l", "--list-available-packages",action="callback", callback=list_available_packages,help="List all available packages on the system."),
-                     make_option ("-d", "--with-dependencies",      action="store_true",                                help="Include package dependencies in --classpath and --library calls",                     default=False, dest="with_deps"),
-                     make_option ("-p", "--classpath",              action="callback", callback=query_pkg_path,         help="Print entries in the environment classpath for these packages",                       type="string", dest="package(s)", callback_args = ("CLASSPATH",)),
-                     make_option ("",   "--package",                action="callback", callback=query_pkg,              help="Retrieve a value from a packages package.env file, value is specified by --query",    type="string", dest="package(s)"),
-                     make_option ("-q", "--query",                  action="store",                                     help="Value to retieve from packages package.env file, specified by --package",             type="string", dest="query"),
-                     make_option ("-i", "--library",                action="callback", callback=query_pkg_path,         help="Print java library paths for these packages",                                         type="string", dest="package(s)", callback_args = ("LIBRARY_PATH",)),
-                     make_option ("-A", "--set-system-classpath",   action="callback", callback=set_system_classpath,   help="(Deprecated) Set the system classpath to include the libraries",                      type="string", dest="package(s)" ),
-                     make_option ("-B", "--append-system-classpath",action="callback", callback=append_system_classpath,help="(Deprecated) Append the libraries to the system classpath",                           type="string", dest="package(s)"),
-                     make_option ("-X", "--clean-system-classpath", action="callback", callback=clean_system_classpath, help="(Deprecated) Clean the current system classpath"),
-                     make_option ("-a", "--set-user-classpath",     action="callback", callback=set_user_classpath,     help="(Deprecated) Set the user classpath to include the libraries",                        type="string", dest="package(s)"),
-                     make_option ("-b", "--append-user-classpath",  action="callback", callback=append_user_classpath,  help="(Deprecated) Append the libraries to the user classpath",                             type="string", dest="package(s)"),
-                     make_option ("-x", "--clean-user-classpath",   action="callback", callback=clean_user_classpath,   help="(Deprecated) Clean the current user classpath"),
-                     make_option ("",   "--get-virtual-providers",  action="callback", callback=get_virtual_providers,  help="(Experimental) Return a list of packages that provide a virtual",                     type="string", dest="package(s)"),
-                     make_option ("-r", "--runtime",                action="callback", help="Print the runtime classpath",
-                                     callback=query_active_vm_cb, callback_args=("BOOTCLASSPATH",)),
-                     make_option ("-O", "--jdk-home",               action="callback", help="Print the location of the active JAVA_HOME",
-                                     callback=query_active_vm_cb, callback_args=("JAVA_HOME",)),
-                     make_option ("-o", "--jre-home",               action="callback", help="Print the location of the active JAVA_HOME",
-                                     callback=query_active_vm_cb, callback_args=("JAVA_HOME",))
-                   ]
+    parser = OptionParser(usage)
+    parser.add_option("-V", "--version",
+                    action="callback", callback=version,
+                    help="Print version information")
+    parser.add_option("--select-vm",
+                    action="callback", callback=select_vm,
+                    type="string", dest="vm",
+                    help="Use this vm instead of the active vm when returning information")
+    parser.add_option("-n", "--nocolor",
+                    action="callback", callback=nocolor,
+                    help="Disable color output")
 
-    parser = OptionParser(usage, options_list)
+    # Queries
+    group = OptionGroup(parser, "Queries")
+    group.add_option("-J", "--java",
+                    action="callback", callback=java,
+                    help="Print the location of the java executable")
+    group.add_option("-c", "--javac",
+                    action="callback", callback=javac,
+                    help="Print the location of the javac executable")
+    group.add_option("-j", "--jar",
+                    action="callback", callback=jar,
+                    help="Print the location of the jar executable")
+    group.add_option("-t", "--tools",
+                    action="callback", callback=tools,
+                    help="Print the path to tools.jar")
+    group.add_option("-f", "--show-active-vm",
+                    action="callback", callback=show_active_vm,
+                    help="Print the active Virtual Machine")
+    group.add_option("-v", "--java-version",
+                    action="callback", callback=java_version,
+                    help="Print version information for the active VM")
+    group.add_option("-g", "--get-env",
+                    action="callback", callback=get_env,
+                    type="string", dest="var",
+                    help="Print an environment variable from the active VM")
+    group.add_option("-P", "--print",
+                    action="callback", callback=print_environment,
+                    type="string", dest="vm",
+                    help="Print the environment for the specified VM")
+    group.add_option("-e", "--exec_cmd",
+                    action="callback", callback=exec_cmd,
+                    type="string", dest="command",
+                    help="Execute something which is in JAVA_HOME")
+    group.add_option("-L", "--list-available-vms",
+                    action="callback", callback=list_available_vms,
+                    help="List available Java Virtual Machines")
+    group.add_option("-l", "--list-available-packages",
+                    action="callback", callback=list_available_packages,
+                    help="List all available packages on the system.")
+    group.add_option("-d", "--with-dependencies",
+                    action="store_true",
+                    default=False, dest="with_deps",
+                    help="Include package dependencies in --classpath and --library calls")
+    group.add_option("-p", "--classpath",
+                    action="callback", callback=query_pkg_path, callback_args = ("CLASSPATH",),
+                    type="string", dest="package(s)",
+                    help="Print entries in the environment classpath for these packages")
+    group.add_option("--package",
+                    action="callback", callback=query_pkg,
+                    type="string", dest="package(s)",
+                    help="Retrieve a value from a packages package.env file, value is specified by --query")
+    group.add_option("-q", "--query",
+                    action="store",
+                    type="string", dest="query",
+                    help="Value to retieve from packages package.env file, specified by --package")
+    group.add_option("-i", "--library",
+                    action="callback", callback=query_pkg_path, callback_args = ("LIBRARY_PATH",),
+                    type="string", dest="package(s)",
+                    help="Print java library paths for these packages")
+    group.add_option("-r", "--runtime",
+                    action="callback", callback=query_active_vm_cb, callback_args=("BOOTCLASSPATH",),
+                    help="Print the runtime classpath")
+    group.add_option("-O", "--jdk-home",
+                    action="callback", callback=query_active_vm_cb, callback_args=("JAVA_HOME",),
+                    help="Print the location of the active JAVA_HOME")
+    group.add_option("-o", "--jre-home",
+                    action="callback", callback=query_active_vm_cb, callback_args=("JAVA_HOME",),
+                    help="Print the location of the active JAVA_HOME")
+    parser.add_option_group(group)
+
+    # Experimental
+    group = OptionGroup(parser, "Experimental")
+    group.add_option("--get-virtual-providers",
+                    action="callback", callback=get_virtual_providers,
+                    type="string", dest="package(s)",
+                    help="Return a list of packages that provide a virtual")
+    parser.add_option_group(group)
+
+    # Deprecated
+    group = OptionGroup(parser, "Deprecated",
+                        "Use eselect java-vm instead. Report usability issues "
+                        "so they can be taken care of.")
+    group.add_option("-S", "--set-system-vm",
+                    action="callback", callback=set_system_vm,
+                    type="string", dest="vm",
+                    help="Set the default Java VM for the system")
+    group.add_option("-s", "--set-user-vm",
+                    action="callback", callback=set_user_vm,
+                    type="string", dest="vm",
+                    help="Set the default Java VM for the user")
+    parser.add_option_group(group)
+
+    # Doomed
+    group = OptionGroup(parser, "TO BE REMOVED",
+                        "Those options will soon be removed.")
+    group.add_option("-A", "--set-system-classpath",
+                    action="callback", callback=set_system_classpath,
+                    type="string", dest="package(s)",
+                    help="Set the system classpath to include the libraries")
+    group.add_option("-B", "--append-system-classpath",
+                    action="callback", callback=append_system_classpath,
+                    type="string", dest="package(s)",
+                    help="Append the libraries to the system classpath")
+    group.add_option("-X", "--clean-system-classpath",
+                    action="callback", callback=clean_system_classpath,
+                    help="Clean the current system classpath")
+    group.add_option("-a", "--set-user-classpath",
+                    action="callback", callback=set_user_classpath,
+                    type="string", dest="package(s)",
+                    help="Set the user classpath to include the libraries")
+    group.add_option("-b", "--append-user-classpath",
+                    action="callback", callback=append_user_classpath,
+                    type="string", dest="package(s)",
+                    help="Append the libraries to the user classpath")
+    group.add_option("-x", "--clean-user-classpath",
+                    action="callback", callback=clean_user_classpath,
+                    help="Clean the current user classpath")
+    parser.add_option_group(group)
 
     if len(sys.argv) < 2: 
         parser.print_help()
