@@ -1,2 +1,2 @@
 #!/bin/sh
-PYTHONPATH="../src" python run-test-suite.py
+PYTHONPATH="../src" python "`dirname $0`"/run-test-suite.py
