@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-# Copyright 2004-2005 Gentoo Foundation
+# Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -22,21 +22,22 @@ class EnvironmentManager(object):
     virtuals_pref = None
     active = None
 
-    # Location of the vm ev files
-    vms_path = '/usr/share/java-config-2/vm'
-    # Location of the package env files to load
-    pkg_path = '/usr/share/%s/package.env'
-    virtual_path = '/usr/share/java-config-2/virtuals/'
 
-    system_config_path="/etc/java-config-2/"
-
-    def __init__(self):
+    def __init__(self, root='', eprefix=''):
         self.all_packages_loaded = False
         self.packages = {}
         self.virtuals = {}
 
-    def __call__(self):
-        return self
+        self.eprefix = eprefix
+        self.eroot = root + eprefix
+
+        # Location of the vm env files
+        self.vms_path = self.eroot + '/usr/share/java-config-2/vm'
+        # Location of the package env files to load
+        self.pkg_path = self.eroot + '/usr/share/%s/package.env'
+        self.virtual_path = self.eroot + '/usr/share/java-config-2/virtuals/'
+
+        self.system_config_path = self.eroot + "/etc/java-config-2/"
 
     def load_vms(self):
         """Load all the vm files, and check for correctness"""
@@ -246,7 +247,7 @@ class EnvironmentManager(object):
         elif os.path.exists(target):
             raise InvalidConfigError(target)
 
-        os.symlink('/usr/lib/jvm/'+vm.name(),target)
+        os.symlink(self.eroot + '/usr/lib/jvm/'+vm.name(),target)
 
     def vm_links(self):
         # Don't try to use user-vm if HOME is undefined
@@ -256,10 +257,10 @@ class EnvironmentManager(object):
             return [ self.user_vm_link(), self.system_vm_link() ]
 
     def user_vm_link(self):
-        return  os.path.join(os.environ.get('HOME'), '.gentoo/java-config-2/current-user-vm')
+        return  os.path.join(os.environ.get('HOME'), '.gentoo' + self.eprefix + '/java-config-2/current-user-vm')
 
     def system_vm_link(self):
-        return '/etc/java-config-2/current-system-vm'
+        return self.eroot + '/etc/java-config-2/current-system-vm'
 
     def system_vm_name(self):
         link = self.system_vm_link()
