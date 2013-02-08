@@ -153,7 +153,7 @@ def target_matches_any( targets, vm ):
     return accept
 
 # Options:
-def get_vm(pkg):
+def get_vm_orig(pkg):
     target, needs_jdk = get_needed_target2(pkg)
     active_vm = manager.get_active_vm()
     if len( needs_jdk ):
@@ -180,6 +180,9 @@ def get_vm(pkg):
     #        return verman.get_vm(needed)
     #else:
     #    return verman.get_vm(pkg.query("VM"))
+
+def get_vm(pkg):
+    return verman.get_vm(pkg.query('VM'))
 
 def get_args(pkg):
     args=""
