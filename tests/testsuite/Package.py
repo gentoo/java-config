@@ -1,17 +1,14 @@
-import unittest
-import os
+import os, unittest
 
+from java_config_2.EnvironmentManager import EnvironmentManager
 from java_config_2.Package import Package
 
 class TestPackage(unittest.TestCase):
-    path = os.path.join(os.path.dirname(__file__), 'packages', '%s/package.env')
-
-    def load_package(self, package):
-        config = TestPackage.path % package
-        return Package(package, config)
 
     def setUp(self):
-        self.ant = self.load_package('ant-cores')
+        em = EnvironmentManager(os.path.join(os.path.dirname(__file__), 'test_env'))
+
+        self.ant = em.get_package('ant-cores')
 
     def test_package_info(self):
         #using a package we definitely

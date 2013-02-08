@@ -1,20 +1,18 @@
-import unittest
-import os
+import os, unittest
+
 from java_config_2.Virtual import Virtual
-from java_config_2.EnvironmentManager import EnvironmentManager as em
+from java_config_2.EnvironmentManager import EnvironmentManager
 from java_config_2.Errors import ProviderUnavailableError
 
-def load_virtual(virtual):
-    config = os.path.join(TestVirtual.path, virtual)
-    return Virtual(virtual, em, config)
-
 class TestVirtual(unittest.TestCase):
-    path = os.path.join(os.path.dirname(__file__), "virtual_configs") + "/"
 
     def setUp(self):
-        self.jaf = load_virtual('jaf')
-        self.jmx = load_virtual('jmx')
-        self.jmx2 = load_virtual('jmx2')
+        em = EnvironmentManager(os.path.join(os.path.dirname(__file__), 'test_env'))
+        em.set_active_vm(em.find_vm('ibm-jdk-bin-1.5'))
+
+        self.jaf = em.get_virtual('jaf')
+        self.jmx = em.get_virtual('jmx')
+        self.jmx2 = em.get_virtual('jmx2')
 
     def test_get_vms(self):
         self.assertEqual(self.jaf.get_vms(), ['sun-jdk-1.6'])
@@ -28,8 +26,10 @@ class TestVirtual(unittest.TestCase):
 class TestMultiProviderVirtual(unittest.TestCase):
 
     def setUp(self):
+        em = EnvironmentManager(os.path.join(os.path.dirname(__file__), 'test_env'))
         em.set_active_vm(em.get_vm('sun-jdk-1.6'))
-        self.jdbc = load_virtual('jdbc')
+
+        self.jdbc = em.get_virtual('jdbc')
     
     def test_classpath_multiple(self):
         self.assertEqual( len(self.jdbc.classpath().split(':')), 2)

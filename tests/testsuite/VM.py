@@ -1,17 +1,19 @@
-import unittest
+import os, unittest
+
+from java_config_2.EnvironmentManager import EnvironmentManager
 from java_config_2.VM import VM
-import os
 
 class TestVM(unittest.TestCase):
-    path = os.path.join(os.path.dirname(__file__), 'vm_configs')
 
     def load_vm(self, vm):
         config = os.path.join(self.path,vm)
         return VM(config)
 
     def setUp(self):
-        self.ibm = self.load_vm('ibm-jdk-bin-1.5')
-        self.black = self.load_vm('blackdown-jdk-1.4.2')
+        em = EnvironmentManager(os.path.join(os.path.dirname(__file__), 'test_env'))
+
+        self.ibm = em.get_vm('ibm-jdk-bin-1.5')
+        self.black = em.get_vm('blackdown-jdk-1.4.2')
 
     def test_empty_provide(self):
         self.assertFalse(self.ibm.provides("foobar"))

@@ -1,13 +1,15 @@
-import unittest
-import os
+import os, unittest
+
 from java_config_2.VersionManager import VersionManager
 from java_config_2.EnvironmentManager import EnvironmentManager
 
 class TestVersionManager(unittest.TestCase):
-    envman = EnvironmentManager()
-    verman = VersionManager(envman)
 
     def setUp(self):
+        self.em = EnvironmentManager(os.path.join(os.path.dirname(__file__), 'test_env'))
+        self.em.set_active_vm(self.em.find_vm('ibm-jdk-bin-1.5'))
+        self.verman = VersionManager(self.em)
+
         self.example_dep_vanilla = ">=virtual/jdk-1.5* dev-java/ant-core java-virtuals/jaf"
         self.example_dep_or = "|| ( =virtual/jdk-1.5 =virtual/jdk-1.4 ) dev-java/ant-core java-virtuals/jaf"
         self.example_dep_use = "java? ( >=virtual/jdk-1.5* ) dev-java/ant-core java-virtuals/jaf"
@@ -36,21 +38,21 @@ class TestVersionManager(unittest.TestCase):
 
     def test_filter_depend_vanilla(self):
         os.environ["USE"] = ""
-        self.assertEqual(self.verman.filter_depend(self.example_dep_vanilla), self.example_dep_vanilla)
+        self.assertEquals(self.verman.filter_depend(self.example_dep_vanilla), self.example_dep_vanilla)
 
     def test_filter_depend_or(self):
         # Oh you only realise how ugly things are once you write unittests.
         os.environ["USE"] = ""
         rmatch = "|| =virtual/jdk-1.5 =virtual/jdk-1.4 dev-java/ant-core java-virtuals/jaf"
-        self.assertEqual(self.verman.filter_depend(self.example_dep_or), rmatch)
+        self.assertEquals(self.verman.filter_depend(self.example_dep_or), rmatch)
     
     def test_filter_depend_use(self):
         os.environ["USE"] = "java"
         rmatch = ">=virtual/jdk-1.5* dev-java/ant-core java-virtuals/jaf"
-        self.assertEqual(self.verman.filter_depend(self.example_dep_use), rmatch)
+        self.assertEquals(self.verman.filter_depend(self.example_dep_use), rmatch)
 
     def test_version_satisfies(self):
-        vm = self.envman.get_vm('sun-jdk-1.6')
+        vm = self.em.get_vm('sun-jdk-1.6')
         self.assertTrue(self.verman.version_satisfies('>=virtual/jdk-1.5', vm))
         self.assertFalse(self.verman.version_satisfies('>=virtual/jdk-1.7', vm))
         self.assertTrue(self.verman.version_satisfies('|| ( =virtual/jdk-1.6 =virtual/jdk-1.5 )', vm))
@@ -76,13 +78,13 @@ class TestVersionManager(unittest.TestCase):
 
     def test_get_lowest(self):
         target = self.verman.get_lowest(">=virtual/jdk-1.4")
-        self.assertEqual(target, '1.4')
+        self.assertEquals(target, '1.4')
         
         target = self.verman.get_lowest(self.example_dep_vanilla)
-        self.assertEqual(target, '1.5')
+        self.assertEquals(target, '1.5')
 
         target = self.verman.get_lowest(self.example_dep_or)
-        self.assertEqual(target, '1.4')
+        self.assertEquals(target, '1.4')
         
     def test_get_lowest_with_package_dep(self):
         pass
@@ -96,7 +98,7 @@ class TestVersionManager(unittest.TestCase):
     #def test_matches(self):
 
     def test_version_cmp(self):
-        self.assertEqual(self.verman.version_cmp('1.5.2', '1.5.2'), 0)
+        self.assertEquals(self.verman.version_cmp('1.5.2', '1.5.2'), 0)
         self.assertTrue(self.verman.version_cmp('1.5', '1.5.1') < 0)
         self.assertTrue(self.verman.version_cmp('1.5.1', '1.5') > 0)
 
