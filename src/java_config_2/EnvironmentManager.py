@@ -488,7 +488,4 @@ class EnvironmentManager(object):
             self.set_active_vm(storeVM)
         return result
     
-# Singleton hack 
-EnvironmentManager = EnvironmentManager()
-
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:

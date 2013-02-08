@@ -65,7 +65,7 @@ class Virtual(Package):
             if not element in self._packages:
                 self._packages.append(element)
 
-        verman = VersionManager()
+        verman = VersionManager(self._manager)
         vmachines = self._manager.get_virtual_machines()
         for vm in vmachines:
             if verman.version_satisfies(" ".join(vms), vmachines[vm]):

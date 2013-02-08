@@ -66,7 +66,7 @@ if __name__ == '__main__':
     global printer, manager, verman
     printer = OutputFormatter(True, True)
     manager = EnvironmentManager()
-    verman = VersionManager()
+    verman = VersionManager(manager)
 
     usage =  "depend-java-query [options]\n\n"
     usage += "Java Dep Query Utility Version " + str(__version__) + "\n"

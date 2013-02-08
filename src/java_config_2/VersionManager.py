@@ -58,13 +58,10 @@ class VersionManager:
     default_pref_file = '/usr/share/java-config-2/config/jdk-defaults.conf'
     _prefs = None
 
-    def __init__(self):
-        pass
+    def __init__(self, env_manager):
+        self.env_manager = env_manager
 
     def get_prefs(self):
-        from java_config_2.EnvironmentManager import EnvironmentManager
-        envman = EnvironmentManager()
-
         if self._prefs:
             return self._prefs
         else:
@@ -73,9 +70,9 @@ class VersionManager:
             if os.path.exists(self.user_pref_file):
                 self._prefs += PrefsFileParser(self.user_pref_file).get_config()
             # then try system vm
-            sys_vm = envman.system_vm_name()
+            sys_vm = self.env_manager.system_vm_name()
             if sys_vm is not None:
-            	self._prefs.append(['*', [sys_vm]])
+                self._prefs.append(['*', [sys_vm]])
             # then try the build defaults
             if os.path.exists(self.default_pref_file):
                 self._prefs += PrefsFileParser(self.default_pref_file).get_config()
@@ -194,8 +191,6 @@ class VersionManager:
 
     def get_target_from_pkg_deps(self, matches):
         """ Get the lowest virtual machine version from a packages dependencies."""
-        from java_config_2.EnvironmentManager import EnvironmentManager
-        manager = EnvironmentManager()
         highest = None
         pkg_name = None
 
@@ -206,12 +201,12 @@ class VersionManager:
             if match['slot'] and match['slot'] != '0':
                 pkg_name += '-' + match['slot']
             try:
-                pkg = manager.get_package(pkg_name)
+                pkg = self.manager.get_package(pkg_name)
                 pkgs.append(pkg)
             except:
                 pass
 
-        deep_pkgs = get_needed_packages(*pkgs)
+        deep_pkgs = self.get_needed_packages(*pkgs)
 
         for pkg in deep_pkgs:
             try:
@@ -228,8 +223,6 @@ class VersionManager:
         return pkg_name, highest
 
     def get_vm(self, atoms, allow_build_only = False):
-        from java_config_2.EnvironmentManager import EnvironmentManager
-
         pkg_name, highest_pkg_target = self.get_target_from_pkg_deps(self.parse_depend_packages(atoms))
 
         matched_atoms = self.parse_depend(atoms)
@@ -250,7 +243,7 @@ class VersionManager:
                         for gvm in self.find_vm(vmProviderString, atom, highest_pkg_target, allow_build_only):
                             if need_virtual: # Package we are finding a vm for needs a virtual
                                 # New, correct way of searching for virtuals
-                                if EnvironmentManager().have_provider(need_virtual, gvm, self): # We have a package available that provides it, will use that
+                                if self.env_manager.have_provider(need_virtual, gvm, self): # We have a package available that provides it, will use that
                                     return gvm
                             else:
                                 return gvm          # use it!
@@ -260,7 +253,7 @@ class VersionManager:
         for atom in matched_atoms:
             for gvm in self.find_vm("", atom, highest_pkg_target, allow_build_only):
                 if need_virtual:         # Package we are finding a vm for needs a virtual
-                    if EnvironmentManager().have_provider(need_virtual, gvm, self):
+                    if self.env_manager.have_provider(need_virtual, gvm, self):
                         return gvm
                 else:
                     return gvm
@@ -281,8 +274,7 @@ class VersionManager:
 
 
     def find_vm(self, vmProviderString, atom, min_package_target, allow_build_only = True):
-        from java_config_2.EnvironmentManager import EnvironmentManager
-        vm_list = EnvironmentManager().find_vm(vmProviderString)
+        vm_list = self.env_manager.find_vm(vmProviderString)
         vm_list.sort()
         vm_list.reverse()
         for vm in vm_list:
@@ -333,44 +325,40 @@ class VersionManager:
         return 0
 
 
-def get_needed_packages(*packages):
-    from java_config_2.EnvironmentManager import EnvironmentManager
-
-    manager = EnvironmentManager()
-
-    unresolved = set()
-    for package in packages:
-        unresolved.add(package)
-
-    resolved = set()
-
-    while len(unresolved) > 0:
-        pkg = unresolved.pop()
-        resolved.add(pkg)
-        # dep is in the form of (jar, pkg)
-        for dep in manager.get_pkg_deps(pkg):
-            dep_pkg = dep[-1]
-            p = manager.get_package(dep_pkg)
-            if p is None:
-                if ',' in dep_pkg:
-                    msg = """
+    def get_needed_packages(self, *packages):
+        unresolved = set()
+        for package in packages:
+            unresolved.add(package)
+    
+        resolved = set()
+    
+        while len(unresolved) > 0:
+            pkg = unresolved.pop()
+            resolved.add(pkg)
+            # dep is in the form of (jar, pkg)
+            for dep in self.env_manager.get_pkg_deps(pkg):
+                dep_pkg = dep[-1]
+                p = self.env_manager.get_package(dep_pkg)
+                if p is None:
+                    if ',' in dep_pkg:
+                        msg = """
 Package %s has a broken DEPEND entry in package.env. Please reinstall it.
 If this does not fix it, please report this to http://bugs.gentoo.org
 """
-                    msg = msg % pkg
-                else:
-                    msg = """
+                        msg = msg % pkg
+                    else:
+                        msg = """
 Package %s not found in the system. This package is listed as a
 dependency of %s. Please run emerge -1Da %s and if it does not bring in the
 needed dependency, report this to http://bugs.gentoo.org.
 """
-                    msg = msg % (dep_pkg,pkg,pkg)
-                abort(msg)
-
-            if p not in resolved:
-                unresolved.add(p)
-
-    return resolved
+                        msg = msg % (dep_pkg,pkg,pkg)
+                    abort(msg)
+    
+                if p not in resolved:
+                    unresolved.add(p)
+    
+        return resolved
 
 #vator=VersionManager()
 #for i in [  

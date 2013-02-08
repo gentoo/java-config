@@ -1,10 +1,11 @@
 import unittest
 import os
 from java_config_2.VersionManager import VersionManager
-from java_config_2.EnvironmentManager import EnvironmentManager as em
+from java_config_2.EnvironmentManager import EnvironmentManager
 
 class TestVersionManager(unittest.TestCase):
-    verman = VersionManager()
+    envman = EnvironmentManager()
+    verman = VersionManager(envman)
 
     def setUp(self):
         self.example_dep_vanilla = ">=virtual/jdk-1.5* dev-java/ant-core java-virtuals/jaf"
@@ -49,7 +50,7 @@ class TestVersionManager(unittest.TestCase):
         self.assertEqual(self.verman.filter_depend(self.example_dep_use), rmatch)
 
     def test_version_satisfies(self):
-        vm = em.get_vm('sun-jdk-1.6')
+        vm = self.envman.get_vm('sun-jdk-1.6')
         self.assertTrue(self.verman.version_satisfies('>=virtual/jdk-1.5', vm))
         self.assertFalse(self.verman.version_satisfies('>=virtual/jdk-1.7', vm))
         self.assertTrue(self.verman.version_satisfies('|| ( =virtual/jdk-1.6 =virtual/jdk-1.5 )', vm))
