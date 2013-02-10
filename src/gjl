@@ -48,7 +48,7 @@ def get_args(pkg):
     envlp = os.getenv('LD_LIBRARY_PATH')
     envjlp = os.getenv('JAVA_LIBRARY_PATH')
 
-    newlibrary = '/lib:/usr/lib'
+    newlibrary = manager.eprefix + '/lib:'+ manager.eprefix + '/usr/lib'
     if library:
         newlibrary = ':'.join((library, newlibrary))
     if envjlp:
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     global printer, manager, verman
     printer = OutputFormatter(True, True)
-    manager = EnvironmentManager()
+    manager = EnvironmentManager(os.getenv('ROOT', ''), os.getenv('EPREFIX', '@GENTOO_PORTAGE_EPREFIX@'))
     verman = VersionManager(manager)
 
     if not options.package:

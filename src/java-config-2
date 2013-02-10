@@ -217,13 +217,13 @@ def set_user_vm(option, opt, value, parser):
 # Deprecated
 def system_classpath_target():
     # TODO: MAKE THIS MODULAR!! (compnerd)
-    return [{'file': '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
+    return [{'file': manager.eprefix + '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
 
 def user_classpath_target():
     # TODO: MAKE THIS MODULAR!! (compnerd)
     return [
-            {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath'),     'format': 'export %s=%s\n' },
-            {'file': os.path.join(os.environ.get("HOME"), '.gentoo/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
+            {'file': os.path.join(os.environ.get("HOME"), '.gentoo' + manager.eprefix + '/java-env-classpath'),     'format': 'export %s=%s\n' },
+            {'file': os.path.join(os.environ.get("HOME"), '.gentoo' + manager.eprefix + '/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
         ]
 # Deprecated
 def set_system_classpath(option, opt, value, parser):
@@ -300,12 +300,12 @@ def select_vm(option, opt, value, parser):
         fatalError("The vm could not be found")
 
 def update_env():
-    printer._print(getoutput("/usr/sbin/env-update"))
+    printer._print(getoutput(manager.eprefix + "/usr/sbin/env-update"))
     printer._printAlert("If you want the changes too take effect in your current session, you should update\n\
-            your environment by running: source /etc/profile")
+            your environment by running: source " + manager.eprefix + "/etc/profile")
 
 def user_update_env():
-    printer._printAlert("Environment files in ~/.gentoo/ have been updated. You should source these from your shell's profile.\n\
+    printer._printAlert("Environment files in ~/.gentoo" + manager.eprefix + "/ have been updated. You should source these from your shell's profile.\n\
             If you want the changes too take effect in your current sessiosn, you should resource these files")
 
 def deprecation_notice():
@@ -318,7 +318,7 @@ def fatalError(msg):
 if __name__ == '__main__':
     global printer, manager
     printer = OutputFormatter(True, True)
-    manager = EnvironmentManager()
+    manager = EnvironmentManager(os.getenv('ROOT', ''), os.getenv('EPREFIX', '@GENTOO_PORTAGE_EPREFIX@'))
 
     usage =  "java-config [options]\n\n"
     usage += "Java Configuration Utility Version " + str(__version__) + "\n"
