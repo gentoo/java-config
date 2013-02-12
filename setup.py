@@ -4,11 +4,13 @@
 package_version = '2.2.0'
 #######################################
 
+from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.install import install
-import fileinput, os, sys
+import fileinput, os, sys, unittest
 
-class my_build(build):
+
+class jc_build(build):
 
 	def run(self):
 		build.run(self)
@@ -22,7 +24,31 @@ class my_build(build):
 					sys.stdout.write(line.replace('@GENTOO_PORTAGE_EPREFIX@', eprefix))
 
 
-class my_install(install):
+class jc_test(Command):
+
+	user_options = []
+
+	def initialize_options(self):
+		self.build_base = None
+		self.build_lib = None
+
+	def finalize_options(self):
+		self.set_undefined_options('build', ('build_lib', 'build_lib'))
+
+	def run(self):
+		self.run_command('build')
+
+		sys.path.insert(0, 'tests')
+		sys.path.insert(0, self.build_lib)
+
+		import testsuite
+		suite = unittest.defaultTestLoader.loadTestsFromNames(testsuite.__all__, testsuite)
+
+		result = unittest.TextTestRunner().run(suite)
+		sys.exit(not result.wasSuccessful())
+
+
+class jc_install(install):
 	"""
 	Generate and install the jdk defaults configuration file.
 
@@ -70,7 +96,7 @@ class my_install(install):
 from distutils.core import setup
 
 setup (
-	cmdclass={'build' : my_build, 'install' : my_install},
+	cmdclass={'build' : jc_build, 'test' : jc_test, 'install' : jc_install},
 	name = 'java-config',
 	version = package_version,
 	description = 'java enviroment configuration tool',
