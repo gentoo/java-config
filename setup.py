@@ -88,6 +88,7 @@ setup (
 	scripts = ['src/java-config-2','src/depend-java-query','src/gjl'],
 	data_files = [
 		('share/java-config-2/launcher', ['src/launcher.bash']),
+		('share/man/man1/', ['man/java-config-2.1']),
 		('/etc/java-config-2/', ['config/virtuals']),
 		('/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
 	]
