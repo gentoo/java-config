@@ -15,7 +15,6 @@ class jc_build(build):
 	def run(self):
 		build.run(self)
 
-		eprefix = os.getenv('EPREFIX', '')
 		for base, dirs, files in os.walk(self.build_base):
 			for f in files:
 				for line in fileinput.input(os.path.join(base, f),inplace=True):
@@ -95,6 +94,8 @@ class jc_install(install):
 
 from distutils.core import setup
 
+eprefix = os.getenv('EPREFIX', '')
+
 setup (
 	cmdclass={'build' : jc_build, 'test' : jc_test, 'install' : jc_install},
 	name = 'java-config',
@@ -115,8 +116,8 @@ setup (
 	data_files = [
 		('share/java-config-2/launcher', ['src/launcher.bash']),
 		('share/man/man1/', ['man/java-config-2.1']),
-		('/etc/java-config-2/', ['config/virtuals']),
-		('/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
+		(eprefix + '/etc/java-config-2/', ['config/virtuals']),
+		(eprefix + '/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
 	]
 )
 
