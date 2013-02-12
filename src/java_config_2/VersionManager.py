@@ -54,12 +54,12 @@ class VersionManager:
     atom_parser = re.compile(r"([<>=]*)virtual/(jre|jdk)[-:]([0-9\.*]+)")
     virtuals_parser = re.compile(r"([<>=~]+)?java-virtuals/([\w\-\.:]+)")
     package_parser = re.compile(r"([\w\-]+)/([\w\-]+)(?:\:(\d+))?")
-    user_pref_file = '/etc/java-config-2/build/jdk.conf'
-    default_pref_file = '/usr/share/java-config-2/config/jdk-defaults.conf'
-    _prefs = None
 
     def __init__(self, env_manager):
         self.env_manager = env_manager
+        self.user_pref_file = env_manager.eprefix + '/etc/java-config-2/build/jdk.conf'
+        self.default_pref_file = env_manager.eprefix + '/usr/share/java-config-2/config/jdk-defaults.conf'
+        self._prefs = None
 
     def get_prefs(self):
         if self._prefs:
