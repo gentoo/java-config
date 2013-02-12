@@ -5,7 +5,6 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-from java_config_2 import __version__
 from java_config_2.OutputFormatter import OutputFormatter
 from java_config_2.EnvironmentManager import EnvironmentManager
 from java_config_2.Errors import *
@@ -17,7 +16,7 @@ import sys
 from optparse import OptionParser, make_option, OptionValueError
 
 def version(option, opt, value, parser):
-     printer._print("%H%BJava Dep Query Utility %GVersion " + str(__version__))
+     printer._print("%H%BJava Dep Query Utility %GVersion @PACKAGE_VERSION@")
      raise SystemExit()
 
 def nocolor(option, opt, value, parser):
@@ -69,7 +68,7 @@ if __name__ == '__main__':
     verman = VersionManager(manager)
 
     usage =  "depend-java-query [options]\n\n"
-    usage += "Java Dep Query Utility Version " + str(__version__) + "\n"
+    usage += "Java Dep Query Utility Version @PACKAGE_VERSION@\n"
     usage += "Copyright 2004-2006 Gentoo Foundation\n"
     usage += "Distributed under the terms of the GNU General Public License v2\n"
     usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."

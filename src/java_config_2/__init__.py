@@ -1,5 +1,1 @@
-'''
-java-config support files
-'''
-
-__version__ = '2.1.12'
+__version__ = '@PACKAGE_VERSION@'

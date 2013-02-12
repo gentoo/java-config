@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+#######################################
+package_version = '2.2.0'
+#######################################
+
 from distutils.command.build import build
 import fileinput, os, sys
 
@@ -12,6 +16,8 @@ class my_build(build):
 		for base, dirs, files in os.walk(self.build_base):
 			for f in files:
 				for line in fileinput.input(os.path.join(base, f),inplace=True):
+					sys.stdout.write(line.replace('@PACKAGE_VERSION@', package_version))
+				for line in fileinput.input(os.path.join(base, f),inplace=True):
 					sys.stdout.write(line.replace('@GENTOO_PORTAGE_EPREFIX@', eprefix))
 
 
@@ -20,7 +26,7 @@ from distutils.core import setup
 setup (
 	cmdclass={'build' : my_build},
 	name = 'java-config',
-	version = '2.1.12',
+	version = package_version,
 	description = 'java enviroment configuration tool',
 	long_description = \
 	"""
