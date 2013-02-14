@@ -1,8 +1,26 @@
 For full ChangeLog generated from svn commit logs see ChangeLog.
 
- * eselect modules are split-out into separate package eselect-java.
- * desktop files, icons, env.d and profile.d files as well as revdep-rebuild
-   control file and finally run-java-tool are now part of baselayout-java.
+  BGO:  https://bugs.gentoo.org
+
+2.2.0:
+
+  * BGO 455798: Use recorded VM dependency for launcher
+  * BGO 402315: Don't lock on active VM in presence of virtuals.
+  * ROOT support
+  * Gentoo Prefix support
+  * Install man page
+  * eselect modules and run-java-tool are split-out into separate package
+    eselect-java.
+  * desktop files, icons, env.d and profile.d files as well as revdep-rebuild
+    control file now part of baselayout-java.
+  * Generate jdk-defaults.conf at install time having a reasonable fallback for
+    unknown architectures.
+  * Face lifting for 'java-config --help'
+  * Add test command to setup.py
+
+
+1.1.12:
+  * ?
 
 Changes in 2.1.6:
  * Fixes for virtuals that have vms as providers. Needed for for example jaf.
