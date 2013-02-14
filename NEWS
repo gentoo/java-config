@@ -16,7 +16,7 @@ For full ChangeLog generated from svn commit logs see ChangeLog.
   * Generate jdk-defaults.conf at install time having a reasonable fallback for
     unknown architectures.
   * Face lifting for 'java-config --help'
-  * Add test command to setup.py
+  * Fix sdist and add test command to setup.py
 
 
 1.1.12:

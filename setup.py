@@ -7,7 +7,8 @@ package_version = '2.2.0'
 from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.install import install
-import fileinput, os, sys, unittest
+from distutils.command.sdist import sdist
+import fileinput, os, subprocess, sys, unittest
 
 
 class jc_build(build):
@@ -92,12 +93,30 @@ class jc_install(install):
 			f.write(defaults + "\n")
 
 
+class jc_sdist(sdist):
+	"""
+	Set some defaults and generate ChangeLog from svn log
+	"""
+
+	def initialize_options(self):
+		sdist.initialize_options(self)
+		self.formats = ['bztar']
+		self.force_manfifest = 1
+
+	def run(self):
+		subprocess.call(['svn', 'up'])
+		os.mkdir(self.distribution.get_fullname())
+		subprocess.call(['svn2cl', '--authors', 'AUTHORS', '--output', self.distribution.get_fullname() + '/ChangeLog'])
+
+		sdist.run(self)
+
+
 from distutils.core import setup
 
 eprefix = os.getenv('EPREFIX', '')
 
 setup (
-	cmdclass={'build' : jc_build, 'test' : jc_test, 'install' : jc_install},
+	cmdclass={'build' : jc_build, 'test' : jc_test, 'install' : jc_install, 'sdist' : jc_sdist},
 	name = 'java-config',
 	version = package_version,
 	description = 'java enviroment configuration tool',
