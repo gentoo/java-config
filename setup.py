@@ -87,7 +87,7 @@ class jc_install(install):
 		elif arch in ['hpux']:
 			defaults = '*= hp-jdk-bin'
 
-		os.mkdir(self.root + '/usr/share/java-config-2/config/')
+		os.mkdirs(self.root + '/usr/share/java-config-2/config/')
 		with open(self.root + '/usr/share/java-config-2/config/jdk-defaults.conf', 'w') as f:
 			f.write("# This files contain the default support jdk's\n")
 			f.write(defaults + "\n")
@@ -133,8 +133,8 @@ setup (
 	package_dir = { 'java_config_2' : 'src/java_config_2' },
 	scripts = ['src/java-config-2','src/depend-java-query','src/gjl'],
 	data_files = [
-		('share/java-config-2/launcher', ['src/launcher.bash']),
-		('share/man/man1/', ['man/java-config-2.1']),
+		(eprifix + '/usr/share/share/java-config-2/launcher', ['src/launcher.bash']),
+		(eprefix + '/usr/share/man/man1/', ['man/java-config-2.1']),
 		(eprefix + '/etc/java-config-2/', ['config/virtuals']),
 		(eprefix + '/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
 	]
