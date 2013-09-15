@@ -8,7 +8,7 @@ from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.install import install
 from distutils.command.sdist import sdist
-import fileinput, os, subprocess, sys, unittest
+import fileinput, os, subprocess, sys, tempfile, unittest
 
 
 class jc_build(build):
@@ -87,10 +87,13 @@ class jc_install(install):
 		elif arch in ['hpux']:
 			defaults = '*= hp-jdk-bin'
 
-		os.mkdirs(self.root + '/usr/share/java-config-2/config/')
-		with open(self.root + '/usr/share/java-config-2/config/jdk-defaults.conf', 'w') as f:
+		with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
 			f.write("# This files contain the default support jdk's\n")
 			f.write(defaults + "\n")
+		confdir = self.root + '/usr/share/java-config-2/config/'
+		self.mkpath(confdir)
+		self.copy_file(f.name, confdir + 'jdk-defaults.conf', preserve_mode=0)
+		os.remove(f.name)
 
 
 class jc_sdist(sdist):
