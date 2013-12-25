@@ -213,81 +213,6 @@ def set_user_vm(option, opt, value, parser):
             except InvalidConfigError as e:
                 fatalError("Target file already exists and is not a symlink: %s" % e.file)
 
-# Deprecated
-def system_classpath_target():
-    # TODO: MAKE THIS MODULAR!! (compnerd)
-    return [{'file': manager.eprefix + '/etc/env.d/21java-classpath', 'format': '%s=%s\n' }]
-
-def user_classpath_target():
-    # TODO: MAKE THIS MODULAR!! (compnerd)
-    return [
-            {'file': os.path.join(os.environ.get("HOME"), '.gentoo' + manager.eprefix + '/java-env-classpath'),     'format': 'export %s=%s\n' },
-            {'file': os.path.join(os.environ.get("HOME"), '.gentoo' + manager.eprefix + '/java-env-classpath.csh'), 'format': 'setenv %s %s\n' }
-        ]
-# Deprecated
-def set_system_classpath(option, opt, value, parser):
-    deprecation_notice()
-    if os.getuid() is 0:
-        pkgs = value.split(',')
-        manager.set_classpath(system_classpath_target(), pkgs)
-        
-        for package in pkgs:
-            printer._printError("Package %s was not found!" % package)
-            
-        update_env()
-    else:
-       fatalError("You do not have enough permissions to set the system classpath!")
-
-# Deprecated
-def set_user_classpath(option, opt, value, parser):
-    deprecation_notice()
-    pkgs = value.split(',')
-    manager.set_classpath(user_classpath_target(), pkgs)
-
-    for package in pkgs:
-        printer._printError("Package %s was not found!" % package)
-
-    user_update_env()
-
-# Deprecated
-def append_system_classpath(option, opt, value, parser):
-    deprecation_notice()
-    if os.getuid() is 0:
-        pkgs = value.split(',')
-        manager.append_classpath(system_classpath_target(), pkgs)
-
-        for package in pkgs:
-            printer._printError("Package %s was not found!" % package)
-
-        update_env()
-    else:
-        fatalError("You do not have enough permissioins to append to the system classpath!")
-
-# Deprecated
-def append_user_classpath(option, opt, value, parser):
-    deprecation_notice()
-    pkgs = value.split(',')
-    manager.append_classpath(user_classpath_target(),  pkgs)
-
-    for package in pkgs:
-        printer._printError("Package %s was not found!" % package)
-
-    user_update_env()
-
-# Deprecated
-def clean_system_classpath(option, opt, value, parser):
-    deprecation_notice()
-    if os.getuid() is 0:
-        manager.clean_classpath(system_classpath_target())
-        update_env()
-    else:
-        fatalError("You do not have enough permissions to clean the system classpath!")
-
-# Deprecated
-def clean_user_classpath(option, opt, value, parser):
-    deprecation_notice()
-    manager.clean_classpath(user_classpath_target())
-
 def select_vm(option, opt, value, parser):
     if value == '':
         return
@@ -297,15 +222,6 @@ def select_vm(option, opt, value, parser):
         manager.set_active_vm(manager.get_vm(value))
     else:
         fatalError("The vm could not be found")
-
-def update_env():
-    printer._print(getoutput(manager.eprefix + "/usr/sbin/env-update"))
-    printer._printAlert("If you want the changes too take effect in your current session, you should update\n\
-            your environment by running: source " + manager.eprefix + "/etc/profile")
-
-def user_update_env():
-    printer._printAlert("Environment files in ~/.gentoo" + manager.eprefix + "/ have been updated. You should source these from your shell's profile.\n\
-            If you want the changes too take effect in your current sessiosn, you should resource these files")
 
 def deprecation_notice():
     printer._printWarning("Setting a user and system classpath is deprecated, this option will be removed from future versions.")
@@ -426,33 +342,6 @@ if __name__ == '__main__':
                     action="callback", callback=set_user_vm,
                     type="string", dest="vm",
                     help="Set the default Java VM for the user")
-    parser.add_option_group(group)
-
-    # Doomed
-    group = OptionGroup(parser, "TO BE REMOVED",
-                        "Those options will soon be removed.")
-    group.add_option("-A", "--set-system-classpath",
-                    action="callback", callback=set_system_classpath,
-                    type="string", dest="package(s)",
-                    help="Set the system classpath to include the libraries")
-    group.add_option("-B", "--append-system-classpath",
-                    action="callback", callback=append_system_classpath,
-                    type="string", dest="package(s)",
-                    help="Append the libraries to the system classpath")
-    group.add_option("-X", "--clean-system-classpath",
-                    action="callback", callback=clean_system_classpath,
-                    help="Clean the current system classpath")
-    group.add_option("-a", "--set-user-classpath",
-                    action="callback", callback=set_user_classpath,
-                    type="string", dest="package(s)",
-                    help="Set the user classpath to include the libraries")
-    group.add_option("-b", "--append-user-classpath",
-                    action="callback", callback=append_user_classpath,
-                    type="string", dest="package(s)",
-                    help="Append the libraries to the user classpath")
-    group.add_option("-x", "--clean-user-classpath",
-                    action="callback", callback=clean_user_classpath,
-                    help="Clean the current user classpath")
     parser.add_option_group(group)
 
     if len(sys.argv) < 2: 
