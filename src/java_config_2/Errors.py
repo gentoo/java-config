@@ -44,11 +44,6 @@ class ProviderUnavailableError(Exception):
         return """No provider is available for """ + self._virtual + """
         Please check your environment."""
 
-class MissingOptionalsError(Exception):
-    """
-    Some optional utilities are missing from a valid VM
-    """
-
 class PermissionError(Exception):
     """
     The permission on the file are wrong or you are not a privileged user
