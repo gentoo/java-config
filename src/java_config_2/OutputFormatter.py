@@ -29,12 +29,7 @@ class OutputFormatter:
 
     def __init__(self, displayColor=True, displayTitle=True, autoIndent=True):
         self.colorOutput = displayColor
-        self.consoleTitle = displayTitle
         self.autoIndent = autoIndent
-
-        if displayTitle and "TERM" in os.environ:
-            if os.environ["TERM"] not in [ "xterm", "Eterm", "aterm", "rxvt" ]:
-                self.consoleTitle = False
 
     def __call__(self, displayColor=True, displayTitle=True, autoIndent=True):
         return self
@@ -42,27 +37,6 @@ class OutputFormatter:
     def setColorOutputStatus(self, status):
         self.colorOutput = status
 
-    def setDisplayTitleStatus(self, status):
-        if status and "TERM" in os.environ:
-            if os.environ["TERM"] in [ "xterm", "Eterm", "aterm", "rxvt" ]:
-                self.consoleTitle = True
-            else:
-                self.consoleTitle = False
-        else:
-            self.consoleTitle = False
-
-    def isColorOutputEnabled(self):
-        return self.colorOutput
-
-    def isTitleDisplayEnabled(self):
-        return self.consoleTitle
-
-
-    def __setTitle(self, title):
-        if self.consoleTitle:
-            sys.stderr.write("\x1b]1;\x07\x1b]2;" + str(title) + "\x07")
-            sys.stderr.flush()
-  
     def __indent(self, prefix, message):
         if self.autoIndent is True:
             num = len(prefix)
@@ -115,9 +89,6 @@ class OutputFormatter:
     def _printAlert(self, message):
         message = "%H%C" + self.__indent("!!! ALERT: ", message) +  "%$"
         sys.stderr.write(self.__parseColor(message) + '\n')
-
-    def setTitle(self, message):
-        self.__setTitle(self.__parseColor(message))
 
 
 OutputFormatter = OutputFormatter()
