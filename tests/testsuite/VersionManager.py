@@ -46,9 +46,19 @@ class TestVersionManager(unittest.TestCase):
         rmatch = "|| =virtual/jdk-1.5 =virtual/jdk-1.4 dev-java/ant-core java-virtuals/jaf"
         self.assertEquals(self.verman.filter_depend(self.example_dep_or), rmatch)
     
-    def test_filter_depend_use(self):
+    def test_filter_depend_use_enabled(self):
         os.environ["USE"] = "java"
         rmatch = ">=virtual/jdk-1.5* dev-java/ant-core java-virtuals/jaf"
+        self.assertEquals(self.verman.filter_depend(self.example_dep_use), rmatch)
+
+    def test_filter_depend_use_disabled(self):
+        os.environ["USE"] = ""
+        rmatch = "dev-java/ant-core java-virtuals/jaf"
+        self.assertEquals(self.verman.filter_depend(self.example_dep_use), rmatch)
+
+    def test_filter_depend_use_unset(self):
+        del os.environ["USE"]
+        rmatch = self.example_dep_use
         self.assertEquals(self.verman.filter_depend(self.example_dep_use), rmatch)
 
     def test_version_satisfies(self):

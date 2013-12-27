@@ -4,9 +4,6 @@
 # Copyright 2005-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public license v2
 
-import sys
-sys.path.append("/usr/lib/portage/pym")
-
 from . import VM, Errors 
 from java_config_2.FileParser import *
 import os, glob, re
@@ -110,23 +107,35 @@ class VersionManager:
     def filter_depend( self, atoms ):
         """Filter the dependency string for useful information"""
 
-        import os
+        def dep_string_reduce(dep_string,enabled_useflags):
+            dest = []
+            tokens = iter(dep_string.split())
+            useflags = enabled_useflags.split()
+
+            for token in tokens:
+                if token[-1] == "?":
+                    if token[:-1] not in useflags:
+                        level = 0
+                        while 1:
+                            token = next(tokens)
+                            if token == "(":
+                                level+=1
+                            if token == ")":
+                                level-=1
+                                if level < 1:
+                                    break
+                    continue
+                elif token == "(" or token == ")":
+                    continue
+                else:
+                    dest.append(token)
+
+            return " ".join(dest)
+
         # gjl does not use use flags
         try:
             use = os.environ["USE"]
-
-            # Local import to avoid initializing portage elsewhere
-            try:
-                from portage.dep import use_reduce,paren_reduce
-            except ImportError:
-                from portage_dep import use_reduce,paren_reduce
-            from portage import flatten
-
-            # Normalize white space for Portage
-            atoms = " ".join(atoms.split())
-
-            # Remove conditional depends that are not turned on
-            atoms = " ".join(flatten(use_reduce(paren_reduce(atoms),uselist=use)))
+            atoms = dep_string_reduce(atoms, use)
         except KeyError:
             pass
         return atoms
