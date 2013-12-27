@@ -1,13 +1,11 @@
 # -*- coding: UTF-8 -*-
+# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
 
 # Copyright 2005-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public license v2
-# $Header: $
 
 import sys
 sys.path.append("/usr/lib/portage/pym")
-
-import re
 
 from . import VM, Errors 
 from java_config_2.FileParser import *
@@ -359,23 +357,3 @@ needed dependency, report this to http://bugs.gentoo.org.
                     unresolved.add(p)
     
         return resolved
-
-#vator=VersionManager()
-#for i in [  
-#            ">=virtual/jdk-1.3",
-#            ">=virtual/jdk-1.4",
-#            ">=virtual/jdk-1.5",
-#            "|| ( =virtual/jdk-1.4* =virtual/jdk-1.3* )",
-#            "|| ( =virtual/jdk-1.3* =virtual/jdk-1.4* )",
-#            "=virtual/jdk-1.5*",
-#            "=virtual/jdk-1.4*",
-#            "=virtual/jdk-1.3*",
-#        ]:
-#    print i
-#    try:
-#    print vator.get_vm(i)
-#    except Exception, ex:
-#        print ex
-#    print
-
-# vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
