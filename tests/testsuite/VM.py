@@ -15,9 +15,6 @@ class TestVM(unittest.TestCase):
         self.ibm = em.get_vm('ibm-jdk-bin-1.5')
         self.black = em.get_vm('blackdown-jdk-1.4.2')
 
-    def test_empty_provide(self):
-        self.assertFalse(self.ibm.provides("foobar"))
-    
     def test_name(self):
         self.assertEqual(self.ibm.name(), 'ibm-jdk-bin-1.5')
 

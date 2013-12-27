@@ -197,12 +197,6 @@ class Virtual(Package):
         except:
             return []
 
-    def get_provides(self):
-        """
-        Return the virtuals this package provides
-        """
-        return self.get_provider().get_provides()
-
     def get_provider(self):
         """
         Return whether a package is to be used by the Virtual.

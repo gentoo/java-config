@@ -66,15 +66,6 @@ class Package:
         """
         return self.__get_deps("OPTIONAL_DEPEND")
 
-    def get_provides(self):
-        """
-        Return the virtuals this package provides
-        """
-        pv = self.query('PROVIDES')
-        if pv:
-            return pv.split(" ")
-        return []
-    
     def __get_deps(self, query):
         """
         Internal function to get package's (optional) dependencies;

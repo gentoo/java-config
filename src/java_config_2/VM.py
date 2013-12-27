@@ -100,25 +100,4 @@ class VM:
                 raise PermissionError
         return None
 
-    def get_provides(self):
-        if 'PROVIDES' in self.config:
-            return self.config['PROVIDES'].split(' ')
-        return []
-
-    def provides(self, virtuals):
-        if 'PROVIDES' in self.config:
-            vp = self.config['PROVIDES'].split(' ')
-        else:
-            return False
-
-        found = 0
-        
-        for virtual in virtuals:
-            if virtual in vp:
-                found += 1
-            else:
-                return False
-
-        return found == len(virtuals)
-
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
