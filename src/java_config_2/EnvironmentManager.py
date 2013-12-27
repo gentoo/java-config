@@ -269,14 +269,6 @@ class EnvironmentManager(object):
         else:
             return None
 
-    def clean_classpath(self, targets):
-        for target in targets:
-            if os.path.isfile(target['file']):
-                try:
-                    os.remove(target['file'])
-                except IOError:
-                    raise PermissionError
-
     def add_path_elements(self, elements, path):
         if elements:
             for p in elements.split(':'):
@@ -289,9 +281,6 @@ class EnvironmentManager(object):
             self.add_path_elements(lpath, path)
 
         return path
-
-    def build_classpath(self, pkgs):
-        return self.build_path(pkgs, "CLASSPATH")
 
     def get_pkg_deps(self, pkg):
         """
@@ -412,62 +401,6 @@ class EnvironmentManager(object):
                 else:
                     missing_deps.add(dep[-1])
         return env
-
-    def set_classpath(self, targets, pkgs):
-        classpath = self.build_classpath(pkgs)
-
-        if classpath:
-            self.clean_classpath(targets)
-
-            self.write_classpath(targets, classpath)
-
-    def get_old_classpath(self, target):
-        """Returns the current set classpath in the file"""
-        oldClasspath = ''
-        if os.path.isfile(target['file']):
-            try:
-                stream = open(target['file'], 'r')
-            except IOError:
-                raise PermissionError
-
-            for line in stream:
-                line = line.strip(' \n')
-                if line.find('CLASSPATH') != -1:
-                    try:
-                        oldClasspath = line.split(target['format'].split('%s')[-2])[-1].strip()
-                    except:
-                        pass
-            stream.close()
-
-        return oldClasspath
-
-    def append_classpath(self, targets, pkgs):
-        classpath = self.build_classpath(pkgs)
-
-        if classpath:
-            oldClasspath = None
-            for target in targets:
-                for cp in self.get_old_classpath(target).split(':'):
-                    if cp not in classpath:
-                        classpath.append(cp)
-
-            self.clean_classpath(targets)
-
-            self.write_classpath(targets, classpath)
-
-    def write_classpath(self, targets, classpath):
-        for target in targets:
-            dir = dirname(target['file'])
-            if not os.path.isdir(dir):
-                os.makedirs(dir)
-
-            try:
-                stream = open(target['file'], 'w')
-            except IOError:
-                raise PermissionError
-
-            stream.write(target['format'] % ("CLASSPATH", ':'.join(classpath)))
-            stream.close()
 
     def have_provider(self, virtuals, virtualMachine, versionManager):
         result=True
