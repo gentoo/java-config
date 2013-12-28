@@ -17,16 +17,14 @@ import os, re, sys
 
 class EnvironmentManager(object):
     """This is the central class, which manages all information from the 'environment'"""
-    virtual_machines = None
-    virtuals = None
-    virtuals_pref = None
-    active = None
-
 
     def __init__(self, root='', eprefix=''):
         self.all_packages_loaded = False
         self.packages = {}
         self.virtuals = {}
+        self.virtuals_pref = None
+        self.virtual_machines = None
+        self.active = None
 
         self.eprefix = eprefix
         self.eroot = root + eprefix
