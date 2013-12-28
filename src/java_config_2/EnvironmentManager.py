@@ -24,7 +24,7 @@ class EnvironmentManager(object):
         self.virtuals = {}
         self.virtuals_pref = None
         self.virtual_machines = None
-        self.active = None
+        self.active_vm = None
 
         self.eprefix = eprefix
         self.eroot = root + eprefix
@@ -107,7 +107,7 @@ class EnvironmentManager(object):
         if vm_name:
             vm = self.get_vm(vm_name)
             if vm:
-                self.active = vm
+                self.active_vm = vm
                 return vm
 
         for link in self.vm_links():
@@ -115,17 +115,17 @@ class EnvironmentManager(object):
                 vm_name = basename(os.readlink(link))
                 vm = self.get_vm(vm_name)
                 if vm:
-                    self.active = vm
+                    self.active_vm = vm
                     return vm
         raise InvalidVMError("Unable to determine valid vm. Please see http://www.gentoo.org/doc/en/java.xml#doc_chap4")
 
     def set_active_vm(self, vm):
-        self.active = vm
+        self.active_vm = vm
  
     def get_active_vm(self):
-        if self.active is None:
+        if self.active_vm is None:
             self.load_active_vm()
-        return self.active
+        return self.active_vm
 
     def get_virtual_machines(self):
         if self.virtual_machines is None:
