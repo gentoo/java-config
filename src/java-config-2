@@ -175,6 +175,8 @@ def print_environment(option, opt, value, parser):
         fatalError("Could not find a vm matching: %s" % value)
 
 def set_system_vm(option, opt, value, parser):
+    deprecation_notice()
+
     vm = manager.get_vm(value)
 
     if not vm:
@@ -194,6 +196,8 @@ def set_system_vm(option, opt, value, parser):
             fatalError("Target file already exists and is not a symlink: %s" % e.file)
 
 def set_user_vm(option, opt, value, parser):
+    deprecation_notice()
+
     vm = manager.get_vm(value)
 
     if not vm:
@@ -224,7 +228,7 @@ def select_vm(option, opt, value, parser):
         fatalError("The vm could not be found")
 
 def deprecation_notice():
-    printer._printWarning("Setting a user and system classpath is deprecated, this option will be removed from future versions.")
+    printer._printWarning("Setting user and system vm using java-config is deprecated, use eselect java-vm instead.")
 
 def fatalError(msg):
     printer._printError(msg)
