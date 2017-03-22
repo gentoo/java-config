@@ -4,11 +4,19 @@
 package_version = '2.2.0'
 #######################################
 
+
 from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.install import install
 from distutils.command.sdist import sdist
-import fileinput, os, subprocess, sys, tempfile, unittest
+
+
+import fileinput
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
 
 
 class jc_build(build):
