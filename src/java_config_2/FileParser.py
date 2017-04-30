@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
-
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
+
 
 from java_config_2.Errors import InvalidConfigError, PermissionError
 import os
@@ -19,33 +18,32 @@ class FileParser:
         if not os.access(file, os.R_OK):
             raise PermissionError
 
-        stream = open(file, 'r')
-        for line in stream:
-            line = line.strip('\n')
-            if line.isspace() or line == '' or line.startswith('#'):
-                continue
-            else:
-                index = line.find('=')
-                name = line[:index]
-                value = line [index+1:]
-
-                if value == '':
+        with open(file, 'r') as stream:
+            for line in stream:
+                line = line.strip('\n')
+                if line.isspace() or line == '' or line.startswith('#'):
                     continue
-                    #raise InvalidConfigError(file)
+                else:
+                    index = line.find('=')
+                    name = line[:index]
+                    value = line [index+1:]
 
-                value = value.strip('\\\'\"')
+                    if value == '':
+                        continue
+                        #raise InvalidConfigError(file)
 
-                while value.find('${') >= 0:
-                    item = value[value.find('${')+2:value.find('}')]
+                    value = value.strip('\\\'\"')
 
-                    if item in self.config:
-                        val = self.config[item]
-                    else:
-                        val = ''
-                        
-                    value = value.replace('${%s}' % item, val)
-                
-                self.pair(name,value)
+                    while value.find('${') >= 0:
+                        item = value[value.find('${')+2:value.find('}')]
+
+                        if item in self.config:
+                            val = self.config[item]
+                        else:
+                            val = ''
+                        value = value.replace('${%s}' % item, val)
+
+                    self.pair(name,value)
 
         stream.close()
 
