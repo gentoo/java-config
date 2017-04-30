@@ -4,12 +4,14 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+
 from java_config_2.FileParser import *
 from java_config_2.Errors import EnvironmentUndefinedError, ProviderUnavailableError
 from java_config_2.Package import *
 from java_config_2.VersionManager import VersionManager
 import re, sys
-        
+
+
 class Virtual(Package):
     """
     Class representing an installed java virtual.
@@ -29,7 +31,7 @@ class Virtual(Package):
 
         self.active_package = None
         self.avaliable_vms = []
-        
+
         self.min_target = None
         self.loaded = False
 
@@ -43,7 +45,7 @@ class Virtual(Package):
                 self.vm_providers = self._config["VM"].split(' ')
         else:
             self._config = {}
-        
+
         # Refactored to make __init__ smaller.
         self.load_providers(self.providers, self.vm_providers)
 
@@ -70,7 +72,7 @@ class Virtual(Package):
         for vm in vmachines:
             if verman.version_satisfies(" ".join(vms), vmachines[vm]):
                 self._vms.append(vmachines[vm].name())
-		
+
         for vm in vms:
             if self._manager.get_vm(vm):
                 self._vms.append(vm)
@@ -78,7 +80,7 @@ class Virtual(Package):
                     self.min_target = self._manager.get_vm(vm).version()
                 if verman.version_cmp(self.min_target, self._manager.get_vm(vm).version()) > 0:
                     self.min_target = self._manager.get_vm(vm).version()
-        
+
         if not self._packages and not self._vms:
             raise ProviderUnavailableError( self._name, ' '.join(self.vm_providers), ' '.join(self.providers) )
 
@@ -117,7 +119,7 @@ class Virtual(Package):
             return self.get_provider().query("TARGET")
         except EnvironmentUndefinedError:
             return self.get_provider().query("PROVIDES_VERSION")
-            
+
 
     def classpath(self):
         """
@@ -137,12 +139,11 @@ class Virtual(Package):
             cp = self.query_all_providers('CLASSPATH')
             if self._vms and not self._manager.get_active_vm().name() in self._vms:
                 raise ProviderUnavailableError( self._name, ' '.join(self.vm_providers), ' '.join(self.providers) )
-            
+
             if "VM_CLASSPATH" in self._config:
                 cp += ':' + self._manager.get_active_vm().query('JAVA_HOME') + self._config["VM_CLASSPATH"]
             return cp
         return ""
-                
 
     def library_path(self):
         try:
