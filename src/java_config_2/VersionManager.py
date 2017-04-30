@@ -4,7 +4,7 @@
 # Copyright 2005-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public license v2
 
-from . import VM, Errors 
+from . import VM, Errors
 from java_config_2.FileParser import *
 import os, glob, re
 import os.path
@@ -75,12 +75,12 @@ class VersionManager:
 
     def parse_depend(self, atoms):
         """Filter the dependency string for useful information"""
-      
+
         #pkg_name, highest_pkg_target = self.get_target_from_pkg_deps(self.parse_depend_packages(atoms))
         matched_atoms = []
         atoms = self.filter_depend(atoms)
         matches = self.atom_parser.findall(atoms)
-       
+
         if len(matches) >  0:
             for match in matches:
                 matched_atoms.append(_DepSpec(equality=match[0], type=match[1], version=match[2]))
@@ -101,7 +101,7 @@ class VersionManager:
             for match in matches:
                 if not (match[0] == 'virtual' and (match[1] == 'jdk-1' or match[1] == 'jre-1' or match[1] == 'jdk' or match[1] == 'jre' )):
                         matched_atoms.append({'equality':'=', 'cat':match[0], 'pkg':match[1], 'slot':match[2]})
-        
+
         return matched_atoms
 
     def filter_depend( self, atoms ):
@@ -153,7 +153,7 @@ class VersionManager:
 
     def matches(self, version_a, version_b, operator):
         val = self.version_cmp(version_a, version_b)
-        
+
         #now assuming that if no operator we are
         #doing an '=' comparision. Used to handle cases like virtual/jdk:1.5
         if operator == '>=': return val >= 0
@@ -161,7 +161,7 @@ class VersionManager:
         elif operator == '>':  return val > 0
         elif operator == '<':  return val < 0
         else:                  return val == 0
-                
+
     def version_satisfies(self, atoms, vm):
         version = vm.version()
         matched_atoms = self.parse_depend(atoms)
@@ -226,7 +226,7 @@ class VersionManager:
                     pkg_name = pkg.name()
             except:
                 pass
-        
+
         return pkg_name, highest
 
     def get_vm(self, atoms, allow_build_only = False):
@@ -235,7 +235,7 @@ class VersionManager:
         matched_atoms = self.parse_depend(atoms)
         matched_virtuals = self.parse_depend_virtuals(atoms)
         need_virtual = None
-        
+
         if not len(matched_virtuals) == 0:
             need_virtual = matched_virtuals
 
@@ -243,7 +243,7 @@ class VersionManager:
         # first try to find vm based on preferences
         low = self.get_lowest(atoms) # Lowest vm version we can use
 
-        for atom in matched_atoms: 
+        for atom in matched_atoms:
             for pref in prefs:
                 if pref[0] == low or pref[0] == "*": # We have a configured preference for this version
                     for vmProviderString in pref[1]: # Loop over the prefered once, and check if they are valid
@@ -254,7 +254,7 @@ class VersionManager:
                                     return gvm
                             else:
                                 return gvm          # use it!
-       
+
         # no match in preferences, find anything we have
         # Support for virtuals too here
         for atom in matched_atoms:
@@ -276,7 +276,7 @@ class VersionManager:
                 error += " and/or\n"
         if need_virtual:
             error += "this package requiring virtual(s) " + need_virtual
-        
+
         raise Exception(error)
 
 
@@ -317,7 +317,6 @@ class VersionManager:
             if version2[x][0] == '0':
                 version2[x]='.' + version2[x]
 
-       
         if len(version2) < len(version1):
             version2.extend(["0"]*(len(version1)-len(version2)))
         elif len(version1) < len(version2):
@@ -336,9 +335,9 @@ class VersionManager:
         unresolved = set()
         for package in packages:
             unresolved.add(package)
-    
+
         resolved = set()
-    
+
         while len(unresolved) > 0:
             pkg = unresolved.pop()
             resolved.add(pkg)
@@ -361,8 +360,8 @@ needed dependency, report this to http://bugs.gentoo.org.
 """
                         msg = msg % (dep_pkg,pkg,pkg)
                     abort(msg)
-    
+
                 if p not in resolved:
                     unresolved.add(p)
-    
+
         return resolved
