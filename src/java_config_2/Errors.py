@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
-
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
 
 class EnvironmentUndefinedError(Exception):
     """
@@ -14,7 +12,7 @@ class InvalidConfigError(Exception):
     Invalid Configuration File
     """
     def __init__(self, file):
-        self.file = file 
+        self.file = file
 
 class InvalidVMError(Exception):
     """
