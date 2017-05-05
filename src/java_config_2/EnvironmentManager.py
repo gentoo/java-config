@@ -9,9 +9,13 @@ from .VM import *
 from .Errors import *
 from itertools import chain
 
+import sys
+import re
+import os
+
 from os.path import basename, dirname
 from glob import glob
-import os, re, sys
+
 
 class EnvironmentManager(object):
     """This is the central class, which manages all information from the 'environment'"""
@@ -37,7 +41,7 @@ class EnvironmentManager(object):
 
     def load_vms(self):
         """Load all the vm files, and check for correctness"""
-        self.virtual_machines = {} 
+        self.virtual_machines = {}
 
         if os.path.isdir(self.vms_path):
             count = 1
@@ -60,7 +64,6 @@ class EnvironmentManager(object):
 
                 self.virtual_machines[count] = vm
                 count += 1
-
 
     def load_package(self, name):
         try:
@@ -119,7 +122,7 @@ class EnvironmentManager(object):
 
     def set_active_vm(self, vm):
         self.active_vm = vm
- 
+
     def get_active_vm(self):
         if self.active_vm is None:
             self.load_active_vm()
@@ -169,7 +172,7 @@ class EnvironmentManager(object):
 
     def query_packages(self, packages, query):
         results = []
-            
+
         for package in packages:
             pkg = self.get_package(package)
             if pkg:
@@ -194,9 +197,9 @@ class EnvironmentManager(object):
             else:
                 # Check if the vm is specified via env file
                 if machine == vm.filename():
-                    return vm 
+                    return vm
 
-                # Check if the vm is specified by name 
+                # Check if the vm is specified by name
                 if machine == vm.name():
                     return vm
 
@@ -204,7 +207,7 @@ class EnvironmentManager(object):
                 if machine == vm.query('JAVA_HOME'):
                     return vm
 
-                # Check if vm is specified by partial name 
+                # Check if vm is specified by partial name
                 if vm.name().startswith(machine):
                     selected = vm
 
@@ -304,7 +307,7 @@ class EnvironmentManager(object):
                     continue
         return deps
 
-    def add_dep_classpath(self, pkg, dep, classpath): 
+    def add_dep_classpath(self, pkg, dep, classpath):
         pkg_cp = pkg.classpath()
         if pkg_cp:
             if not dep or len(dep) == 1:
@@ -331,7 +334,7 @@ class EnvironmentManager(object):
         while len(unresolved) > 0:
             pkg = unresolved.pop()
             resolved.add(pkg)
-            
+
             if query != "CLASSPATH":
                 lpath = pkg.query(query)
                 self.add_path_elements(lpath, path)
@@ -417,5 +420,5 @@ class EnvironmentManager(object):
         finally:
             self.set_active_vm(storeVM)
         return result
-    
+
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
