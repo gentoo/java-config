@@ -42,11 +42,7 @@ class FileParser:
                         else:
                             val = ''
                         value = value.replace('${%s}' % item, val)
-
                     self.pair(name,value)
-
-        stream.close()
-
 
     def pair(self, key, value):
         pass
