@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
-
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
 
 import os, sys
 
@@ -44,12 +42,12 @@ class OutputFormatter:
 
         else:
             return prefix + message
-        
+
     def __parseColor(self, message):
         colored = ''
         striped = ''
         replace = 0
-      
+
         for char in str(message):
             if replace:
                 if char == ' ':
