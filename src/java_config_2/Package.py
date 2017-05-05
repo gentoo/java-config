@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
-
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
 
 from .FileParser import *
 
@@ -44,7 +42,7 @@ class Package:
 
     def target(self):
         return self.query("TARGET")
-    
+
     def query(self, var):
         """
         Return the value of the requested var form the env file
@@ -59,7 +57,7 @@ class Package:
         Return all packages this package depends on
         """
         return self.__get_deps("DEPEND")
-        
+
     def opt_deps(self):
         """
         Return all packages this package optionally depends on
