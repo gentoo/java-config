@@ -2,7 +2,8 @@
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-import os, sys
+import sys
+import os
 
 class OutputFormatter:
     codes = {
