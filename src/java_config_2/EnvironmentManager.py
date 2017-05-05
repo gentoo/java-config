@@ -53,9 +53,7 @@ class EnvironmentManager(object):
 
                 try:
                     vm = VM(conf)
-                except InvalidConfigError:
-                    continue
-                except PermissionError:
+                except (InvalidConfigError, PermissionError):
                     continue
                 except InvalidVMError as ex:
                     printer = OutputFormatter()
@@ -229,7 +227,7 @@ class EnvironmentManager(object):
             raise PermissionError
         except EnvironmentUndefinedError:
             raise EnvironmentUndefinedError
- 
+
     def set_user_vm(self, vm):
         self.set_vm(vm, self.user_vm_link())
 
