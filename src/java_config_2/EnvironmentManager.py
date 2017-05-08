@@ -116,7 +116,7 @@ class EnvironmentManager(object):
                 if vm:
                     self.active_vm = vm
                     return vm
-        raise InvalidVMError("Unable to determine valid vm. Please see http://www.gentoo.org/doc/en/java.xml#doc_chap4")
+        raise InvalidVMError("Unable to determine valid Java VM!")
 
     def set_active_vm(self, vm):
         self.active_vm = vm

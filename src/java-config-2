@@ -165,7 +165,6 @@ def list_available_vms(option, opt, value, parser):
         printer._print('')
         printer._print('%r' + 'VMs marked as Build Only may contain Security Vulnerabilities and/or be EOL.')
         printer._print('%r' + 'Gentoo recommends not setting these VMs as either your System or User VM.')
-        printer._print('%r' + 'Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information')
 
 def print_environment(option, opt, value, parser):
     vm = manager.get_vm(value) 
@@ -187,7 +186,6 @@ def set_system_vm(option, opt, value, parser):
             printer._print("Now using %s as your generation-2 system JVM" % (vm) )
             if vm.is_build_only():
                 printer._printWarning("%s is marked as a build-only JVM. Using this vm is not recommended. " % (vm))
-                printer._printWarning("Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information.")
         except PermissionError:
             fatalError("You do not have enough permissions to set the system VM!")
         except EnvironmentUndefinedError:
@@ -211,7 +209,6 @@ def set_user_vm(option, opt, value, parser):
                 printer._print("Now using %s as your user JVM" % (vm))
                 if vm.is_build_only():
                     printer._printWarning("%s is marked as a build-only JVM. Using this vm is not recommended. " % (vm))
-                    printer._printWarning("Please see http://www.gentoo.org/doc/en/java.xml#build-only for more information.")
             except PermissionError:
                 fatalError("You do not have enough permissions to set the VM!")
             except InvalidConfigError as e:
