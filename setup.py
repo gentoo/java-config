@@ -103,25 +103,6 @@ class jc_install(install):
 		self.copy_file(f.name, confdir + 'jdk-defaults.conf', preserve_mode=0)
 		os.remove(f.name)
 
-
-class jc_sdist(sdist):
-	"""
-	Set some defaults and generate ChangeLog from svn log
-	"""
-
-	def initialize_options(self):
-		sdist.initialize_options(self)
-		self.formats = ['bztar']
-		self.force_manfifest = 1
-
-	def run(self):
-		subprocess.call(['svn', 'up'])
-		os.mkdir(self.distribution.get_fullname())
-		subprocess.call(['svn2cl', '--authors', 'AUTHORS', '--output', self.distribution.get_fullname() + '/ChangeLog'])
-
-		sdist.run(self)
-
-
 from distutils.core import setup
 
 eprefix = os.getenv('EPREFIX', '')
