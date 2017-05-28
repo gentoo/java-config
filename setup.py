@@ -107,8 +107,12 @@ from distutils.core import setup
 
 eprefix = os.getenv('EPREFIX', '')
 
-setup (
-	cmdclass={'build' : jc_build, 'test' : jc_test, 'install' : jc_install, 'sdist' : jc_sdist},
+setup(
+	cmdclass = {
+		'build' : jc_build,
+		'test' : jc_test,
+		'install' : jc_install,
+	},
 	name = 'java-config',
 	version = package_version,
 	description = 'java enviroment configuration tool',
@@ -116,7 +120,7 @@ setup (
 	"""
 		java-config is a tool for configuring various enviroment
 		variables and configuration files involved in the java
-		enviroment for Gentoo Linux.
+		environment for Gentoo Linux.
 	""",
 	maintainer = 'Gentoo Java Team',
 	maintainer_email = 'java@gentoo.org',
