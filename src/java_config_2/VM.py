@@ -9,17 +9,16 @@ from .Errors import *
 import os
 
 
-class VM:
-    # Dont accept env files without these variables
-    needed_vars = [ "JAVA_HOME", "PROVIDES_TYPE", "PROVIDES_VERSION" ]
+# Dont accept env files without these variables
+NEEDED_VARS = [ "JAVA_HOME", "PROVIDES_TYPE", "PROVIDES_VERSION" ]
 
+class VM:
     def __init__(self, file):
         self.file = file
         self.config = EnvFileParser(file).get_config()
-    
-        for var in self.needed_vars:
+        for var in NEEDED_VARS:
             if var not in self.config:
-                raise InvalidVMError("Missing: %s" %var)
+                raise InvalidVMError("Missing: %s" % var)
 
     def __eq__(self, other):
         return self.version() == other.version()
