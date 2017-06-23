@@ -23,26 +23,25 @@ class FileParser:
                 line = line.strip('\n')
                 if line.isspace() or line == '' or line.startswith('#'):
                     continue
-                else:
-                    index = line.find('=')
-                    name = line[:index]
-                    value = line [index+1:]
 
-                    if value == '':
-                        continue
-                        #raise InvalidConfigError(file)
+                index = line.find('=')
+                name = line[:index]
+                value = line[index+1:]
 
-                    value = value.strip('\\\'\"')
+                if value == '':
+                    continue
 
-                    while value.find('${') >= 0:
-                        item = value[value.find('${')+2:value.find('}')]
+                value = value.strip('\\\'\"')
 
-                        if item in self.config:
-                            val = self.config[item]
-                        else:
-                            val = ''
-                        value = value.replace('${%s}' % item, val)
-                    self.pair(name,value)
+                while value.find('${') >= 0:
+                    item = value[value.find('${')+2:value.find('}')]
+
+                    if item in self.config:
+                        val = self.config[item]
+                    else:
+                        val = ''
+                    value = value.replace('${%s}' % item, val)
+                self.pair(name,value)
 
     def pair(self, key, value):
         pass
