@@ -36,10 +36,9 @@ class FileParser:
                 while value.find('${') >= 0:
                     item = value[value.find('${')+2:value.find('}')]
 
+                    val = ''
                     if item in self.config:
                         val = self.config[item]
-                    else:
-                        val = ''
                     value = value.replace('${%s}' % item, val)
                 self.pair(name,value)
 
