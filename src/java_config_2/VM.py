@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
-
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
 
 from .FileParser import *
 from .Errors import *
@@ -12,13 +10,12 @@ import os
 # Dont accept env files without these variables
 NEEDED_VARS = [ "JAVA_HOME", "PROVIDES_TYPE", "PROVIDES_VERSION" ]
 
+
 class VM:
     def __init__(self, file):
         self.file = file
         self.config = EnvFileParser(file).get_config()
-        for var in NEEDED_VARS:
-            if var not in self.config:
-                raise InvalidVMError("Missing: %s" % var)
+        self.check_for_needed_vars()
 
     def __eq__(self, other):
         return self.version() == other.version()
@@ -40,6 +37,11 @@ class VM:
 
     def __str__(self):
         return self.name()
+
+    def check_for_needed_vars(self):
+        for var in NEEDED_VARS:
+            if var not in self.config:
+                raise InvalidVMError("Missing: %s" % var)
 
     def get_config(self):
         return self.config
