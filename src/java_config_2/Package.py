@@ -6,7 +6,7 @@ from .FileParser import *
 
 class Package:
     """
-    Class represeting an installed java package
+    Class representing an installed java package
     """
     def __init__(self, name, file = None):
         self._file = file
