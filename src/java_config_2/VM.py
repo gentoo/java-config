@@ -84,14 +84,11 @@ class VM:
         return self.query('PROVIDES_VERSION')
 
     def find_exec(self, executable):
-        path = None
-
         path = self.query('PATH')
         paths = path.split(':')
 
         for path in paths:
             path = os.path.join(path, executable)
-
             if os.path.isfile(path):
                 if not os.access(path, os.X_OK):
                     raise PermissionError
