@@ -2,27 +2,23 @@
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+
 class EnvironmentUndefinedError(Exception):
-    """
-    Environment Variable is undefined!
-    """
+    """The environment variable is undefined."""
+
 
 class InvalidConfigError(Exception):
-    """
-    Invalid Configuration File
-    """
+    """The configuration file is invalid."""
     def __init__(self, file):
         self.file = file
 
+
 class InvalidVMError(Exception):
-    """
-    Specified Virtual Machine does not exist or is invalid
-    """
+    """The virtual machine does not exist or is invalid."""
+
 
 class ProviderUnavailableError(Exception):
-    """
-    No provider is available for the specified Virtual.
-    """
+    """No provider is available for the specified virtual."""
 
     def __init__( self, virtual, vms, packages ):
         self._virtual = virtual
@@ -39,18 +35,16 @@ class ProviderUnavailableError(Exception):
         return self._vms
 
     def __str__(self):
-        return """No provider is available for """ + self._virtual + """
-        Please check your environment."""
+        return """No provider available for %s
+Please check your your environment""" % (self._virtual)
+
 
 class PermissionError(Exception):
-    """
-    The permission on the file are wrong or you are not a privileged user
-    """
+    """File permissions are wrong or you are not a privileged user."""
+
 
 class UnexistingPackageError(Exception):
-    """
-    Thrown when a function is called to do something on a package that does not exist
-    """
+    """Package does not exist."""
     def __init__(self, package):
         self.package = package
 
