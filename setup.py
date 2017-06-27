@@ -20,7 +20,6 @@ import unittest
 
 
 class jc_build(build):
-
 	def run(self):
 		build.run(self)
 
@@ -33,7 +32,6 @@ class jc_build(build):
 
 
 class jc_test(Command):
-
 	user_options = []
 
 	def initialize_options(self):
