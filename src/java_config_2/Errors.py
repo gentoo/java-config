@@ -20,7 +20,7 @@ class InvalidVMError(Exception):
 class ProviderUnavailableError(Exception):
     """No provider is available for the specified virtual."""
 
-    def __init__( self, virtual, vms, packages ):
+    def __init__(self, virtual, vms, packages):
         self._virtual = virtual
         self._vms = vms
         self._packages = packages

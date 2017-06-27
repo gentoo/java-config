@@ -6,7 +6,7 @@ from .FileParser import *
 
 class Package:
     """
-    Class representing an installed java package
+    The Package class represents an installed Java package.
     """
     def __init__(self, name, file = None):
         self._file = file
@@ -20,32 +20,42 @@ class Package:
         return self.name()
 
     def name(self):
+        """
+        Returns this package's name.
+        """
         return self._name
 
     def file(self):
+        """
+        Returns this package's file.
+        """
         return self._file
 
     def description(self):
+        """
+        Returns this package's DESCRIPTION.
+        """
         if "DESCRIPTION" in self._config:
             return self._config["DESCRIPTION"]
-        else:
-            return "No Description"
+        return "No Description"
 
     def classpath(self):
         """
-        Returns this package's classpath
+        Returns this package's CLASSPATH.
         """
         if "CLASSPATH" in self._config:
             return self._config["CLASSPATH"]
-        else:
-            return None
+        return None
 
     def target(self):
+        """
+        Returns this package's TARGET.
+        """
         return self.query("TARGET")
 
     def query(self, var):
         """
-        Return the value of the requested var form the env file
+        Return the value of var from the env file.
         """
         if var in self._config:
             return self._config[var]
@@ -54,19 +64,19 @@ class Package:
 
     def deps(self):
         """
-        Return all packages this package depends on
+        Return all packages this package depends on.
         """
         return self.__get_deps("DEPEND")
 
     def opt_deps(self):
         """
-        Return all packages this package optionally depends on
+        Return all packages this package optionally depends on.
         """
         return self.__get_deps("OPTIONAL_DEPEND")
 
     def __get_deps(self, query):
         """
-        Internal function to get package's (optional) dependencies;
+        Return package's (optional) dependencies;
         @param query: variable to read from package.env
         """
         depstr = self.query(query)
