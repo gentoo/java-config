@@ -59,8 +59,7 @@ class Package:
         """
         if var in self._config:
             return self._config[var]
-        else:
-            return None
+        return None
 
     def deps(self):
         """
@@ -76,13 +75,12 @@ class Package:
 
     def __get_deps(self, query):
         """
-        Return package's (optional) dependencies;
-        @param query: variable to read from package.env
+        Return a package's (optional) dependencies.
+        @param query: variable to read from package.env.
         """
         depstr = self.query(query)
         if depstr:
             return [dep.split("@") for dep in depstr.split(":")]
-        else:
-            return []
+        return []
 
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
