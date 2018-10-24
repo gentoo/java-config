@@ -1,7 +1,7 @@
 #!/@GENTOO_PORTAGE_EPREFIX@usr/bin/python -E
 # -*- coding: UTF-8 -*-
 
-# Copyright 2004-2013 Gentoo Foundation
+# Copyright 2004-2018 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 from java_config_2.OutputFormatter import OutputFormatter
@@ -170,49 +170,12 @@ def print_environment(option, opt, value, parser):
         fatalError("Could not find a vm matching: %s" % value)
     manager.create_env_entry(vm, printer, "%s=%s")
 
-def set_system_vm(option, opt, value, parser):
-    deprecation_notice()
-    vm = manager.get_vm(value)
-    if not vm:
-        fatalError("Could not find a vm matching: %s" % value)
-    try:
-        manager.set_system_vm(vm)
-        printer._print("Now using %s as your generation-2 system JVM" % (vm) )
-        if vm.is_build_only():
-            printer._printWarning("%s is marked as a build-only JVM. Using this vm is not recommended. " % (vm))
-    except PermissionError:
-        fatalError("You do not have enough permissions to set the system VM!")
-    except EnvironmentUndefinedError:
-        fatalError("The selected VM is missing critical environment variables.")
-    except InvalidConfigError as e:
-        fatalError("Target file already exists and is not a symlink: %s" % e.file)
-
-def set_user_vm(option, opt, value, parser):
-    deprecation_notice()
-    vm = manager.get_vm(value)
-    if not vm:
-        fatalError("Could not find a vm matching: %s" % value)
-    if os.getuid() is 0:
-        fatalError("The user 'root' should always use the System VM")
-    try:
-        manager.set_user_vm(vm)
-        printer._print("Now using %s as your user JVM" % (vm))
-        if vm.is_build_only():
-            printer._printWarning("%s is marked as a build-only JVM. Using this vm is not recommended. " % (vm))
-    except PermissionError:
-        fatalError("You do not have enough permissions to set the VM!")
-    except InvalidConfigError as e:
-        fatalError("Target file already exists and is not a symlink: %s" % e.file)
-
 def select_vm(option, opt, value, parser):
     if not value: return
     vm = manager.get_vm(value)
     if not vm:
         fatalError("The vm could not be found")
     manager.set_active_vm(manager.get_vm(value))
-
-def deprecation_notice():
-    printer._printWarning("Setting user and system vm using java-config is deprecated, use eselect java-vm instead.")
 
 def fatalError(msg):
     printer._printError(msg)
@@ -316,20 +279,6 @@ Please contact the Gentoo Java Herd <java@gentoo.org> with problems."""
                     action="callback", callback=get_virtual_providers,
                     type="string", dest="package(s)",
                     help="Return a list of packages that provide a virtual")
-    parser.add_option_group(group)
-
-    # Deprecated
-    group = OptionGroup(parser, "Deprecated",
-                        "Use eselect java-vm instead. Report usability issues "
-                        "so they can be taken care of.")
-    group.add_option("-S", "--set-system-vm",
-                    action="callback", callback=set_system_vm,
-                    type="string", dest="vm",
-                    help="Set the default Java VM for the system")
-    group.add_option("-s", "--set-user-vm",
-                    action="callback", callback=set_user_vm,
-                    type="string", dest="vm",
-                    help="Set the default Java VM for the user")
     parser.add_option_group(group)
 
     if len(sys.argv) < 2: 

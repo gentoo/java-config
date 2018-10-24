@@ -228,24 +228,6 @@ class EnvironmentManager(object):
         except EnvironmentUndefinedError:
             raise EnvironmentUndefinedError
 
-    def set_user_vm(self, vm):
-        self.set_vm(vm, self.user_vm_link())
-
-    def set_system_vm(self, vm):
-        self.set_vm(vm, self.system_vm_link())
-
-    def set_vm(self, vm, target):
-        sym_dir = dirname(target)
-        if not os.path.isdir(sym_dir):
-            os.makedirs(sym_dir)
-
-        if os.path.islink(target):
-            os.remove(target)
-        elif os.path.exists(target):
-            raise InvalidConfigError(target)
-
-        os.symlink(self.eroot + '/usr/lib/jvm/'+vm.name(),target)
-
     def vm_links(self):
         # Don't try to use user-vm if HOME is undefined
         if os.environ.get('HOME') == None:

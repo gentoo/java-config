@@ -8,8 +8,7 @@ java-config - The Java configuration tool for Gentoo
 .PP 
 .I java-config
 Is used to query/set properties of your system's Java environment. It can be
-used to list available VMs, java packages, set system default JVM and set user
-default JVM.
+used to list available VMs and java packages.
 .PP 
 In addition, it is used by Portage as a common interface to querying 
 properties about the various JVMs.
@@ -61,21 +60,10 @@ List available Java packages. Used for selection by
 .I --classpath
 .TP 
 \fB-L, --list-available-vms\fI
-Lists available JVMs. Used with 
-.I --set-system-vm
-and 
-.I -set-user-vm
-.
-.TP 
-\fB-S <vm-id>, --set-system-vm=<vm-id>\fI
-Sets the system-wide default JVM.
-.TP 
-\fB-s <vm-id>, --set-user-vm=<vm-id>\fI
-Sets the user-specific JVM by putting all necessary env vars into 
-.I $HOME/.gentoo/java-env .
+Lists available JVMs.
 .TP 
 \fB-f, --show-active-vm\fI
-Show the JVM that's currently active, as set via --set-system-vm or --set-user-vm.
+Show the JVM that's currently active, as set by eselect java-vm.
 .TP 
 \fB-n, --nocolor\fI
 Turn off all colors.
@@ -97,16 +85,6 @@ Value to retieve from packages package.env file, specified by --package.
 .TP
 \fB--get-virtual-providers=PACKAGE(S)\fI
 Return a list of packages that provide a virtual.
-
-.SH "NOTES"
-You can get the <vm-id> that is used with 
-.I --set-system-vm=<vm-id>
-and 
-.I --set-user-vm=<vm-id>
-in the output of 
-.I java-config --list-available-vms
-inside the brackets. Ex. [blackdown-jdk-1.4.1] and you can use this to
-set your default Java Virtual Machine.
 
 .SH "MAINTAINER"
 java@gentoo.org
