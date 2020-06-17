@@ -1,5 +1,0 @@
-recursive-include man *
-recursive-include config *
-recursive-include src *
-recursive-include tests *
-include NEWS TODO
