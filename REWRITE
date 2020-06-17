@@ -1,11 +1,2 @@
 Goals for the rewrite:
-- reduce dependencies (c++ with few external libs)
-- provide a dbus interface (for use in Eclipse/Netbeans library managers)
-- solve outstanding bugs
-  * deep scan for class versioning issues (bug #161622)
-  * wrappers for all JVM tools
-  * virtuals handling for jdbc providers
-  * virtuals provided by JDKs
-- remove all deprecated command line options
-- don't depend on pm code (custom antlr based parsing)
-- unify java-config-wrapper,javatoolkit and java-config to a single package
+- throw away this codebase and start from scratch
