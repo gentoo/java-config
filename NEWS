@@ -2,6 +2,13 @@ For full ChangeLog generated from svn commit logs see ChangeLog.
 
   BGO:  https://bugs.gentoo.org
 
+2.3:
+* Remove a lot of cruft.
+* Python 3.8 compat mostly.
+* Set out a plan to get rid of the current codebase that nobody understands nor
+care to actually understand in order to write a new java-config that makes
+sense for the current team (me).
+
 2.2.0:
 
   * BGO 455798: Use recorded VM dependency for launcher
