@@ -52,7 +52,6 @@ class VersionManager:
 
     def __init__(self, env_manager):
         self.env_manager = env_manager
-        self.user_pref_file = env_manager.eprefix + '/etc/java-config-2/build/jdk.conf'
         self.default_pref_file = env_manager.eprefix + '/usr/share/java-config-2/config/jdk-defaults.conf'
         self._prefs = None
 
@@ -61,10 +60,7 @@ class VersionManager:
             return self._prefs
         else:
             self._prefs = []
-            # first try the build preferences
-            if os.path.exists(self.user_pref_file):
-                self._prefs += PrefsFileParser(self.user_pref_file).get_config()
-            # then try system vm
+            # try system vm
             sys_vm = self.env_manager.system_vm_name()
             if sys_vm is not None:
                 self._prefs.append(['*', [sys_vm]])
