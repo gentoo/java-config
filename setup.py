@@ -71,30 +71,16 @@ class jc_install(install):
 		arch = os.getenv('ARCH', 'unknown')
 		defaults = '*= icedtea'
 		if arch in ['amd64', 'x86']:
-			defaults = '*= icedtea6 icedtea6-bin sun-jdk blackdown-jdk ibm-jdk-bin jrockit-jdk-bin'
+			defaults = '*= icedtea6 icedtea6-bin icedtea7 icedtea7-bin'
 		elif arch in ['ppc-macos', 'x64-macos', 'x86-macos']:
 			defaults = '*= apple-jdk-bin'
-		elif arch in ['amd64-fbsd', 'x86-fbsd', 'x64-freebsd', 'x86-freebsd']:
-			defaults = '*= diablo-jdk'
-		elif arch in ['sparc-solaris', 'sparc64-solaris', 'x64-solaris', 'x86-solaris']:
-			defaults = '*= sun-jdk'
-		elif arch in ['mips', 'sparc']:
-			defaults = '*= blackdown-jdk'
 		elif arch in ['ppc', 'ppc64', 'ppc-linux', 'ppc-aix']:
 			defaults = '*= ibm-jdk-bin'
-		elif arch in ['alpha']:
-			defaults = '*= compaq-jdk'
 		elif arch in ['arm']:
 			defaults = '*= icedtea-7 icedtea-6 icedtea-bin-7 icedtea-bin-6'
-		elif arch in ['ia64']:
-			defaults = '*= jrockit-jdk-bin'
-		elif arch in ['hppa']:
-			defaults = '*= kaffe'
-		elif arch in ['hpux']:
-			defaults = '*= hp-jdk-bin'
 
 		with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
-			f.write("# This files contain the default support jdk's\n")
+			f.write("# Supported JDKs\n")
 			f.write(defaults + "\n")
 		confdir = self.root + '/usr/share/java-config-2/config/'
 		self.mkpath(confdir)

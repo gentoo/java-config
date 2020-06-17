@@ -16,7 +16,7 @@ class TestVirtual(unittest.TestCase):
 
     def test_get_vms(self):
         self.assertEqual(self.jaf.get_vms(), ['sun-jdk-1.6'])
-    
+
     def test_load_vms(self):
         self.assertEqual( self.jmx._vms, ['ibm-jdk-bin-1.5', 'sun-jdk-1.6' , \
             'sun-jdk-1.7', 'sun-jre-bin-1.6'] )
@@ -30,7 +30,7 @@ class TestMultiProviderVirtual(unittest.TestCase):
         em.set_active_vm(em.get_vm('sun-jdk-1.6'))
 
         self.jdbc = em.get_virtual('jdbc')
-    
+
     def test_classpath_multiple(self):
         self.assertEqual( len(self.jdbc.classpath().split(':')), 2)
 
