@@ -130,7 +130,7 @@ setup(
 		(eprefix + '/usr/share/java-config-2/launcher', ['src/launcher.bash']),
 		(eprefix + '/usr/share/man/man1/', ['man/java-config-2.1']),
 		(eprefix + '/etc/java-config-2/', ['config/virtuals']),
-		(eprefix + '/etc/java-config-2/build/', ['config/jdk.conf','config/compilers.conf']),
+		(eprefix + '/etc/java-config-2/build', ['config/jdk.conf'])
 	]
 )
 
