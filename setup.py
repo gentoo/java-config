@@ -4,7 +4,6 @@
 package_version = '2.2.0'
 #######################################
 
-
 from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.install import install
@@ -17,6 +16,9 @@ import subprocess
 import sys
 import tempfile
 import unittest
+
+
+eprefix = os.getenv('EPREFIX', '')
 
 
 class jc_build(build):
@@ -82,14 +84,12 @@ class jc_install(install):
 		with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
 			f.write("# Supported JDKs\n")
 			f.write(defaults + "\n")
-		confdir = self.root + '/usr/share/java-config-2/config/'
+		confdir = self.root + eprefix + '/usr/share/java-config-2/config/'
 		self.mkpath(confdir)
 		self.copy_file(f.name, confdir + 'jdk-defaults.conf', preserve_mode=0)
 		os.remove(f.name)
 
 from distutils.core import setup
-
-eprefix = os.getenv('EPREFIX', '')
 
 setup(
 	cmdclass = {
