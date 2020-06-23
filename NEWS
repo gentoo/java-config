@@ -2,6 +2,9 @@ For full ChangeLog generated from svn commit logs see ChangeLog.
 
   BGO:  https://bugs.gentoo.org
 
+2.3.1:
+* Fix a bug related to eprefix in setup.py.
+
 2.3:
 * Remove a lot of cruft.
 * Python 3.8 compat mostly.
