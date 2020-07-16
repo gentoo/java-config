@@ -110,7 +110,11 @@ class VersionManager:
 
             for token in tokens:
                 if token[-1] == "?":
-                    if token[:-1] not in useflags:
+                    if token.startswith("!"):
+                        skip = token[1:-1] in useflags
+                    else:
+                        skip = token[:-1] not in useflags
+                    if skip:
                         level = 0
                         while 1:
                             token = next(tokens)
