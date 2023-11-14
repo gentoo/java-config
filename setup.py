@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #######################################
-package_version = '2.3.1'
+package_version = '2.3.2'
 #######################################
 
 from distutils.cmd import Command
