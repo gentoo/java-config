@@ -47,7 +47,15 @@ def get_args(pkg):
     envlp = os.getenv('LD_LIBRARY_PATH')
     envjlp = os.getenv('JAVA_LIBRARY_PATH')
 
-    newlibrary = manager.eprefix + '/lib:'+ manager.eprefix + '/usr/lib'
+    libdir = pkg.query('LIBDIR')
+    if libdir:
+        newlibrary = manager.eprefix + '/' + libdir
+    else:
+        # Old, obsolete fallback path for packages that where
+        # installed before java-utils-2.eclass recorded LIBDIR.
+        # Bug #917326.
+        newlibrary = manager.eprefix + '/lib:'+ manager.eprefix + '/usr/lib'
+
     if library:
         newlibrary = ':'.join((library, newlibrary))
     if envjlp:
