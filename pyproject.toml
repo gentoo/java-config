@@ -1,0 +1,17 @@
+[project]
+name = 'java-config'
+dynamic = ['version']
+description = 'Java environment configuration query tool'
+readme = 'README'
+requires-python = '>=3.9'
+license = {file = "COPYING"}
+authors = [
+  {name = 'Gentoo Java Project', email = 'java@gentoo.org'},
+]
+
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python']
+
+[tool.meson-python.args]
+setup = ['-Dsystem-wide=false']

@@ -1,5 +1,5 @@
-#!/@GENTOO_PORTAGE_EPREFIX@usr/bin/python -E
-# -*- coding: UTF-8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Copyright 2004-2018 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
@@ -20,7 +20,8 @@ except ImportError:
 from optparse import OptionParser, OptionGroup
 
 def version(option, opt, value, parser):
-    printer._print("%H%BJava Configuration Utility %GVersion @PACKAGE_VERSION@")
+    import java_config_2
+    printer._print(f"%H%BJava Configuration Utility %GVersion {java_config_2.version}")
     raise SystemExit()
 
 def nocolor(option, opt, value, parser):
@@ -183,11 +184,12 @@ def fatalError(msg):
 
 if __name__ == '__main__':
     global printer, manager
+    import java_config_2
     printer = OutputFormatter(True, True)
-    manager = EnvironmentManager(os.getenv('ROOT', ''), os.getenv('EPREFIX', '@GENTOO_PORTAGE_EPREFIX@'))
+    manager = EnvironmentManager(os.getenv('ROOT', ''), java_config_2.eprefix)
 
-    usage = """java-config [options]
-Java Configuration Utility Version @PACKAGE_VERSION@
+    usage = f"""java-config [options]
+Java Configuration Utility Version {java_config_2.version}
 Copyright 2004-2013 Gentoo Foundation
 Distributed under the terms of the GNU General Public License v2
 Please contact the Gentoo Java Herd <java@gentoo.org> with problems."""

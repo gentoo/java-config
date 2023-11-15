@@ -1,0 +1,15 @@
+option('system-wide', type: 'boolean', value: true,
+    description: 'Install system-wide rather than isolated inside a Python environment'
+)
+
+option('eprefix', type: 'string',
+    description: 'Prefix directory to operate under'
+)
+
+option('python-only', type: 'boolean', value: false,
+       description: 'Only install the Python parts',
+)
+
+option('arch', type: 'string', value: 'unknown',
+       description: 'The official Gentoo-specific acronym for the architecture',
+)

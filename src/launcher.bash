@@ -1,4 +1,4 @@
-#!/@GENTOO_PORTAGE_EPREFIX@bin/bash
+#!/usr/bin/env bash
 
 abort() {
 	echo ${@} >&2
@@ -18,10 +18,19 @@ unset GENTOO_PYTHON_WRAPPER_SCRIPT_PATH
 unset GENTOO_PYTHON_TARGET_SCRIPT_PATH
 unset GENTOO_PYTHON_TARGET_SCRIPT_PATH_VERIFICATION
 
+if [[ ! -v EPREFIX ]]; then
+	INJECTED_PREFIX="@EPREFIX@"
+	if [[ ${INJECTED_PREFIX} == @* ]]; then
+		EPREFIX=""
+	else
+		EPREFIX="${INJECTED_PREFIX}"
+	fi
+fi
+
 # Source package env
 # ---------------------
-gjl_user_env="${HOME}/.gentoo@GENTOO_PORTAGE_EPREFIX@/java-config-2/launcher.d/${gjl_package}"
-gjl_system_env="@GENTOO_PORTAGE_EPREFIX@/etc/java-config-2/launcher.d/${gjl_package}"
+gjl_user_env="${HOME}/.gentoo${EPREFIX}/java-config-2/launcher.d/${gjl_package}"
+gjl_system_env="${EPREFIX}/etc/java-config-2/launcher.d/${gjl_package}"
 if [[ -f "${gjl_user_env}" ]]; then
 	source "${gjl_user_env}"
 elif [[ -f "${gjl_system_env}" ]]; then

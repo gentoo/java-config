@@ -1,5 +1,5 @@
-#!/@GENTOO_PORTAGE_EPREFIX@usr/bin/python -E
-# -*- coding: UTF-8 -*-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Copyright 2004-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
@@ -91,11 +91,12 @@ def normpath(mypath):
     return newpath
 
 if __name__ == '__main__':
+    import java_config_2
     usage =  "%prog [options]\n\n"
-    usage += "Java Utility Version @PACKAGE_VERSION@\n"
-    usage += "Copyright 2004-2013 Gentoo Foundation\n"
+    usage += f"Java Utility Version {java_config_2.version}\n"
+    usage += "Copyright 2004-2023 Gentoo Authors\n"
     usage += "Distributed under the terms of the GNU General Public License v2\n"
-    usage += "Please contact the Gentoo Java Herd <java@gentoo.org> with problems."
+    usage += "Please contact the Gentoo Java Project <java@gentoo.org> with problems."
 
     options_list = [
                      make_option ("-p", "--package",  action="store", type="string", dest="package", help="The package"),
@@ -109,7 +110,7 @@ if __name__ == '__main__':
 
     global printer, manager, verman
     printer = OutputFormatter(True, True)
-    manager = EnvironmentManager(os.getenv('ROOT', ''), os.getenv('EPREFIX', '@GENTOO_PORTAGE_EPREFIX@'))
+    manager = EnvironmentManager(os.getenv('ROOT', ''), java_config_2.eprefix)
     verman = VersionManager(manager)
 
     if not options.package:
