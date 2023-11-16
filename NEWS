@@ -2,6 +2,10 @@ For full ChangeLog generated from svn commit logs see ChangeLog.
 
   BGO:  https://bugs.gentoo.org
 
+2.3.3 / 2.3.2:
+* Correctly set java.library.path in launcher
+* Allow java-config to parse inverted conditions
+
 2.3.1:
 * Fix a bug related to eprefix in setup.py.
 
