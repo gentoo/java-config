@@ -3,7 +3,7 @@ subdir('java_config_2')
 py_bins = [
   'depend-java-query',
   'gjl',
-  'java-config-2',
+  'java-config',
 ]
 
 # It might seem sensible to use py.install_sources() to install the Python
