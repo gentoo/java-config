@@ -1,5 +1,5 @@
-# -*- coding: UTF-8 -*-
-# Copyright 2004-2013 Gentoo Foundation
+# -*- coding: utf-8 -*-
+# Copyright 2004-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 import sys

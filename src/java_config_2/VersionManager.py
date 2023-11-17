@@ -1,7 +1,7 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 # vim:set expandtab tabstop=4 shiftwidth=4 softtabstop=4 nowrap:
 
-# Copyright 2005-2013 Gentoo Foundation
+# Copyright 2005-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public license v2
 
 from . import VM, Errors
