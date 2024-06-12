@@ -20,9 +20,11 @@ if python_only
   subdir_done()
 endif
 
+prefix = get_option('prefix')
+
 launcherdir_rel =  'share' / 'java-config-2' / 'launcher'
-launcherdir = system_wide ? eprefix / launcherdir_rel \
-                         : datadir / eprefix / launcherdir_rel
+launcherdir = system_wide ? prefix / launcherdir_rel \
+                         : datadir / prefix / launcherdir_rel
 
 launcher_bash = configure_file(
   input: 'launcher.bash',

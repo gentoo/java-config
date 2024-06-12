@@ -4,6 +4,7 @@ For full ChangeLog generated from svn commit logs see ChangeLog.
 
 2.3.4:
 * Install java-config-2 as java-config from now on
+* Fix launcher installation in Gentoo-prefix installations (#933521)
 
 2.3.3 / 2.3.2:
 * Correctly set java.library.path in launcher
