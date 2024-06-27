@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright 2004-2023 Gentoo Authors
+# Copyright 2004-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 from java_config_2.OutputFormatter import OutputFormatter
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     usage =  "depend-java-query [options]\n\n"
     usage += f"Java Dep Query Utility Version {java_config_2.version}\n"
-    usage += "Copyright 2004-2023 Gentoo Authors\n"
+    usage += "Copyright 2004-2024 Gentoo Authors\n"
     usage += "Distributed under the terms of the GNU General Public License v2\n"
     usage += "Please contact the Gentoo Java Project <java@gentoo.org> with problems."
 
