@@ -1,6 +1,6 @@
 project(
   'java-config',
-  version: '2.3.4',
+  version: '2.3.5-SNAPSHOT',
   license: 'GPL-2.0',
   meson_version: '>=1.1.1'
 )

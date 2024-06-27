@@ -2,6 +2,8 @@ For full ChangeLog generated from svn commit logs see ChangeLog.
 
   BGO:  https://bugs.gentoo.org
 
+2.4.5-SNAPSHOT:
+
 2.3.4:
 * Install java-config-2 as java-config from now on
 * Fix launcher installation in Gentoo-prefix installations (#933521)
