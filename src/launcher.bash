@@ -29,7 +29,13 @@ fi
 
 # Source package env
 # ---------------------
-gjl_user_env="${HOME}/.gentoo${EPREFIX}/java-config-2/launcher.d/${gjl_package}"
+gjl_legacy_dir="${HOME}/.gentoo${EPREFIX}/java-config-2"
+if [[ -d "${gjl_legacy_dir}" ]]; then
+	gjl_user_dir="${gjl_legacy_dir}"
+else
+	gjl_user_dir="${XDG_STATE_HOME:-${HOME}/.local/state}${EPREFIX}/java-config-2"
+fi
+gjl_user_env="${gjl_user_dir}/launcher.d/${gjl_package}"
 gjl_system_env="${EPREFIX}/etc/java-config-2/launcher.d/${gjl_package}"
 if [[ -f "${gjl_user_env}" ]]; then
 	source "${gjl_user_env}"

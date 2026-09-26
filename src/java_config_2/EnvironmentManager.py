@@ -235,8 +235,15 @@ class EnvironmentManager(object):
         else:
             return [ self.user_vm_link(), self.system_vm_link() ]
 
+    def user_state_dir(self):
+        legacy = os.path.join(os.environ.get('HOME'), '.gentoo' + self.eprefix, 'java-config-2')
+        if os.path.isdir(legacy):
+            return legacy
+        state_home = os.environ.get('XDG_STATE_HOME') or os.path.join(os.environ.get('HOME'), '.local', 'state')
+        return state_home + self.eprefix + '/java-config-2'
+
     def user_vm_link(self):
-        return  os.path.join(os.environ.get('HOME'), '.gentoo' + self.eprefix + '/java-config-2/current-user-vm')
+        return os.path.join(self.user_state_dir(), 'current-user-vm')
 
     def system_vm_link(self):
         return self.eroot + '/etc/java-config-2/current-system-vm'
